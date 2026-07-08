@@ -7,9 +7,9 @@
 
     @author     Mathilde Needham (Mathilde.Needham@tria-technologies.com)
 
-    @defgroup   REF_GertToUTW_TestItem   TestItem 
+    @defgroup  REF_GertToUTWEngine_GertToUTW_TestRun   TestRun 
     @{
-    @ingroup    REF_GertToUTW
+    @ingroup    PROJ_GertToUTWEngine_GertToUTW
 
     @brief      Defines data structures representing serial number attributes and a test run .
 
@@ -23,7 +23,7 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("RegressionTests")]
 namespace GertToUTW;
 
-/** @ingroup    REF_GertToUTW_TestRun
+/** @ingroup    REF_GertToUTWEngine_GertToUTW_TestRun
 
     @class      SerialNumberAttributes
 
@@ -55,7 +55,7 @@ public class SerialNumberAttributes
     public string? Comment { get; set; } 
     }
 
-/** @ingroup    REF_GertToUTW_TestRun
+/** @ingroup    REF_GertToUTWEngine_GertToUTW_TestRun
 
     @class      TestRun
 
