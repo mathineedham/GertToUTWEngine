@@ -1,48 +1,229 @@
-﻿namespace GertToUTW;
+﻿/** @file
 
+    @copyright  &copy; 2024, Tria Technologies GmbH
+                SPDX-License-Identifier: (GPL-2.0-or-later OR LGPL-2.1-or-later)
 
+    @date       08.07.2026
 
+    @author     Mathilde Needham (Mathilde.Needham@tria-technologies.com)
+
+    @defgroup   REF_GertToUTW_TestItem   TestItem 
+    @{
+    @ingroup    REF_GertToUTW
+
+    @brief      Defines data structures representing serial number attributes and a test run .
+
+    @details    This file includes metadata models used to serialize and manage properties 
+                associated with individual test sequence executions, hardware metadata, 
+                and regulatory data boundary compliance tracking.
+    @
+*/
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("RegressionTests")]
+namespace GertToUTW;
+
+/** @ingroup    REF_GertToUTW_TestRun
+
+    @class      SerialNumberAttributes
+
+    @brief      Represents key-value attribute extensions for a unique serial number.
+
+    @details    Provides custom dynamic properties without modifying the fixed schematic layout.
+*/
 public class SerialNumberAttributes
     {
+    /** @brief      configuration key 
+
+        @return     The key of the serial number attributes.
+    */
     public int SerialNumberAttributes_Key { get; set; } = 1;
+    /** @brief      The descriptor name of the metadata attribute field.
+
+        @return     The name of the attribute.
+    */
     public string Name { get; set; } = string.Empty;
+    /** @brief      The text value matching the descriptive attribute property.
+
+        @return     The value of the attribute.
+    */
     public string Value { get; set; } = string.Empty;
+    /** @brief      An optional user or system log comment regarding this attribute record.
+
+        @return     The comment block text string, or null if unassigned.
+    */
     public string? Comment { get; set; } 
     }
 
+/** @ingroup    REF_GertToUTW_TestRun
+
+    @class      TestRun
+
+    @brief      Main context class capturing structural tracking metrics for a completed test sequence.
+
+    @details    This class encapsulates data spanning environmental properties, time logs, target hardware 
+                serial designations, operator footprints, structural collections of executed sub-items, and strict validation 
+                bounds for string formatting patterns matching expected global XML target schemas.
+*/
 public class TestRun
     {
+    /** @brief      key identifier 
+
+        @return     The key value.
+    */
     public int TestRun_Key { get; set; } = 1;
-    public string? MaterialNumber { get; set; } = string.Empty; //"\d*[1-9]+\d*" OR "\d{1,18}"
+
+    /** @brief      The structural material index number identification pattern.
+
+        @details    Enforces patterns for XML schema definitions. 
+                    either `\d*[1-9]+\d*` or `\d{1,18}` 
+
+        @return     The string value of the material number, or null if undefined.
+    */
+    public string? MaterialNumber { get; set; } = string.Empty;
+
+    /** @brief      Plain-text naming description of the material unit under test.
+
+        @return     The descriptive string text for the material.
+    */
     public string MaterialText { get; set; } = string.Empty;
-    public string MaterialRevision { get; set; } = string.Empty; //"([A-Z0-9]{4})*"
+
+    /** @brief      The production revision of the product.
+
+        @details    Formatted identifiers are strictly configured to structure patterns like `([A-Z0-9]{4})*`.
+
+        @return     The item revision string.
+    */
+    public string MaterialRevision { get; set; } = string.Empty;
+
+    /** @brief      The unique factory physical serial number value of the product.
+
+        @return     The hardware identity serial number string.
+    */
     public string SerialNumber { get; set; } = string.Empty;
+
+    /** @brief      The login credential name tracking the human operator conducting the run.
+
+        @return     The operator configuration identity string.
+    */
     public string OperatorName { get; set; } = string.Empty;
+
+    /** @brief      The structural machine network node or workstation name executing the sequence.
+
+        @return     The physical client workstation name string.
+    */
     public string ComputerName { get; set; } = string.Empty;
+
+    /** @brief      The engine identifier (UTW/GERT) executing the test sequence.
+     * 
+        @return     The sequencer program ID token.
+    */
     public string SequencerId { get; set; } = string.Empty;
-    public string Result { get; set; } = string.Empty; // FAILED; PASSED; SKIPPED; INCOMPLETE;ERROR
+
+    /** @brief      The strict structural output outcome result tracking tag.
+
+        @details    Explicitly bounded states map directly against specific enumerated configurations 
+                    namely: FAILED, PASSED, SKIPPED, INCOMPLETE, or ERROR state strings.
+
+        @return     The matching categorical result outcome string state token.
+    */
+    public string Result { get; set; } = string.Empty;
+
+    /** @brief      The absolute localized starting timestamp tracking the test execution initialization.
+
+        @details    Formatted to comply sequentially with serialization constraints governing `xsd:dateTime`.
+
+        @return     The starting timeline event timestamp.
+    */
     public DateTime StartTime
         {
         get; set;
-        } //xsd::datetime
+        }
+
+    /** @brief      The absolute localized end timestamp tracking the completed test execution run conclusion.
+
+        @details    Formatted to comply sequentially with serialization constraints governing `xsd:dateTime`.
+
+        @return     The ending timeline event timestamp.
+    */
     public DateTime EndTime
         {
         get; set;
-        }//xsd::datetime
+        }
+
+    /** @brief      The structured relational list container holding all test steps/items.
+
+        @return     An iterable list of underlying child `TestItem` validation models.
+    */
     public List<TestItem> TestItem { get; set; } = [];
+
+    /** @brief      The internal test station tracking identity node.
+
+        @return     The testing physical facility name string context, or null if generic.
+    */
     public string? Station
         {
         get; set;
         }
+
+    /** @brief      The exact operational test process step context string identifier.
+
+        @return     The process route stage name descriptor tracking string, or null if unspecified.
+    */
     public string? Routestep
         {
         get; set;
         }
-    public string Lot { get; set; } = "000000"; //"([0-9]{6,7})*"
+
+    /** @brief      The factory batch production lot allocation context mask.
+
+        @details    Formatted values must fit structural validation tracking layouts matching `([0-9]{6,7})*`.
+
+        @return     The production lot id string.
+    */
+    public string Lot { get; set; } = "000000";
+
+    /** @brief      An optional open-ended string comment detailing general aspects of this test execution run.
+
+        @return     The comment description text, or null if unassigned.
+    */
     public string? Comment { get; set; }
+
+    /** @brief      The custom key-value property tracking collection mapping unique attributes for item serial configurations.
+
+        @return     An iterable array tracking specific custom variable entries.
+    */
     public List<SerialNumberAttributes> SerialNumberAttributes { get; set; } = [];
-    public int? DUTPosition { get; set; } = 1; //must be convertable to xsd::short
-    public string? SoftwareVersion { get; set; } = "0.0.0"; //"[0-9]{1,2}.[0-9]{1,2}(.[0-9]{1,2})*(.[0-9]{1,4})*"
+
+    /** @brief      The individual physical slot or device under test layout station index assignment value.
+
+        @details    Structural parameters must fall into bounds that are convertible to a valid standard `xsd:short` format integer.
+
+        @return     The numerical physical slot layout index location, or null if generic.
+    */
+    public int? DUTPosition { get; set; } = 1;
+
+    /** @brief      The application software version tag context running the sequence.
+
+        @details    Follows structured format validation boundaries matching standard sequence masks: 
+                    `[0-9]{1,2}.[0-9]{1,2}(.[0-9]{1,2})*(.[0-9]{1,4})*`.
+
+        @return     The system application software version string identifier, or null if generic.
+    */
+    public string? SoftwareVersion { get; set; } = "0.0.0";
+
+    /** @brief      The background runtime operating system environment infrastructure details tag context.
+
+        @return     The platform environment text identification string, or null if generalized.
+    */
     public string? OperatingSystem { get; set; } = "OS";
-    public string? OperatingMode { get; set; } = "OPERATING"; // MUST BE "OPERATING","ENGINEERING","REPAIR",DEVELOPMENT, RMA
+
+    /** @brief      The execution environment state configuration mode context string token.
+
+        @details    The value assigned must fit explicitly matching options: `OPERATING`, `ENGINEERING`, 
+                    `REPAIR`, `DEVELOPMENT`, or `RMA`.
+
+        @return     The structural operational execution state type tracking token string, or null if generic.
+    */
+    public string? OperatingMode { get; set; } = "OPERATING";
     }

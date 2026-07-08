@@ -7,11 +7,11 @@
 
     @author     Mathilde Needham (Mathilde.Needham@tria-technologies.com)
 
-    @defgroup   REF_GertToUTW_TestItem   TestItem 
+    @defgroup   REF_GertToUTWEngine_GertToUTW_TestItem   TestItem 
     @{
-    @ingroup    REF_GertToUTW
+    @ingroup    PROJ_GertToUTWEngine_GertToUTW
 
-    @brief      Represents a test item within the execution context.
+    @brief      Represents a test item
 
     @details    The `TestItem` class is used to handle and validate the attributes associated with an executed test. 
                 It allows for managing key identifiers, checking boundary constraints for individual indexes, 
@@ -23,7 +23,7 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("RegressionTests")]
 namespace GertToUTW;
 
-/** @ingroup    REF_GertToUTW_TestItem
+/** @ingroup    PROJ_GertToUTWEngine_GertToUTW
 
     @class     TestItem
 
