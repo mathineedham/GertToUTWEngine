@@ -1,0 +1,50 @@
+/** @defgroup	SOL_GertToUTWEngine Solution GertToUTWENgine
+	@{
+	@brief		bbbb
+
+    @details    The `LibFundamento` solution includes a wide range of reusable libraries and components that aid in 
+                various aspects of software development, such as argument parsing, logging, exception handling, 
+                data processing, and utility functions. It serves as the foundational toolkit for building reliable 
+                and scalable applications, ensuring consistency, maintainability, and ease of integration across 
+                different projects.
+	@}
+    
+    @defgroup	PROJ_GertToUTWEngine_GertToUTW GertToUTW
+	@{
+	@ingroup	SOL_GertToUTWEngine
+
+	@brief		The `LibApplication` module provides the foundational classes and utilities required for building 
+                and managing applications.
+
+    @details    This group covers the core classes and functionality for handling application options, arguments, 
+                and other configuration utilities. It is intended to streamline application setup, execution, and 
+                argument handling, while offering customizable logging and exception handling mechanisms for developers.
+	@}
+
+    
+    @defgroup	PROJ_GertToUTWEngine_RegressionTest RegressionTest
+	@{
+	@ingroup	SOL_GertToUTWEngine
+
+	@brief		The `LibApplication` module provides the foundational classes and utilities required for building 
+                and managing applications.
+
+    @details    This group covers the core classes and functionality for handling application options, arguments, 
+                and other configuration utilities. It is intended to streamline application setup, execution, and 
+                argument handling, while offering customizable logging and exception handling mechanisms for developers.
+	@}
+
+    
+    @defgroup	REF_GertToUTWEngine_RegressionTest_GertToUTW GertToUTW
+	@{
+	@ingroup	PROJ_GertToUTWEngine_RegressionTest
+
+	@brief		The `LibApplication` module provides the foundational classes and utilities required for building 
+                and managing applications.
+
+    @details    This group covers the core classes and functionality for handling application options, arguments, 
+                and other configuration utilities. It is intended to streamline application setup, execution, and 
+                argument handling, while offering customizable logging and exception handling mechanisms for developers.
+	@}
+
+*/

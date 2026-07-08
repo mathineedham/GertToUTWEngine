@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
+    <File Path="doc/Grouping.dox" />
+  </Folder>
+  <Project Path="GertToUTW/GertToUTW.csproj" />
+  <Project Path="RegressionTest/RegressionTest.csproj" />
+</Solution>

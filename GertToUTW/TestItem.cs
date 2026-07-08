@@ -1,0 +1,129 @@
+﻿/** @file
+
+    @copyright  &copy; 2024, Tria Technologies GmbH
+                SPDX-License-Identifier: (GPL-2.0-or-later OR LGPL-2.1-or-later)
+
+    @date       08.07.2026
+
+    @author     Mathilde Needham (Mathilde.Needham@tria-technologies.com)
+
+    @defgroup   REF_GertToUTW_TestItem   TestItem 
+    @{
+    @ingroup    REF_GertToUTW
+
+    @brief      Represents a test item within the execution context.
+
+    @details    The `TestItem` class is used to handle and validate the attributes associated with an executed test. 
+                It allows for managing key identifiers, checking boundary constraints for individual indexes, 
+                and validating matching XSD result states.
+    @}
+*/
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("RegressionTests")]
+namespace GertToUTW;
+
+/** @ingroup    REF_GertToUTW_TestItem
+
+    @class     TestItem
+
+    @brief      Represents a single test step in a test run.
+
+    @details    This class handles the initialization, properties, and structural validation constraints of a test item.
+                It enforces strict range rules for sequence indices and strict string matching boundaries for 
+                the XML Schema definition result enumerations.
+*/
+public class TestItem
+{
+    /** @brief      The unique database or configuration key identifier for the test item.
+
+        @return     The key of the test item.
+    */
+    public int TestItem_Key { get; set; }
+
+    /** @brief      The name of the test item.
+
+        @details    The `Name` property represents the name assigned to the test. It defaults to an empty string.
+
+        @return     The name of the test item.
+    */
+    public string Name { get; set; } = string.Empty;
+
+    /** @brief      The optional description text of the test item.
+      
+        @details    In the case of transforming test logs from GERT to UTW, the description holds the second line of a test step log, giving use the step command
+
+        @return     The description string, or null if no description is provided.
+    */
+    public string? Description { get; set; }
+
+    /** @brief      The standard output log produced by the test item execution.
+
+        @details    If the result of a test item is not FAILED all output from the test item is stored in Stdout
+
+        @return     The standard output stream contents, or null if unavailable.
+    */
+    public string? Stdout { get; set; }
+
+    /** @brief      The standard error log produced by the test item execution.
+     
+        @details    If the result of a test item is FAILED all output from the test item is stored in Stderr
+
+        @return     The standard error stream contents, or null if unavailable.
+    */
+    public string? Stderr { get; set; }
+
+    /** @brief      The index number of the tet item in the test run
+
+        @details    The `Idx` property tracks the relative layout position. It enforces a structural constraint 
+                    restricting values to fit strictly within valid xsd:short bounds, so that it will fulfill the xml structure.
+
+        @throw      ArgumentOutOfRangeException if the value is negative or exceeds 32767.
+
+        @return     The numerical sequence short index value, or null if unassigned.
+    */
+    public int? Idx
+        {
+        get;
+        set
+            {
+            if( value is < 0 or > 32767 )
+                {
+                throw new ArgumentOutOfRangeException(nameof(value), "Idx must be a valid positive short integer (0 to 32767).");
+                }
+            field = value;
+            }
+        }
+
+    /** @brief      The structural execution status outcome of the test item.
+
+        @details    The `Result` property guarantees a strict matching against the XSD result enumeration strings. 
+                    Assigned strings are transformed and stored normalized into upper-case invariants.
+
+        @throw      ArgumentException if the assigned string format fails to match PASSED, FAILED, SKIPPED, INCOMPLETE, or ERROR.
+
+        @return     The uppercase normalized result state string.
+    */
+    public string Result
+        {
+        get;
+        set
+            {
+            if( value == null )
+                {
+                field = string.Empty;
+                return;
+                }
+
+            string upper_value = value.ToUpperInvariant();
+            if( upper_value is "PASSED" or "FAILED" or "SKIPPED" or "INCOMPLETE" or "ERROR" )
+                {
+                field = upper_value;
+                }
+            else
+                {
+                throw new ArgumentException($"Invalid Result '{value}'. Allowed options: PASSED, FAILED, SKIPPED, INCOMPLETE, ERROR.", nameof(value));
+                }
+            }
+        } = string.Empty;
+    }
