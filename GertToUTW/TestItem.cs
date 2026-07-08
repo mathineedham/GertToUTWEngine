@@ -89,7 +89,7 @@ public class TestItem
             {
             if( value is < 0 or > 32767 )
                 {
-                throw new ArgumentOutOfRangeException(nameof(value), "Idx must be a valid positive short integer (0 to 32767).");
+                throw new ArgumentOutOfRangeException(nameof(value));
                 }
             field = value;
             }
@@ -122,7 +122,7 @@ public class TestItem
                 }
             else
                 {
-                throw new ArgumentException($"Invalid Result '{value}'. Allowed options: PASSED, FAILED, SKIPPED, INCOMPLETE, ERROR.", nameof(value));
+                throw new ArgumentException(null, nameof(value));
                 }
             }
         } = string.Empty;
