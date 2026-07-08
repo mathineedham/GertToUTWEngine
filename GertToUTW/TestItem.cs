@@ -39,7 +39,7 @@ public class TestItem
 
         @return     The key of the test item.
     */
-    public int TestItem_Key { get; set; }
+    public int TestItem_Key { get; set; } =1;
 
     /** @brief      The name of the test item.
 
