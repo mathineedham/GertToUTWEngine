@@ -117,6 +117,8 @@ public static partial class GertLogParser
             string result_raw = extract_field(result_regex(), chunk);
             List<TestItem> test_items = parse_test_items(chunk);
 
+            string mac_adress = extract_field(mac_address_regex(), chunk);
+
             test_runs.Add(new TestRun
                 {
                 TestRun_Key = 1,
@@ -130,7 +132,7 @@ public static partial class GertLogParser
                 SequencerId = "GERT",
                 StartTime = parse_date(extract_field(start_time_regex(), chunk)),
                 EndTime = parse_date(extract_field(end_time_regex(), chunk)),
-                SerialNumberAttributes = build_serial_attributes(extract_field(mac_address_regex(), chunk)),
+                SerialNumberAttributes = build_serial_attributes([("MACAdress",mac_adress)]),
                 TestItem = test_items
                 });
             }
@@ -181,13 +183,13 @@ public static partial class GertLogParser
 
     /** @brief      Constructs peripheral identifier containers around physical device logs.
 
-        @param[in]  mac_address   The physical interface code token identifier string.
+    @param[in]  attributes   A dictionary containing the identifier names and their corresponding values.
 
-        @return     An explicit relational layout tracking tracking entry list.
-    */
-    internal static List<SerialNumberAttributes> build_serial_attributes( string mac_address )
+    @return     An explicit relational layout tracking entry list.
+*/
+    internal static List<SerialNumberAttributes> build_serial_attributes( List<(string, string)> attributes )
         {
-        return [new() { SerialNumberAttributes_Key = 1, Name = "MACAdress", Value = mac_address }];
+        return [.. attributes.Select(attr => new SerialNumberAttributes { SerialNumberAttributes_Key = 1,Name = attr.Item1, Value = attr.Item2 })];
         }
 
     /** @brief      Isolates step records embedded directly inside structural file body payloads.
