@@ -16,7 +16,7 @@
     @details    The `GertLogParser` class splits raw file contents into individual historical test data chunks, 
                 extracting metadata attributes, tracking evaluation criteria, and translating execution timelines 
                 into serializable structural objects.
-    @
+    @}
 */
 using System.Globalization;
 using System.Runtime.CompilerServices;
@@ -39,48 +39,48 @@ public static partial class GertLogParser
     {
     /** @brief      Matches the starting environmental network host identifier. */
     [GeneratedRegex(@"GERT started on host:\s*(\S+)")]
-    private static partial Regex computer_name_regex();
+    internal static partial Regex computer_name_regex();
     /** @brief      Splits individual log report execution records safely. */
     [GeneratedRegex(@"(?=GERT started on host:)")]
-    private static partial Regex report_split_regex();
+    internal static partial Regex report_split_regex();
     /** @brief      Matches the execution initialization timeline start flag. */
     [GeneratedRegex(@"\[TestRunStart =\s*([^\]]+)\]")]
-    private static partial Regex start_time_regex();
+    internal static partial Regex start_time_regex();
     /** @brief      Matches the associated operator validation credential marker. */
     [GeneratedRegex(@"\[OPER=\s*([^\]]+)\]")]
-    private static partial Regex operator_name_regex();
+    internal static partial Regex operator_name_regex();
     /** @brief      Extracts numerical product schematic indices. */
     [GeneratedRegex(@"Script\s*=\s*(\d+)")]
-    private static partial Regex material_number_regex();
+    internal static partial Regex material_number_regex();
     /** @brief      Matches plain-text descriptive product information strings. */
     [GeneratedRegex(@"\[Product =\s*([^\]]+)\]")]
-    private static partial Regex material_text_regex();
+    internal static partial Regex material_text_regex();
     /** @brief      Matches alpha-numeric engineering design index modifications. */
     [GeneratedRegex(@"\[Revision =\s*([^\]]+)\]")]
-    private static partial Regex material_revision_regex();
+    internal static partial Regex material_revision_regex();
     /** @brief      Matches individual target physical asset serial markings. */
     [GeneratedRegex(@"\[BoardID =\s*([^\]]+)\]")]
-    private static partial Regex serial_number_regex();
+    internal static partial Regex serial_number_regex();
     /** @brief      Extracts final evaluation context verdict indicators. */
     [GeneratedRegex(@"\[ScriptResult =\s*([^\]]+)\]")]
-    private static partial Regex result_regex();
+    internal static partial Regex result_regex();
     /** @brief      Matches the absolute structural termination timestamp metadata flag. */
     [GeneratedRegex(@"\[TestRunEnd =\s*([^\]]+)\]")]
-    private static partial Regex end_time_regex();
+    internal static partial Regex end_time_regex();
     /** @brief      Extracts peripheral hardware network adapter identifier codes. */
     [GeneratedRegex(@"MACAddress1:\s*(\S+)")]
-    private static partial Regex mac_address_regex();
+    internal static partial Regex mac_address_regex();
     /** @brief      Captures core body segments containing isolated step-by-step arrays. */
     [GeneratedRegex(@"\[LogData = Start\](.*?)\[LogData = End\]", RegexOptions.Singleline)]
-    private static partial Regex log_data_regex();
+    internal static partial Regex log_data_regex();
     /** @brief      Splits raw execution blocks into discrete functional milestones. */
     [GeneratedRegex(@"-{20,}\s*(?=Step\s+\d+:|INFO::CloseTestLog)")]
-    private static partial Regex steps_split_regex();
+    internal static partial Regex steps_split_regex();
     /** @brief      Validates internal parameters, descriptions, variables, and output scopes. */
     [GeneratedRegex(@"Step\s+(\d+):\s*\[(.*?)\]\s*((?:INFO::FillVariables|INFO::ActionSteps).*?)\s*\n(?:.*?INFO::FillVariables.*?: SET .*?\n)*\s*(.*?)Result:\s*(\S+)", RegexOptions.Singleline)]
-    private static partial Regex step_item_regex();
+    internal static partial Regex step_item_regex();
     /** @brief      Internal static key translation reference map for input abbreviations. */
-    private static readonly Dictionary<string, string> theResultRules = new(StringComparer.Ordinal)
+    internal static readonly Dictionary<string, string> theResultRules = new(StringComparer.Ordinal)
     {
         { "PASS", "PASSED" },
         { "FAIL", "FAILED" },
@@ -146,7 +146,7 @@ public static partial class GertLogParser
 
         @return     The extracted matched string chunk value or the requested default.
     */
-    private static string extract_field( Regex regex, string text, string @default = "" )
+    internal static string extract_field( Regex regex, string text, string @default = "" )
         {
         Match match = regex.Match(text);
         return match.Success ? match.Groups[1].Value.Trim() : @default;
@@ -158,7 +158,7 @@ public static partial class GertLogParser
 
         @return     The corresponding upper-case tracking state outcome token.
     */
-    private static string map_result( string raw_result )
+    internal static string map_result( string raw_result )
         {
         return theResultRules.TryGetValue(raw_result, out string? transformed) ? transformed : raw_result;
         }
@@ -169,13 +169,14 @@ public static partial class GertLogParser
 
         @return     The converted object timestamp data snapshot, or system runtime fallback `Now`.
     */
-    private static DateTime parse_date( string date_str )
+    internal static DateTime parse_date( string date_str )
         {
         if( DateTime.TryParseExact(date_str, "dd.MM.yyyy 'at' HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsed_date) )
             {
             return parsed_date;
             }
-        return DateTime.Now;
+
+        throw new FormatException(date_str);
         }
 
     /** @brief      Constructs peripheral identifier containers around physical device logs.
@@ -184,7 +185,7 @@ public static partial class GertLogParser
 
         @return     An explicit relational layout tracking tracking entry list.
     */
-    private static List<SerialNumberAttributes> build_serial_attributes( string mac_address )
+    internal static List<SerialNumberAttributes> build_serial_attributes( string mac_address )
         {
         return [new() { SerialNumberAttributes_Key = 1, Name = "MACAdress", Value = mac_address }];
         }
@@ -195,7 +196,7 @@ public static partial class GertLogParser
 
         @return     An isolated array listing sub-milestone object definitions.
     */
-    private static List<TestItem> parse_test_items( string content )
+    internal static List<TestItem> parse_test_items( string content )
         {
         List<TestItem> test_items = [];
         Match log_data_match = log_data_regex().Match(content);
@@ -232,7 +233,7 @@ public static partial class GertLogParser
 
         @return     An initialized structural item definition.
     */
-    private static TestItem build_test_item( Match match )
+    internal static TestItem build_test_item( Match match )
         {
         string result_raw = map_result(match.Groups[5].Value.Trim());
         string middle_string = match.Groups[4].Value.Trim();

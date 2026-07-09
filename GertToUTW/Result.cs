@@ -17,7 +17,7 @@ using System.Runtime.CompilerServices;
     @brief      Defines the Result context class ensuring strict target data compliance.
 
     @details    This file keeps track of final results and makes sure they match XML formatting rules before they are saved.
-    @
+    @}
 */
 [assembly: InternalsVisibleTo("RegressionTest")]
 namespace GertToUTW;

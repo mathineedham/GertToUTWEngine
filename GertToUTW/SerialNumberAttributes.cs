@@ -16,7 +16,7 @@
     @details    This file includes metadata models used to serialize and manage properties 
                 associated with individual test sequence executions, hardware metadata, 
                 and regulatory data boundary compliance tracking.
-    @
+    @}
 */
 using System.Runtime.CompilerServices;
 
