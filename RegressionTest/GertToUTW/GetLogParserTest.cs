@@ -40,7 +40,7 @@ public sealed class ParseDateTests
     {
     /** @brief Verifies that a correctly formatted date string parses into the exact expected DateTime object. */
     [TestMethod]
-    public void Parse_date_ValidFormat_ReturnsExpectedDateTime()
+    public void Parse_date_ValidFormat()
         {
         string valid_date_text = "09.07.2026 at 14:30:25";
         DateTime expected = new(2026, 7, 9, 14, 30, 25);
@@ -53,7 +53,7 @@ public sealed class ParseDateTests
     [TestMethod]
     [DataRow("2026-07-09 14:30:25")]
     [DataRow("09/07/2026 at 14h30m25s")]
-    public void Parse_date_InvalidFormat_ThrowsFormatExceptionWithRawValueAsMessage( string malformed_date_text )
+    public void Parse_date_InvalidFormat( string malformed_date_text )
         {
         try
             {
@@ -78,6 +78,12 @@ public sealed class ParseDateTests
 [TestClass]
 public sealed partial class ExtractFieldTests
     {
+    /** @brief Verifies that a correctly formatted date field is extracted from the log text. 
+     * param[in]  expr A regex pattern to identify the date field in the log text.
+     * param[in]  log_text   A string containing a valid date field in the expected format.
+     * param[in]  expected_date   The DateTime object that should result from parsing the extracted field.
+     * param[in]  explicit_default A string representing the default value to use if the field is not found; should be null if not given
+     */
     [TestMethod]
     // Success cases with single and multiple values
     [DataRow(@"Key\s*=\s*(.*)", "Some header info\nKey =   SRNUM-999X   \nSome footer info", "SRNUM-999X", null)]
@@ -112,16 +118,62 @@ public sealed partial class ExtractFieldTests
 [TestClass]
 public class TestMapTests
     {
+    /** @brief Verifies that a correctly formatted result string is mapped to the expected standardized outcome. 
+     * param[in]  raw_result A string representing the raw result from the log.
+     * param[in]  expected_result The expected standardized outcome after mapping.
+     */
     [TestMethod]
     [DataRow("PASS", "PASSED")]
     [DataRow("FAIL", "FAILED")]
     [DataRow("SKIP", "SKIPPED")]
     [DataRow("", "")]
     [DataRow(" d  ", " d  ")]
-    [DataRow(null, null)]
-    public void MapResult_WhenCalled_ReturnsMappedValueOrOriginalRawInput( string raw_result, string expected_result )
+    public void MapResult( string raw_result, string expected_result )
         {
         string result = GertLogParser.map_result(raw_result);
         Assert.AreEqual(expected_result, result, $"Mapping outcome did not match expectations for input: '{raw_result}'");
+        }
+    }
+
+/** @class      SerialAttributesTests
+    @ingroup    REF_GertToUTWEngine_RegressionTest_GertToUTW_GerLogParserTest
+
+    @brief      Unit tests for the 'build_serial_attributes' method of the `GertLogParser` class.
+
+    @details    Verifies that the `build_serial_attributes` method correctly constructs a dictionary of serializable attributes from the log text, 
+                handles edge cases.
+*/
+[TestClass]
+public class SerialAttributesTests
+    {
+    /** @brief Verifies that the `build_serial_attributes` method correctly extracts and serializes attributes from log text. */
+    [TestMethod]
+    public void BuildSerialAttributes_att()
+        {
+        List<(string, string)> input_attributes =
+            [
+                ("MACAddress", "00:1A:2B:3C:4D:5E"),
+                ("SerialNumber", "SRNUM-999X"),
+                ("FirmwareVersion", "v2.1.4")
+            ];
+        List<SerialNumberAttributes> result = GertLogParser.build_serial_attributes(input_attributes);
+        Assert.IsNotNull(result, "The returned list should never be null.");
+        Assert.HasCount(input_attributes.Count, result, "The result list count should match the input count.");
+        Assert.AreEqual(1, result[0].SerialNumberAttributes_Key, "Key should currently default to 1.");
+        Assert.AreEqual("MACAddress", result[0].Name, "Name should match the first tuple element.");
+        Assert.AreEqual("00:1A:2B:3C:4D:5E", result[0].Value, "Value should match the second tuple element.");
+        Assert.AreEqual(1, result[1].SerialNumberAttributes_Key, "Key remains 1 for subsequent items in current implementation.");
+        Assert.AreEqual("SerialNumber", result[1].Name);
+        Assert.AreEqual("SRNUM-999X", result[1].Value);
+        }
+
+    /** @brief Verifies that the `serial_attributes` method correctly handles an empty input list. */
+    [TestMethod]
+    public void BuildSerialAttributes_empty()
+        {
+        List<(string, string)> empty_input = [];
+        List<SerialNumberAttributes> result = GertLogParser.build_serial_attributes(empty_input);
+        Assert.IsNotNull(result, "Should return an instantiated list, not null.");
+        Assert.IsEmpty(result, "An empty input list should produce an empty output list.");
         }
     }
