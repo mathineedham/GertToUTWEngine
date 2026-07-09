@@ -23,7 +23,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 
-[assembly: InternalsVisibleTo("RegressionTests")]
+[assembly: InternalsVisibleTo("RegressionTest")]
 namespace GertToUTW;
 
 /** @ingroup    REF_GertToUTWEngine_GertToUTW_GertLogParser
@@ -126,7 +126,7 @@ public static partial class GertLogParser
                 MaterialText = extract_field(material_text_regex(), chunk),
                 MaterialRevision = extract_field(material_revision_regex(), chunk),
                 SerialNumber = extract_field(serial_number_regex(), chunk),
-                Result = map_result(result_raw),
+                Result = new Result { Value = map_result(result_raw) },
                 SequencerId = "GERT",
                 StartTime = parse_date(extract_field(start_time_regex(), chunk)),
                 EndTime = parse_date(extract_field(end_time_regex(), chunk)),
@@ -258,7 +258,7 @@ public static partial class GertLogParser
             Idx = int.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture),
             Name = match.Groups[2].Value.Trim(),
             Description = match.Groups[3].Value.Trim(),
-            Result = result_raw,
+            Result = new Result { Value = result_raw },
             Stdout = stdout_val,
             Stderr = stderr_val
             };

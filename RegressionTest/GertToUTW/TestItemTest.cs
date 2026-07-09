@@ -44,7 +44,7 @@ public sealed class TestItemTests
         Assert.IsNull(item.Stdout);
         Assert.IsNull(item.Stderr);
         Assert.IsNull(item.Idx);
-        Assert.AreEqual(string.Empty, item.Result);
+        Assert.AreEqual(string.Empty, item.Result.Value);
         }
 
     /** @brief      Validates that legal sequence indexing values correctly persist to the property.
@@ -78,55 +78,6 @@ public sealed class TestItemTests
         _ = Assert.ThrowsExactly<ArgumentOutOfRangeException>(() =>
         {
             item.Idx = invalid_idx;
-        });
-        }
-
-    /** @brief Verifies that assigning a null reference value resets the execution status to an empty string. */
-    [TestMethod]
-    public void ResultPropertyNullInputResetsToEmptyTest()
-        {
-        TestItem item = new()
-            {
-            Result = null!
-            };
-        Assert.AreEqual(string.Empty, item.Result);
-        }
-
-    /** @brief      Validates strict string normalization and direct invariant uppercase matching.
-     
-        @param[in]  input_verdict    The raw variance token to parse.
-        @param[in]  expected_verdict The compliant destination uppercase string value.
-    */
-    [TestMethod]
-    [DataRow("passed", "PASSED")]
-    [DataRow("FAILED", "FAILED")]
-    [DataRow("Skipped", "SKIPPED")]
-    [DataRow("incomplete", "INCOMPLETE")]
-    [DataRow("error", "ERROR")]
-    public void ResultPropertyExactInvariantsNormalizeTest( string input_verdict, string expected_verdict )
-        {
-        TestItem item = new()
-            {
-            Result = input_verdict
-            };
-        Assert.AreEqual(expected_verdict, item.Result);
-        }
-
-    /** @brief      Confirms that unrecognized text triggers an ArgumentException.
-     
-        @param[in]  invalid_verdict   An unexpected outcome label text.
-    */
-    [TestMethod]
-    [DataRow("UNKNOWN")]
-    [DataRow("invalid_state")]
-    [DataRow("PASS_YET_INVALID")]
-    public void ResultPropertyInvalidInputThrowsTest( string invalid_verdict )
-        {
-        TestItem item = new();
-
-        _ = Assert.ThrowsExactly<ArgumentException>(() =>
-        {
-            item.Result = invalid_verdict;
         });
         }
     }

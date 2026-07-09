@@ -20,7 +20,7 @@
 */
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("RegressionTests")]
+[assembly: InternalsVisibleTo("RegressionTest")]
 namespace GertToUTW;
 
 /** @ingroup    PROJ_GertToUTWEngine_GertToUTW_TestItem
@@ -35,6 +35,8 @@ namespace GertToUTW;
 */
 public class TestItem
 {
+    internal static readonly int theMinIndexLimit;
+    internal static readonly int theMaxIndexLimit = 32767;
     /** @brief      The unique database or configuration key identifier for the test item.
 
         @return     The key of the test item.
@@ -87,7 +89,7 @@ public class TestItem
         get;
         set
             {
-            if( value is < 0 or > 32767 )
+            if( value < theMinIndexLimit || ( value > theMaxIndexLimit ))
                 {
                 throw new ArgumentOutOfRangeException(nameof(value));
                 }
@@ -104,26 +106,5 @@ public class TestItem
 
         @return     The uppercase normalized result state string.
     */
-    public string Result
-        {
-        get;
-        set
-            {
-            if( value == null )
-                {
-                field = string.Empty;
-                return;
-                }
-
-            string upper_value = value.ToUpperInvariant();
-            if( upper_value is "PASSED" or "FAILED" or "SKIPPED" or "INCOMPLETE" or "ERROR" )
-                {
-                field = upper_value;
-                }
-            else
-                {
-                throw new ArgumentException(null, nameof(value));
-                }
-            }
-        } = string.Empty;
+    public Result Result { get; set; } = new();
     }

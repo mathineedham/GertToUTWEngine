@@ -7,7 +7,7 @@
 
     @author     Mathilde Needham (Mathilde.Needham@tria-technologies.com)
 
-    @defgroup  REF_GertToUTWEngine_GertToUTW_TestRun   TestRun 
+    @defgroup   REF_GertToUTWEngine_GertToUTW_TestRun   TestRun 
     @{
     @ingroup    PROJ_GertToUTWEngine_GertToUTW
 
@@ -19,41 +19,10 @@
     @
 */
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 
-[assembly: InternalsVisibleTo("RegressionTests")]
+[assembly: InternalsVisibleTo("RegressionTest")]
 namespace GertToUTW;
-
-/** @ingroup    REF_GertToUTWEngine_GertToUTW_TestRun
-
-    @class      SerialNumberAttributes
-
-    @brief      Represents key-value attribute extensions for a unique serial number.
-
-    @details    Provides custom dynamic properties without modifying the fixed schematic layout.
-*/
-public class SerialNumberAttributes
-    {
-    /** @brief      configuration key 
-
-        @return     The key of the serial number attributes.
-    */
-    public int SerialNumberAttributes_Key { get; set; } = 1;
-    /** @brief      The descriptor name of the metadata attribute field.
-
-        @return     The name of the attribute.
-    */
-    public string Name { get; set; } = string.Empty;
-    /** @brief      The text value matching the descriptive attribute property.
-
-        @return     The value of the attribute.
-    */
-    public string Value { get; set; } = string.Empty;
-    /** @brief      An optional user or system log comment regarding this attribute record.
-
-        @return     The comment block text string, or null if unassigned.
-    */
-    public string? Comment { get; set; } 
-    }
 
 /** @ingroup    REF_GertToUTWEngine_GertToUTW_TestRun
 
@@ -65,8 +34,25 @@ public class SerialNumberAttributes
                 serial designations, operator footprints, structural collections of executed sub-items, and strict validation 
                 bounds for string formatting patterns matching expected global XML target schemas.
 */
-public class TestRun
+public partial class TestRun
     {
+
+    [GeneratedRegex(@"^\d*[1-9]+\d*$")]
+    private static partial Regex MatNb();
+    [GeneratedRegex(@"^\d{1,18}$")]
+    private static partial Regex MatNb2();
+    [GeneratedRegex(@"^[0-9]{6,7}$")]
+    private static partial Regex LotNb();
+    private static readonly HashSet<string> theValidOperatingModes =
+    [
+        "OPERATING",
+        "ENGINEERING",
+        "REPAIR",
+        "DEVELOPMENT",
+        "RMA"
+    ];
+
+
     /** @brief      key identifier 
 
         @return     The key value.
@@ -80,7 +66,28 @@ public class TestRun
 
         @return     The string value of the material number, or null if undefined.
     */
-    public string? MaterialNumber { get; set; } = string.Empty;
+    public string? MaterialNumber
+        {
+        get;
+        set
+            {
+            if( value == null )
+                {
+                field = null;
+                return;
+                }
+
+            // Normalizes empty string allocations if present, otherwise executes schema verification masks
+            if( value != string.Empty &&
+                !MatNb().IsMatch(value) &&
+                !MatNb2().IsMatch(value) )
+                {
+                throw new ArgumentException(null, nameof(value));
+                }
+
+            field = value;
+            }
+        } = string.Empty;
 
     /** @brief      Plain-text naming description of the material unit under test.
 
@@ -127,7 +134,7 @@ public class TestRun
 
         @return     The matching categorical result outcome string state token.
     */
-    public string Result { get; set; } = string.Empty;
+    public Result Result { get; set; } = new();
 
     /** @brief      The absolute localized starting timestamp tracking the test execution initialization.
 
@@ -181,7 +188,25 @@ public class TestRun
 
         @return     The production lot id string.
     */
-    public string Lot { get; set; } = "000000";
+    public string Lot
+        {
+        get;
+        set
+            {
+            if( value == null )
+                {
+                throw new ArgumentNullException(nameof(value), "Lot context layout string cannot be null.");
+                }
+
+            // Validates against target mask constraint: empty string or exactly 6 to 7 digits
+            if( value != string.Empty && !LotNb().IsMatch(value) )
+                {
+                throw new ArgumentException(null, nameof(value));
+                }
+
+            field = value;
+            }
+        } = "000000";
 
     /** @brief      An optional open-ended string comment detailing general aspects of this test execution run.
 
@@ -225,5 +250,27 @@ public class TestRun
 
         @return     The structural operational execution state type tracking token string, or null if generic.
     */
-    public string? OperatingMode { get; set; } = "OPERATING";
+    public string? OperatingMode
+        {
+        get;
+        set
+            {
+            if( value == null )
+                {
+                field = null;
+                return;
+                }
+
+            string upper_value = value.ToUpperInvariant();
+            if( theValidOperatingModes.Contains(upper_value) )
+                {
+                field = upper_value;
+                }
+            else
+                {
+                throw new ArgumentException(null, nameof(value));
+                }
+            }
+        } = "OPERATING";
+
     }
