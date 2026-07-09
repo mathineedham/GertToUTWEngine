@@ -250,8 +250,7 @@ public class ParseStepItemTests
 /** @class      ParseGertLog
     @ingroup    REF_GertToUTWEngine_RegressionTest_GertToUTW_GerLogParserTest
     @brief      Unit tests for the 'ParseGertLog' method of the `GertLogParser` class.
-    @details    Verifies that the `extract_field` method correctly extracts fields from log text based on regex patterns, 
-                handles edge cases, and returns default values when necessary.
+    @details    Uses testfiles to verify that the `ParseGertLog` method correctly parses entire log files and produces the expected number of test runs
 */
 [TestClass]
 public class GertLogParserFlowControlTests
@@ -264,18 +263,11 @@ public class GertLogParserFlowControlTests
     [DataRow("Valid/valid_1022000000.log", 2)]
     public void GertLogParserTest_Valid( string relative_file_name, int expected_run_count )
         {
-        // Arrange - Build the absolute path cleanly to the 'valid' subdirectory
-        string absolutePath = Path.Combine(theBaseFilesDir, "valid", relative_file_name);
-
-        // Defensive check to make sure the file actually exists where it belongs
-        Assert.IsTrue(File.Exists(absolutePath), $"Test setup configuration failure: File not found at target location: {absolutePath}");
-
-        // Act
-        List<TestRun> result = GertLogParser.ParseGertLog(absolutePath);
-
-        // Assert - Verify loop flow control logic collected the intended sessions
+        string absolute_path = Path.Combine(theBaseFilesDir, "valid", relative_file_name);
+        Assert.IsTrue(File.Exists(absolute_path), $"Test setup configuration failure: File not found at target location: {absolute_path}");
+        List<TestRun> result = GertLogParser.ParseGertLog(absolute_path);
         Assert.IsNotNull(result);
-        Assert.AreEqual(expected_run_count, result.Count, $"Expected file '{relative_file_name}' to extract exactly {expected_run_count} compiled run records.");
+        Assert.HasCount(expected_run_count, result, $"Expected file '{relative_file_name}' to extract exactly {expected_run_count} compiled run records.");
         }
 
     [TestMethod]
