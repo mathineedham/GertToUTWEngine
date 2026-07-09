@@ -43,6 +43,9 @@ public partial class TestRun
     private static partial Regex MatNb2();
     [GeneratedRegex(@"^[0-9]{6,7}$")]
     private static partial Regex LotNb();
+    [GeneratedRegex(@"^([A-Z0-9]{4})*$")]
+    private static partial Regex MatRev();
+    
     private static readonly HashSet<string> theValidOperatingModes =
     [
         "OPERATING",
@@ -76,8 +79,6 @@ public partial class TestRun
                 field = null;
                 return;
                 }
-
-            // Normalizes empty string allocations if present, otherwise executes schema verification masks
             if( value != string.Empty &&
                 !MatNb().IsMatch(value) &&
                 !MatNb2().IsMatch(value) )
@@ -101,7 +102,20 @@ public partial class TestRun
 
         @return     The item revision string.
     */
-    public string MaterialRevision { get; set; } = string.Empty;
+    public string MaterialRevision
+        {
+        get;
+        set
+            {
+            if( value != string.Empty &&
+                !MatRev().IsMatch(value)  )
+                {
+                throw new ArgumentException(null, nameof(value));
+                }
+
+            field = value;
+            }
+        } = string.Empty;
 
     /** @brief      The unique factory physical serial number value of the product.
 
