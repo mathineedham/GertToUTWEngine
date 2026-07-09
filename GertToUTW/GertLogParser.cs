@@ -205,7 +205,7 @@ public static partial class GertLogParser
 
         if( !log_data_match.Success )
             {
-            return test_items;
+            throw new FormatException();
             }
 
         string log_body = log_data_match.Groups[1].Value;

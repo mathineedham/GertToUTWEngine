@@ -177,3 +177,72 @@ public class SerialAttributesTests
         Assert.IsEmpty(result, "An empty input list should produce an empty output list.");
         }
     }
+
+/** @class      BuildTestItemTest
+    @ingroup    REF_GertToUTWEngine_RegressionTest_GertToUTW_GerLogParserTest
+
+    @brief      Unit tests for the 'build_test_item' method of the `GertLogParser` class.
+
+    @details    Verifies that the `build_test_item` method correctly constructs a `TestItem` object, and saves the
+                test output to the correct property
+*/
+[TestClass]
+public class BuildTestItemTest
+    {
+    [TestClass]
+    public class GertLogParserTestItemRoutingTests
+        {
+        [TestMethod]
+        [DataRow("  Stack trace exception details  ", "FAIL", null, "Stack trace exception details")]
+        [DataRow("  Standard informational output  ", "PASS", "Standard informational output", null)]
+        [DataRow("", "PASS", null, null)]
+        [DataRow("   ", "FAIL", null, null)]
+        public void BuildTestItem_ValidatesOutputRoutingLogicOnly(
+            string middle_string,
+            string raw_result_input,
+            string expected_stdout,
+            string expected_stderr )
+            {
+            string target_log_block =
+                $"Step 12: [StepName] INFO::ActionSteps details\n" +
+                $"{middle_string}" +
+                $"Result: {raw_result_input}";
+
+            Match raw_match = GertLogParser.step_item_regex().Match(target_log_block);
+            Assert.IsTrue(raw_match.Success, " The production step_item_regex failed to match the test logblock layout structure.");
+            TestItem result = GertLogParser.build_test_item(raw_match);
+            Assert.AreEqual(expected_stdout, result.Stdout, "The value assigned to Stdout did not match routing expectations.");
+            Assert.AreEqual(expected_stderr, result.Stderr, "The value assigned to Stderr did not match routing expectations.");
+            }
+        }
+    }
+
+/** @class      ParseStepItemTests
+    @ingroup    REF_GertToUTWEngine_RegressionTest_GertToUTW_GerLogParserTest
+    @brief      Unit tests for the 'parse_test_items' method of the `GertLogParser` class.
+    @details    Verifies that the `parse_test_items` method correctly recognises all elements and all test steps
+*/
+[TestClass]
+public class ParseStepItemTests
+    {
+    /** @brief Verifies that the `parse_test_items` throws an exception when provided with a invalid input*/
+    [TestMethod]
+    public void ParseTestItems_NoTopLevelEnvelopeMatch_ThrowsFormatException()
+        {
+        string invalid_content = "Random invalid file context without log envelopes";
+        _ = Assert.Throws<FormatException>(() => GertLogParser.parse_test_items(invalid_content));
+        }
+
+    /** @brief Verifies that the `parse_test_items` correctly parses a valid log block and returns the expected number of test items. */
+    [TestMethod]
+    [DataRow("[LogData = Start]\nSome unrelated body noise\n[LogData = End]", 0)]
+    [DataRow("[LogData = Start]\nJunkBlock 1: [Noise] text\n[LogData = End]", 0)]
+    [DataRow("[LogData = Start]\nStep 1: [Init] INFO::ActionSteps\nResult: PASS\n--------------------\n[LogData = End]", 1)]
+    [DataRow("[LogData = Start]\nStep 1: [Init] INFO::ActionSteps\nResult: PASS\nSome Interstitial Trash Text\n--------------------\nStep 2: [Teardown] INFO::FillVariables\nResult: FAIL\n--------------------\n[LogData = End]", 2)]
+    public void ParseTestItems_EvaluatesLogStructures_AndReturnsExpectedCount( string raw_content, int expected_count )
+        {
+        List<TestItem> result = GertLogParser.parse_test_items(raw_content);
+        Assert.IsNotNull(result, "The method should always return a valid list instance, never null.");
+        Assert.HasCount(expected_count, result, $"Expected to extract exactly {expected_count} items from the payload string.");
+        }
+    }
