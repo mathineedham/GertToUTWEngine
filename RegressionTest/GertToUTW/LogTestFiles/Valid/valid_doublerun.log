@@ -1,0 +1,160 @@
+################################################################################
+GERT started on host: DESTSM3WK1123M4
+[TestRunStart = 16.04.2026 at 14:20:40]
+[ScriptFile = TS_0584_066872.txt]
+[OPER= ebersollt]
+
+[Project = 0584 MSC nanoRISC-iMX6]
+[Script = 066872 ROB NANORISC-IMX6S-009 PCBFTX - Boundary Scan and Functional Test - A02.60]
+[Product = ROB NANORISC-IMX6S-009 PCBFTX]
+[Revision = E001]
+[BoardID = 1022000000]
+[BOARDDATA]
+[GUIDATA]
+BoardId: 1022000000
+UserSpec1: IMX6S-
+UserSpec2: 009_
+CustomerProductRevision: 016
+Revision: E001
+MACAddress1: 000463A79D70
+CustomerProductName: rob-nR-imx6
+
+[LogData = Start]
+Step  1: [I.010.01. Skip if NoChkPHandle]
+INFO::FillVariables(0): FillVariables(args=['SkipStepsTilIf', '$PHandleLinkDisable', '==', 'TRUE', 'SKIP END: NoChkPHandle'])
+
+Result: PASS
+--------------------
+Step  2: [I.010.02. Check PHandle valid]
+INFO::FillVariables(0): FillVariables(args=['CheckPHandleValid', '$QS_RouteStep', '$BoardId', '$UsedPhandleID'])
+
+Result: PASS
+--------------------
+Step  4: [I.020.01. Set Debuglevel DataMod]
+INFO::FillVariables(0): FillVariables(args=['SetDebugLevel', '$_DebugLevel_04'])
+
+Result: PASS
+--------------------
+Step  5: [I.020.02. Set Debuglevel CASCON]
+INFO::FillVariables(0): FillVariables(args=['SetDebugLevel', '$_DebugLevel_04'])
+
+SetDebugLevel::LogRecData(INFO): Time elapsed= 0.00
+Result: FAIL
+--------------------
+Step  6: [I.020.03. Set Debug Level Wait]
+
+SetDebugLevel::LogRecData(INFO): Time elapsed= 0.00
+Result: PASS
+--------------------
+Step  7: [I.020.04. Set Debuglevel IOW]
+INFO::FillVariables(0): FillVariables(args=['SetDebugLevel', '$_DebugLevel_04'])
+
+Result: PASS
+--------------------
+Step  8: [I.020.05. Skip if !Std. Boot Timeout]
+INFO::FillVariables(0): FillVariables(args=['SkipStepsTilIf', '$DUT_BOOT_TIMEOUT', '!=', '', 'SKIP END: !Std. Boot Timeout'])
+
+Result: PASS
+--------------------
+Step  9: [I.020.06. set USB0 Dev Name]
+INFO::ActionSteps(0): 
+   Skip this teststep because [SKIP END: !Std. Boot Timeout] != [I.020.06. set USB0 Dev Name]
+Result: SKIP
+--------------------
+Step 10: [SKIP END: !Std. Boot Timeout]
+INFO::ActionSteps(0): 
+No Skip this teststep because [SKIP END: !Std. Boot Timeout] == [SKIP END: !Std. Boot Timeout]
+INFO::FillVariables(0): FillVariables(args=['LogInfo', 'Needed if !Std. Boot Timeout'])
+
+INFO::FillVariables(0): SET [LogInfo]
+INFO::FillVariables(0): SET [Needed if !Std. Boot Timeout]
+INFO::Needed if !Std. Boot Timeout
+Result: PASS
+--------------------
+INFO::CloseTestLog(0): 
+Total elapsed time= 119.85
+[LogData = End]
+
+[ScriptResult = FAIL]
+[ScriptElapsed = 119.846]
+[TestRunEnd = 16.04.2026 at 14:22:40]
+################################################################################
+GERT started on host: DESTSM3WK1123M4
+[TestRunStart = 16.04.2026 at 14:22:45]
+[ScriptFile = TS_0584_066872.txt]
+[OPER= ebersollt]
+
+[Project = 0584 MSC nanoRISC-iMX6]
+[Script = 066872 ROB NANORISC-IMX6S-009 PCBFTX - Boundary Scan and Functional Test - A02.60]
+[Product = ROB NANORISC-IMX6S-009 PCBFTX]
+[Revision = E001]
+[BoardID = 1022000000]
+[BOARDDATA]
+[GUIDATA]
+BoardId: 1022000000
+UserSpec1: IMX6S-
+UserSpec2: 009_
+CustomerProductRevision: 016
+Revision: E001
+MACAddress1: 000463A79D70
+CustomerProductName: rob-nR-imx6
+
+[LogData = Start]
+Step  1: [I.010.01. Skip if NoChkPHandle]
+INFO::FillVariables(0): FillVariables(args=['SkipStepsTilIf', '$PHandleLinkDisable', '==', 'TRUE', 'SKIP END: NoChkPHandle'])
+
+Result: PASS
+--------------------
+Step  2: [I.010.02. Check PHandle valid]
+INFO::FillVariables(0): FillVariables(args=['CheckPHandleValid', '$QS_RouteStep', '$BoardId', '$UsedPhandleID'])
+
+Result: PASS
+--------------------
+Step  4: [I.020.01. Set Debuglevel DataMod]
+INFO::FillVariables(0): FillVariables(args=['SetDebugLevel', '$_DebugLevel_04'])
+
+Result: PASS
+--------------------
+Step  5: [I.020.02. Set Debuglevel CASCON]
+INFO::FillVariables(0): FillVariables(args=['SetDebugLevel', '$_DebugLevel_04'])
+
+SetDebugLevel::LogRecData(INFO): Time elapsed= 0.00
+Result: FAIL
+--------------------
+Step  6: [I.020.03. Set Debug Level Wait]
+
+SetDebugLevel::LogRecData(INFO): Time elapsed= 0.00
+Result: PASS
+--------------------
+Step  7: [I.020.04. Set Debuglevel IOW]
+INFO::FillVariables(0): FillVariables(args=['SetDebugLevel', '$_DebugLevel_04'])
+
+Result: PASS
+--------------------
+Step  8: [I.020.05. Skip if !Std. Boot Timeout]
+INFO::FillVariables(0): FillVariables(args=['SkipStepsTilIf', '$DUT_BOOT_TIMEOUT', '!=', '', 'SKIP END: !Std. Boot Timeout'])
+
+Result: PASS
+--------------------
+Step  9: [I.020.06. set USB0 Dev Name]
+INFO::ActionSteps(0): 
+   Skip this teststep because [SKIP END: !Std. Boot Timeout] != [I.020.06. set USB0 Dev Name]
+Result: SKIP
+--------------------
+Step 10: [SKIP END: !Std. Boot Timeout]
+INFO::ActionSteps(0): 
+No Skip this teststep because [SKIP END: !Std. Boot Timeout] == [SKIP END: !Std. Boot Timeout]
+INFO::FillVariables(0): FillVariables(args=['LogInfo', 'Needed if !Std. Boot Timeout'])
+
+INFO::FillVariables(0): SET [LogInfo]
+INFO::FillVariables(0): SET [Needed if !Std. Boot Timeout]
+INFO::Needed if !Std. Boot Timeout
+Result: PASS
+--------------------
+INFO::CloseTestLog(0): 
+Total elapsed time= 119.85
+[LogData = End]
+
+[ScriptResult = PASS]
+[ScriptElapsed = 119.846]
+[TestRunEnd = 16.04.2026 at 14:25:40]
