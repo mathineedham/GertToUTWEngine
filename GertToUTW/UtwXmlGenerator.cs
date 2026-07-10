@@ -37,8 +37,12 @@ namespace GertToUTW;
 */
 public static partial class UtwXmlGenerator
     {
+    /**@brief All characters that may be harmful to an xml format
+     * i.e all control char except for tab, line feed and carriage return
+     */
     [GeneratedRegex(@"[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]")]
     internal static partial Regex invalid_xml_chars_regex(); 
+    /** @brief Strips a string from any characters that may interfer with the xml formal*/ 
     internal static string sanitize_for_xml( string? input )
         {
         if( string.IsNullOrEmpty(input) )
@@ -49,6 +53,17 @@ public static partial class UtwXmlGenerator
         // Strips out 0x1B and other breaking control characters
         return invalid_xml_chars_regex().Replace(input, string.Empty);
         }
+    /** @brief Converts our DateTime object to the current string format.*/
+    internal static string format_iso_time( DateTime dt_obj )
+        {
+        return dt_obj.ToString("yyyy-MM-ddTHH:mm:ss.fff", CultureInfo.InvariantCulture) + "+02:00";
+        }
+
+    /** @brief      Creates a UTW-compliant XML file from a TestRun instance and saves it to the specified output path.
+
+        @param[in]  test_run_instance  The TestRun instance containing the test run data.
+        @param[in]  output_file_path    The path where the generated XML file will be saved.
+    */
     public static void GenerateUtwXml( TestRun test_run_instance, string output_filepath )
         {
         ArgumentNullException.ThrowIfNull(output_filepath);
@@ -57,6 +72,13 @@ public static partial class UtwXmlGenerator
         using StreamWriter writer = new(output_filepath, false, Encoding.UTF8);
         document.Save(writer, SaveOptions.None);
         }
+
+    /** @brief      Creates a UTW-compliant XML document from a TestRun instance.
+
+        @param[in]  test_run_instance  The TestRun instance containing the test run data.
+
+        @return     An XDocument representing the UTW-compliant XML document.
+    */
     internal static XDocument build_utw_xml_document( TestRun test_run_instance )
         {
         ArgumentNullException.ThrowIfNull(test_run_instance);
@@ -126,10 +148,5 @@ public static partial class UtwXmlGenerator
 
         // Create the XDocument and return it
         return new XDocument(new XDeclaration("1.0", "utf-8", null), root);
-        }
-   
-    internal static string format_iso_time( DateTime dt_obj )
-        {
-        return dt_obj.ToString("yyyy-MM-ddTHH:mm:ss.fff", CultureInfo.InvariantCulture) + "+02:00";
         }
     }
