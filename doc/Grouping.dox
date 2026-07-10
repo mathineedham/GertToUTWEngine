@@ -1,24 +1,20 @@
 /** @defgroup	SOL_GertToUTWEngine Solution GertToUTWENgine
 	@{
-	@brief		bbbb
+	@brief		The `GertToUTWEngine` solution provides a set of tools to parse GERT log files and convert into a format
+                compatible with the UTW database. 
 
-    @details    The `LibFundamento` solution includes a wide range of reusable libraries and components that aid in 
-                various aspects of software development, such as argument parsing, logging, exception handling, 
-                data processing, and utility functions. It serves as the foundational toolkit for building reliable 
-                and scalable applications, ensuring consistency, maintainability, and ease of integration across 
-                different projects.
+    @details    The `GertToUTWEngine` solution is designed to automate the process of extracting test run data from GERT
+                log files and transforming it into a structured .xml format that can be ingested by the UTW database. 
 	@}
     
     @defgroup	PROJ_GertToUTWEngine_GertToUTW GertToUTW
 	@{
 	@ingroup	SOL_GertToUTWEngine
 
-	@brief		The `LibApplication` module provides the foundational classes and utilities required for building 
-                and managing applications.
+	@brief		The `GertToUTW` module provides ...
 
-    @details    This group covers the core classes and functionality for handling application options, arguments, 
-                and other configuration utilities. It is intended to streamline application setup, execution, and 
-                argument handling, while offering customizable logging and exception handling mechanisms for developers.
+    @details    This group covers the core classes and methods responsible for parsing GERT log files, extracting 
+                relevant test run information, and converting it into a format suitable for UTW database ingestion.
 	@}
 
     
@@ -26,12 +22,10 @@
 	@{
 	@ingroup	SOL_GertToUTWEngine
 
-	@brief		The `LibApplication` module provides the foundational classes and utilities required for building 
-                and managing applications.
+	@brief		The `RegressionTest` provides a suite of unit tests to validate the functionality of the `GertToUTWEngine` solution.
 
-    @details    This group covers the core classes and functionality for handling application options, arguments, 
-                and other configuration utilities. It is intended to streamline application setup, execution, and 
-                argument handling, while offering customizable logging and exception handling mechanisms for developers.
+    @details    This group contains unit tests that ensure the correctness and reliability of the log parsing and data transformation
+                processes implemented in the `GertToUTWEngine` solution.
 	@}
 
     
@@ -39,12 +33,9 @@
 	@{
 	@ingroup	PROJ_GertToUTWEngine_RegressionTest
 
-	@brief		The `LibApplication` module provides the foundational classes and utilities required for building 
-                and managing applications.
+	@brief		The `RegressionTest/GertToUTW` module provides unit tests specifically for the `GertToUTW` module of the `GertToUTWEngine` solution.
 
-    @details    This group covers the core classes and functionality for handling application options, arguments, 
-                and other configuration utilities. It is intended to streamline application setup, execution, and 
-                argument handling, while offering customizable logging and exception handling mechanisms for developers.
+    @details    This group contains unit test for all core methods and classes.
 	@}
 
 */
