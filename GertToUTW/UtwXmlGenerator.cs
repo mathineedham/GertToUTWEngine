@@ -54,7 +54,7 @@ public static partial class UtwXmlGenerator
         return invalid_xml_chars_regex().Replace(input, string.Empty);
         }
     /** @brief Converts our DateTime object to the current string format.*/
-    internal static string format_iso_time( DateTime dt_obj )
+    internal static string format_time( DateTime dt_obj )
         {
         return dt_obj.ToString("yyyy-MM-ddTHH:mm:ss.fff", CultureInfo.InvariantCulture) + "+02:00";
         }
@@ -66,7 +66,7 @@ public static partial class UtwXmlGenerator
     */
     public static void GenerateUtwXml( TestRun test_run_instance, string output_filepath )
         {
-        ArgumentNullException.ThrowIfNull(output_filepath);
+        ArgumentException.ThrowIfNullOrEmpty(output_filepath);
 
         XDocument document = build_utw_xml_document(test_run_instance);
         using StreamWriter writer = new(output_filepath, false, Encoding.UTF8);
@@ -112,8 +112,8 @@ public static partial class UtwXmlGenerator
             new XElement("OperatingMode", "OPERATING"),
             new XElement("SequencerId", test_run_instance.SequencerId),
             new XElement("Result", test_run_instance.Result?.Value), // Note: Make sure to pull the inner text value if Result is an object!
-            new XElement("StartTime", format_iso_time(test_run_instance.StartTime)),
-            new XElement("EndTime", format_iso_time(test_run_instance.EndTime))
+            new XElement("StartTime", format_time(test_run_instance.StartTime)),
+            new XElement("EndTime", format_time(test_run_instance.EndTime))
         );
 
         //Add all Test items
@@ -142,7 +142,7 @@ public static partial class UtwXmlGenerator
                 item_node.Add(new XElement("Stderr", new XCData(sanitize_for_xml(item.Stderr))));
                 }
 
-            item_node.Add(new XElement("StartTime", format_iso_time(test_run_instance.StartTime)));
+            item_node.Add(new XElement("StartTime", format_time(test_run_instance.StartTime)));
             root.Add(item_node);
             }
 
