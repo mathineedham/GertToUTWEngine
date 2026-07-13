@@ -33,6 +33,7 @@ public sealed class SerialNumberAttributesTests
         Assert.AreEqual(1, attribute.SerialNumberAttributes_Key);
         Assert.AreEqual(string.Empty, attribute.Name);
         Assert.AreEqual(string.Empty, attribute.Value);
+        Assert.IsNull(attribute.Comment);
         }
 
     /** @brief Verifies that explicit data assignments flow through all properties cleanly. */
