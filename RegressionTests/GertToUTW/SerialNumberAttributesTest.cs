@@ -14,7 +14,7 @@
     @ingroup    REF_GertToUTWEngine_RegressionTest_GertToUTW
 */
 using GertToUTW;
-namespace RegressionTest.GertToUTW;
+namespace RegressionTests.GertToUTW;
 
 /** @class      SerialNumberAttributesTests
     @ingroup    REF_GertToUTWEngine_RegressionTest_GertToUTW_SerialNumberAttributesTest

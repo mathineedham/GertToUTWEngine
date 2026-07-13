@@ -23,7 +23,7 @@ using System.Text;
 using System.Xml.Linq;
 
 using GertToUTW;
-namespace RegressionTest.GertToUTW;
+namespace RegressionTests.GertToUTW;
 
 /** @class      SanitizeForXmlTests
     @ingroup    REF_GertToUTWEngine_RegressionTest_GertToUTW_UtwXmlGeneratorTest
