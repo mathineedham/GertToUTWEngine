@@ -43,6 +43,10 @@ public sealed class TestRunTests
         Assert.AreEqual("OPERATING", run.OperatingMode);
         Assert.IsNotNull(run.TestItem);
         Assert.IsNotNull(run.SerialNumberAttributes);
+        Assert.IsNull(run.Comment);
+        Assert.IsNull(run.Routestep);
+        Assert.IsNull(run.Station);
+
         }
 
     /** @brief Validates safe extraction and storage of correct structural Material Numbers. */
@@ -50,6 +54,7 @@ public sealed class TestRunTests
     [DataRow("12345678")]
     [DataRow("9")]
     [DataRow("")]
+    [DataRow(null)]
     public void MaterialNumberPropertyValidInputPassesTest( string valid_material )
         {
         TestRun run = new()
@@ -121,6 +126,7 @@ public sealed class TestRunTests
         _ = Assert.ThrowsExactly<ArgumentException>(() => run.Lot = invalid_lot);
         }
 
+
     /** @brief Validates explicit string normalization and upper-case invariants on Operating Modes. */
     [TestMethod]
     [DataRow("operating", "OPERATING")]
@@ -128,6 +134,7 @@ public sealed class TestRunTests
     [DataRow("repair", "REPAIR")]
     [DataRow("DEVELOPMENT", "DEVELOPMENT")]
     [DataRow("Rma", "RMA")]
+    [DataRow(null,null)]
     public void OperatingModePropertyNormalizesInvariantsTest( string input_mode, string expected_mode )
         {
         TestRun run = new()
@@ -145,5 +152,21 @@ public sealed class TestRunTests
         {
         TestRun run = new();
         _ = Assert.ThrowsExactly<ArgumentException>(() => run.OperatingMode = invalid_mode);
+        }
+
+
+    /** @brief VFalidates set and get for Routestep,Station and Comment properties*/
+    [TestMethod]
+    public void RoutestepStationCommentPropertySetGetTest()
+        {
+        TestRun run = new()
+            {
+            Routestep = "Step1",
+            Station = "StationA",
+            Comment = "This is a test comment."
+            };
+        Assert.AreEqual("Step1", run.Routestep);
+        Assert.AreEqual("StationA", run.Station);
+        Assert.AreEqual("This is a test comment.", run.Comment);
         }
     }

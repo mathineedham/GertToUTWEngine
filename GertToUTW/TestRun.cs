@@ -207,11 +207,6 @@ public partial class TestRun
         get;
         set
             {
-            if( value == null )
-                {
-                throw new ArgumentNullException(nameof(value), "Lot context layout string cannot be null.");
-                }
-
             // Validates against target mask constraint: empty string or exactly 6 to 7 digits
             if( value != string.Empty && !LotNb().IsMatch(value) )
                 {
