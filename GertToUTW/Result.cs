@@ -70,9 +70,4 @@ public class Result
             }
         } = string.Empty;
 
-    /** @brief Implements explicit string formatting conversions for schema mapping automation. */
-    public override string ToString()
-        {
-        return Value;
-        }
     }
