@@ -11,11 +11,10 @@
     @{
     @ingroup    REF_GertToUTWEngine_RegressionTest_GertToUTW
 
-    @brief      Provides utility mechanisms to read, interpret, and parse execution log files.
+    @brief      Regression tests for the `UtwXmlGenerator` class, focusing on XML generation and file I/O operations.
 
-    @details    The `GertLogParser` class splits raw file contents into individual historical test data chunks, 
-                extracting metadata attributes, tracking evaluation criteria, and translating execution timelines 
-                into serializable structural objects.
+    @details    Validates the behavior of the `UtwXmlGenerator` class, including XML document generation, time formatting, and file writing operations.
+                The tests ensure that the generated XML adheres to the expected structure and content, and that file I/O operations are performed correctly.
     @}
 */
 
@@ -25,33 +24,6 @@ using System.Xml.Linq;
 using GertToUTW;
 namespace RegressionTests.GertToUTW;
 
-/** @class      SanitizeForXmlTests
-    @ingroup    REF_GertToUTWEngine_RegressionTest_GertToUTW_UtwXmlGeneratorTest
-
-    @brief      Unit tests for the 'sanitize_for_xml' method of the `UtwXmlGenerator` class.
-
-    @details    Verifies that all non-printable and control characters are correctly removed from strings.
-*/
-[TestClass]
-public sealed class SanitizeForXmlTests
-    {
-    /** @brief Tests that the 'sanitize_for_xml' method correctly removes invalid XML characters from a string. */
-    [TestMethod]
-    [DataRow("Hello\x01World", "HelloWorld")]
-    [DataRow("ValidString\n", "ValidString\n")]
-    [DataRow("StringWith\x1F ControlChar", "StringWith ControlChar")]
-    [DataRow("StringWith\x7F DeleteChar", "StringWith DeleteChar")]
-    [DataRow("StringWith\x0BVerticalTab", "StringWithVerticalTab")]
-    [DataRow("StringWith\x0C FormFeed", "StringWith FormFeed")]
-    [DataRow("StringWith\x0EShiftOut", "StringWithShiftOut")]
-    [DataRow("StringWith\x0FShiftIn", "StringWithShiftIn")]
-    [DataRow("dafdsfY>","dafdsfY>")]
-    public void TestSanitizeForXml_RemovesInvalidCharacters(string input, string expected)
-        {
-        string result = UtwXmlGenerator.sanitize_for_xml(input);
-        Assert.AreEqual(expected, result);
-        }
-    }
 
 /** @class     FormatTimeTests
 
@@ -99,7 +71,7 @@ public class UtwXmlGeneratorTests
 
     /** @brief Allows us to test using DataRow method */
     private static TestRun create_test_run_fixture(
-        string mat_num, string mat_text, string mat_rev, string serial_num, string op_name, string comp_name, string result_val )
+        string mat_num, string mat_text, string mat_rev, string serial_num, string op_name, string comp_name, string result_val, List<TestItem> l , List<SerialNumberAttributes> s)
         {
         return new TestRun
             {
@@ -114,8 +86,8 @@ public class UtwXmlGeneratorTests
             SequencerId = "GERT",
             StartTime =new DateTime(2026, 7, 10, 12, 00, 00),
             EndTime = new DateTime(2026, 07, 10, 12, 05, 00),
-            SerialNumberAttributes =[],
-            TestItem = []
+            SerialNumberAttributes =s,
+            TestItem = l
             };
         }
 
@@ -125,21 +97,37 @@ public class UtwXmlGeneratorTests
     [DataRow("12345678", "Display Mod", "B001", "SN-001", "Jane Doe", "STATION-01", "PASSED")]
     [DataRow("12345678", "Core Engine", "B001", "SN-002", "John Smith", "STATION-02", "FAILED")]
     [DataRow("12345678", "Power Board", "B001", "SN-099-XYZ", "System_Auto", "STATION-99", "ERROR")]
-    public void BuildUtwXmlDocument_HeaderDataRows_MapsAllFieldsCorrectly(
+    public void BuildUtwXmlDocument_Valid(
         string mat_num, string mat_text, string mat_rev, string serial_num, string op_name, string comp_name, string result_val )
         {
-        TestRun test_run_fixture = create_test_run_fixture(mat_num, mat_text, mat_rev, serial_num, op_name, comp_name, result_val);
+        List<TestItem> test_items =
+            [
+            new TestItem { Name = "VoltageTest", Result = new Result { Value = "PASSED" } , Description="Test Description", Stdout="Test outputs"},
+            new TestItem { Name = "CurrentTest",Idx=12, Result = new Result { Value = "FAILED" } , Stderr="ERROR MESSAGE"}
+            ];
+        List<SerialNumberAttributes> serial_attrs =
+            [
+            new SerialNumberAttributes { Name = "Attribute1", Value = "Value1" },
+            new SerialNumberAttributes { Name = "Attribute2", Value = "Value2" }
+            ];
+        TestRun test_run_fixture = create_test_run_fixture(mat_num, mat_text, mat_rev, serial_num, op_name, comp_name, result_val,test_items,serial_attrs);
 
         XDocument doc = UtwXmlGenerator.build_utw_xml_document(test_run_fixture);
         XElement root = doc.Root;
 
         Assert.IsNotNull(root, "XML Document generation failed to produce a valid root element node.");
 
-        Assert.AreEqual(mat_num, root.Element("MaterialNumber")?.Value);
-        Assert.AreEqual(mat_num, root.Element("Lot")?.Value, "The 'Lot' element must always mirror the primary MaterialNumber.");
-        Assert.AreEqual(mat_text, root.Element("MaterialText")?.Value);
-        Assert.AreEqual(mat_rev, root.Element("MaterialRevision")?.Value);
-        Assert.AreEqual(serial_num, root.Element("SerialNumber")?.Value);
+        string? mat_num_value = root.Element("MaterialNumber")?.Value;
+        Assert.IsNotNull(mat_num_value);
+        Assert.AreEqual(mat_num, mat_num_value);
+        string lot_value = root.Element("Lot").Value;
+        Assert.AreEqual(mat_num, lot_value, "The 'Lot' element must always mirror the primary MaterialNumber.");
+        string mat_text_value = root.Element("MaterialText").Value;
+        Assert.AreEqual(mat_text,mat_text_value);
+        string mat_rev_value = root.Element("MaterialRevision").Value;
+        Assert.AreEqual(mat_rev, mat_rev_value);
+        string serial_num_value = root.Element("SerialNumber").Value;
+        Assert.AreEqual(serial_num, serial_num_value);
         Assert.AreEqual(op_name, root.Element("OperatorName")?.Value);
         Assert.AreEqual(comp_name, root.Element("ComputerName")?.Value);
         Assert.AreEqual(result_val, root.Element("Result")?.Value);
@@ -166,7 +154,7 @@ public class UtwXmlGeneratorTests
 [TestClass]
 public class UtwXmlGeneratorFileIoTests
     {
-    private string m_temp_file_path;
+    private string m_temp_file_path ="";
 
     [TestInitialize]
     public void Setup()

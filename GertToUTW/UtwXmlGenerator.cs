@@ -21,7 +21,6 @@
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Xml.Linq;
 
 [assembly: InternalsVisibleTo("RegressionTests")]
@@ -33,26 +32,10 @@ namespace GertToUTW;
 
     @brief      UTW compliant XML files generator .
 
-    @details    Creates
+    @details    Creates UTW-compliant XML files from parsed test run data. It provides methods to format time, build XML documents, and save them to specified file paths.
 */
 public static partial class UtwXmlGenerator
     {
-    /**@brief All characters that may be harmful to an xml format
-     * i.e all control char except for tab, line feed and carriage return
-     */
-    [GeneratedRegex(@"[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]")]
-    internal static partial Regex invalid_xml_chars_regex(); 
-    /** @brief Strips a string from any characters that may interfer with the xml formal*/ 
-    internal static string sanitize_for_xml( string? input )
-        {
-        if( string.IsNullOrEmpty(input) )
-            {
-            return string.Empty;
-            }
-
-        // Strips out 0x1B and other breaking control characters
-        return invalid_xml_chars_regex().Replace(input, string.Empty);
-        }
     /** @brief Converts our DateTime object to the current string format.*/
     internal static string format_time( DateTime dt_obj )
         {
@@ -126,21 +109,9 @@ public static partial class UtwXmlGenerator
                 new XElement("Name", item.Name)
             );
 
-            if( !string.IsNullOrEmpty(item.Description) )
-                {
-                item_node.Add(new XElement("Description", sanitize_for_xml(item.Description)));
-                }
-
-            if( !string.IsNullOrEmpty(item.Stdout) )
-                {
-                item_node.Add(new XElement("Stdout", new XCData(sanitize_for_xml(item.Stdout))));
-                }
-
-            if( !string.IsNullOrEmpty(item.Stderr) )
-                {
-                // Cleaned Up: Swapped to sanitize_for_xml here too to match your Stdout logic!
-                item_node.Add(new XElement("Stderr", new XCData(sanitize_for_xml(item.Stderr))));
-                }
+            item_node.AddIfNotEmpty("Description", item.Description);
+            item_node.AddIfNotEmpty("Stdout", item.Stdout);
+            item_node.AddIfNotEmpty("Stderr", item.Stderr);
 
             item_node.Add(new XElement("StartTime", format_time(test_run_instance.StartTime)));
             root.Add(item_node);
