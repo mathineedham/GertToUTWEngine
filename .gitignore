@@ -18,12 +18,19 @@
 *.exe
 *.dll
 
+# Ignore local
+*.user
+
 # Ignore installer files
 *.msi
 *.cab
 
 # Ignore generated directories and files
 **/Generated/**
+**.g.cs
+
+# Ignore Language.Designer.cs files 
+**/Properties/*.Designer.cs
 
 # Ignore test coverage results
 **/TestCoverage/**
@@ -32,3 +39,11 @@
 # Ignore Doxygen directories
 **/html/**
 **/latex/**
+**/artifacts/**
+
+# Ignore files created by build-server
+./sbom.cdx.json
+
+# Local developer secrets. May contain private PKCS#12/PFX certificate material.
+appsettings.Development.json
+**/appsettings.Development.json

@@ -19,7 +19,7 @@ using System.Runtime.CompilerServices;
     @details    This file keeps track of final results and makes sure they match XML formatting rules before they are saved.
     @}
 */
-[assembly: InternalsVisibleTo("RegressionTest")]
+[assembly: InternalsVisibleTo("RegressionTests")]
 namespace GertToUTW;
 
 

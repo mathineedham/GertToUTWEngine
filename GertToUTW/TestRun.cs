@@ -21,7 +21,7 @@
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 
-[assembly: InternalsVisibleTo("RegressionTest")]
+[assembly: InternalsVisibleTo("RegressionTests")]
 namespace GertToUTW;
 
 /** @ingroup    REF_GertToUTWEngine_GertToUTW_TestRun

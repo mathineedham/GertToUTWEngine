@@ -25,5 +25,10 @@
     <Folder Include="GertToUTW\LogTestFiles\Invalid\" />
     <Folder Include="GertToUTW\LogTestFiles\Valid\" />
   </ItemGroup>
+    <ItemGroup>
+		<None Update="GertToUTW\LogTestFiles\**\*.log">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
 
 </Project>

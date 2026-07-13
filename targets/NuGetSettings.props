@@ -1,0 +1,25 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <NugetConfigPath>$([System.IO.Path]::Combine('$(SolutionRoot)', 'nuget.config'))</NugetConfigPath>
+    <ProjectHasNugetConfig Condition="Exists('$(NugetConfigPath)')">true</ProjectHasNugetConfig>
+    <ProjectHasNugetConfig Condition="!Exists('$(NugetConfigPath)')">false</ProjectHasNugetConfig>
+
+    <DotNugetPath>$([System.IO.Path]::Combine('$(SolutionRoot)', '.nuget'))</DotNugetPath>
+    <ProjectHasDotNuget Condition="Exists('$(DotNugetPath)')">true</ProjectHasDotNuget>
+    <ProjectHasDotNuget Condition="!Exists('$(DotNugetPath)')">false</ProjectHasDotNuget>
+  </PropertyGroup>
+
+  <Target Name="CheckConfigFiles" BeforeTargets="GenerateProjectInfo;Restore;Build">
+    <Message Text="  =========================================" Importance="High" />
+    <Message Text="  ProjectHasNugetConfig: $(ProjectHasNugetConfig)" Importance="High" />
+    <Message Condition="'$(ProjectHasNugetConfig)' == 'true'"  Text="    * This project has its own nuget.config file!" Importance="High" />
+    <Message Condition="'$(ProjectHasNugetConfig)' == 'false'" Text="    * This project does not have its own nuget.config file!" Importance="High" />
+
+    <Message Text="  ProjectHasDotNuget:    $(ProjectHasDotNuget)" Importance="High" />
+    <Message Condition="'$(ProjectHasDotNuget)' == 'true'"     Text="    * This project has its own .nuget file/folder!" Importance="High" />
+    <Message Condition="'$(ProjectHasDotNuget)' == 'false'"    Text="    * This project does not have its own .nuget file/folder!" Importance="High" />
+    <Message Text="  =========================================" Importance="High" />
+  </Target>
+
+</Project>

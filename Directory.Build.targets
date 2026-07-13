@@ -1,0 +1,6 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildThisFileDirectory)targets\Doxygen.targets" />
+  <Import Project="$(MSBuildThisFileDirectory)targets\SolutionInfo.targets" />
+  <Import Project="$(MSBuildThisFileDirectory)targets\ProjectInfo.targets" />
+  <Import Project="$(MSBuildThisFileDirectory)targets\Coverage.targets" />
+</Project>

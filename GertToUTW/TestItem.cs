@@ -20,7 +20,7 @@
 */
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("RegressionTest")]
+[assembly: InternalsVisibleTo("RegressionTests")]
 namespace GertToUTW;
 
 /** @ingroup    PROJ_GertToUTWEngine_GertToUTW_TestItem

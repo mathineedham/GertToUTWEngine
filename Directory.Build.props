@@ -1,0 +1,26 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  
+  <PropertyGroup>
+    <SolutionRoot>$(MSBuildThisFileDirectory)</SolutionRoot>
+    <SolutionDir>$(SolutionRoot)</SolutionDir>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(SolutionName)' == '' Or '$(SolutionName)' == '*Undefined*'">
+    <_SlnxFiles>$([System.IO.Directory]::GetFiles('$(SolutionRoot)', '*.slnx'))</_SlnxFiles>
+    <_SlnFiles>$([System.IO.Directory]::GetFiles('$(SolutionRoot)', '*.sln'))</_SlnFiles>
+    
+    <_DiscoveredSolutionFile Condition="'$(_SlnxFiles)' != ''">$([System.String]::Copy('$(_SlnxFiles)').Split(';')[0])</_DiscoveredSolutionFile>
+    <_DiscoveredSolutionFile Condition="'$(_DiscoveredSolutionFile)' == '' And '$(_SlnFiles)' != ''">$([System.String]::Copy('$(_SlnFiles)').Split(';')[0])</_DiscoveredSolutionFile>
+
+    <SolutionFile>$(_DiscoveredSolutionFile)</SolutionFile>
+    <SolutionName Condition="'$(SolutionFile)' != ''">$([System.IO.Path]::GetFileNameWithoutExtension('$(SolutionFile)'))</SolutionName>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(SolutionFile)' == '' And '$(SolutionName)' != ''">
+    <SolutionFile>$(SolutionRoot)$(SolutionName).slnx</SolutionFile>
+  </PropertyGroup>
+  <Import Project="$(SolutionRoot)targets\ProjectMetadata.props" Condition="Exists('$(SolutionRoot)targets\ProjectMetadata.props')" />
+  <Import Project="$(SolutionRoot)targets\NuGetSettings.props" Condition="Exists('$(SolutionRoot)targets\NuGetSettings.props')" />
+  <Import Project="$(SolutionRoot)targets\GitState.props" Condition="Exists('$(SolutionRoot)targets\GitState.props')" />
+
+</Project>

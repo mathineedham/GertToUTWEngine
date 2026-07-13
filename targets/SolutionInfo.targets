@@ -1,0 +1,177 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+    <PropertyGroup>
+        <!-- Only in this project -->
+        <SolutionInfoTargetProjectName Condition="'$(SolutionInfoTargetProjectName)'==''">RegressionTests</SolutionInfoTargetProjectName>
+        <_IsSolutionInfoTarget Condition="'$(MSBuildProjectName)'=='$(SolutionInfoTargetProjectName)'">true</_IsSolutionInfoTarget>
+
+        <!-- Output (single file, config-independent) -->
+        <SolutionInfoRelFile>Generated\SolutionInfo.g.cs</SolutionInfoRelFile>
+        <SolutionInfoAbsFile>$(MSBuildProjectDirectory)\$(SolutionInfoRelFile)</SolutionInfoAbsFile>
+
+        <!-- Keep this easy-to-edit blob compatible (no literal ';') -->
+        <_Semi>%3B</_Semi>
+
+        <!-- Normalize SolutionRoot for path building -->
+        <_SolutionRoot>$([MSBuild]::EnsureTrailingSlash('$(SolutionRoot)'))</_SolutionRoot>
+
+        <!-- Namespace for the generated class -->
+        <_SolutionInfoNamespace>RegressionTests.Generated</_SolutionInfoNamespace>
+    </PropertyGroup>
+
+    <!-- Ensure it compiles & is visible (ProjectInfo pattern, but only remove THIS file) -->
+    <ItemGroup Condition="'$(_IsSolutionInfoTarget)'=='true'">
+        <Compile Remove="$(SolutionInfoRelFile)" />
+        <Compile Include="$(SolutionInfoRelFile)" Visible="true" Watch="false" />
+        <None Include="$(SolutionInfoRelFile)" Visible="true" />
+    </ItemGroup>
+
+    <!-- Multi-targeting: generate once in outer build, tell inner builds to skip -->
+    <PropertyGroup Condition="'$(IsCrossTargetingBuild)'=='true'">
+        <InnerBuildProperties>$(InnerBuildProperties);SolutionInfoGenerated=true</InnerBuildProperties>
+    </PropertyGroup>
+
+    <Target Name="GenerateSolutionInfo_Cross"
+            BeforeTargets="DispatchToInnerBuilds"
+            Condition="'$(_IsSolutionInfoTarget)'=='true'
+                     and '$(IsCrossTargetingBuild)'=='true'
+                     and '$(MSBuildProjectExtension)'=='.csproj'">
+        <CallTarget Targets="_WriteSolutionInfo" />
+    </Target>
+
+    <Target Name="GenerateSolutionInfo_SingleOrFallback"
+            BeforeTargets="CoreCompile"
+            Condition="'$(_IsSolutionInfoTarget)'=='true'
+                     and '$(IsCrossTargetingBuild)'!='true'
+                     and '$(SolutionInfoGenerated)'!='true'
+                     and '$(MSBuildProjectExtension)'=='.csproj'">
+        <CallTarget Targets="_WriteSolutionInfo" />
+    </Target>
+
+    <Target Name="_WriteSolutionInfo"
+            BeforeTargets="CoreCompile"
+            Condition="'$(_IsSolutionInfoTarget)'=='true'
+                     and '$(DesignTimeBuild)'!='true'
+                     and '$(MSBuildProjectExtension)'=='.csproj'">
+
+        <MakeDir Directories="$(MSBuildProjectDirectory)\Generated" />
+
+        <!-- Determine solution file: prefer $(SolutionFile), else first *.slnx then *.sln -->
+        <PropertyGroup>
+            <SolutionInfoSolutionFile Condition="'$(SolutionFile)'!=''">$(SolutionFile)</SolutionInfoSolutionFile>
+        </PropertyGroup>
+
+        <ItemGroup Condition="'$(SolutionInfoSolutionFile)'==''">
+            <_SolutionFiles Include="$(_SolutionRoot)*.slnx" />
+            <_SolutionFiles Include="$(_SolutionRoot)*.sln" Condition="'@(_SolutionFiles)'==''" />
+        </ItemGroup>
+
+        <PropertyGroup Condition="'$(SolutionInfoSolutionFile)'==''">
+            <_SolutionFilesJoined>@(_SolutionFiles)</_SolutionFilesJoined>
+            <SolutionInfoSolutionFile Condition="'$(_SolutionFilesJoined)'!=''">
+                $([System.String]::Copy('$(_SolutionFilesJoined)').Split(';')[0])
+            </SolutionInfoSolutionFile>
+        </PropertyGroup>
+
+        <Error Condition="'$(SolutionInfoSolutionFile)'==''"
+               Text="SolutionInfo: No .slnx/.sln found in '$(SolutionRoot)'. Set SolutionFile in Directory.Build.props." />
+
+        <Error Condition="!Exists('$(SolutionInfoSolutionFile)')"
+               Text="SolutionInfo: Solution file '$(SolutionInfoSolutionFile)' not found." />
+
+        <!-- Compute extension once (avoids PropertyFunction in Condition parsing) -->
+        <PropertyGroup>
+            <_SolutionInfoExt>$([System.IO.Path]::GetExtension('$(SolutionInfoSolutionFile)'))</_SolutionInfoExt>
+        </PropertyGroup>
+
+        <Error Condition="'$(SolutionInfoSolutionFile)' != '' and '$(_SolutionInfoExt)' != '.slnx'"
+               Text="SolutionInfo: Expected a .slnx solution file, got '$(SolutionInfoSolutionFile)'." />
+
+        <!-- Extract <Project Path="...csproj" /> via XmlPeek (robust) -->
+        <XmlPeek XmlInputPath="$(SolutionInfoSolutionFile)" Query="/Solution/Project/@Path">
+            <Output TaskParameter="Result" PropertyName="_SlnxProjectPaths" />
+        </XmlPeek>
+
+        <ItemGroup>
+            <!-- XmlPeek returns multiple results separated by ';' -->
+            <SolutionProject Include="$(_SlnxProjectPaths)" />
+        </ItemGroup>
+
+        <Error Condition="'@(SolutionProject)'==''"
+               Text="SolutionInfo: No projects extracted from '$(SolutionInfoSolutionFile)'." />
+
+        <!-- Compute metadata -->
+        <ItemGroup>
+            <SolutionProject Update="@(SolutionProject)">
+                <RelPath>%(Identity)</RelPath>
+                <RelPathNative>$([System.String]::Copy('%(Identity)').Replace('/', '\'))</RelPathNative>
+                <Name>$([System.IO.Path]::GetFileNameWithoutExtension('%(Identity)'))</Name>
+                <AbsPath>$([System.IO.Path]::GetFullPath($([System.IO.Path]::Combine('$(_SolutionRoot)', '%(Identity)'))))</AbsPath>
+            </SolutionProject>
+        </ItemGroup>
+
+        <!-- Pre-expand arrays into newline-separated properties -->
+        <PropertyGroup>
+            <_ProjectNamesLines>@(SolutionProject->'        @&quot;%(Name)&quot;,', '&#x0D;&#x0A;')</_ProjectNamesLines>
+            <_ProjectRelPathsLines>@(SolutionProject->'        @&quot;%(RelPathNative)&quot;,', '&#x0D;&#x0A;')</_ProjectRelPathsLines>
+            <_ProjectAbsPathsLines>@(SolutionProject->'        @&quot;%(AbsPath)&quot;,', '&#x0D;&#x0A;')</_ProjectAbsPathsLines>
+        </PropertyGroup>
+
+        <!-- Keep this easy to edit (TEXTUAL CONTENT preserved) -->
+        <PropertyGroup>
+            <_SolutionInfoText>
+                <![CDATA[// <auto-generated/>
+#nullable enable
+
+/// @file SolutionInfo.g.cs
+/// @brief Solution metadata for regression tests.
+/// @details
+///   - Generated from the solution file (.slnx/.sln)
+///   - Contains the list of projects (names and paths)
+/// @note This file is generated. Do not edit manually.
+namespace $(_SolutionInfoNamespace)
+{
+    /// @brief Provides solution-level metadata (project list).
+    public static class SolutionInfo
+    {
+        /// @brief Absolute path to the solution root directory.
+        public const string SolutionDir = @"$(_SolutionRoot)"$(_Semi)
+
+        /// @brief Absolute path to the solution file used for generation.
+        public const string SolutionFile = @"$(SolutionInfoSolutionFile)"$(_Semi)
+
+        /// @brief Project names in the solution (order as in solution file).
+        public static readonly string[] ProjectNames =
+        {
+$(_ProjectNamesLines)
+        }$(_Semi)
+
+        /// @brief Project file paths relative to the solution root (same index as ProjectNames).
+        public static readonly string[] ProjectProjectFiles =
+        {
+$(_ProjectRelPathsLines)
+        }$(_Semi)
+
+        /// @brief Absolute project file paths (same index as ProjectNames).
+        public static readonly string[] ProjectProjectFilesFullPath =
+        {
+$(_ProjectAbsPathsLines)
+        }$(_Semi)
+
+        /// @brief Alias requested: absolute project paths.
+        public static readonly string[] SolutionProjects = ProjectProjectFilesFullPath$(_Semi)
+    }
+}
+]]>
+            </_SolutionInfoText>
+        </PropertyGroup>
+
+        <!-- Direct write (no tmp/copy). Avoid timestamp flips if unchanged. -->
+        <WriteLinesToFile File="$(SolutionInfoAbsFile)"
+                          Lines="$(_SolutionInfoText)"
+                          Overwrite="true"
+                          WriteOnlyWhenDifferent="true" />
+
+    </Target>
+
+</Project>

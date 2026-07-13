@@ -1,0 +1,22 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup Condition="'$(SolutionName)' == '' Or '$(SolutionName)' == '*Undefined*'">
+    <SolutionName>$([System.IO.Path]::GetFileNameWithoutExtension('$(SolutionFile)'))</SolutionName>
+  </PropertyGroup>
+
+  <Target Name="LogProjectVariables" BeforeTargets="GenerateProjectInfo;Restore;Build">
+    <Message Text="  =========================================" Importance="High" />
+    <Message Text="  SolutionName:             $(SolutionName)" Importance="High" />
+    <Message Text="  SolutionDir:              $(SolutionDir)" Importance="High" />
+    <Message Text="  SolutionPath:             $(SolutionPath)" Importance="High" />
+    <Message Text="  ProjectName:              $(ProjectName)" Importance="High" />
+	<Message Text="  ProjectDir:               $(ProjectDir)" Importance="High" />
+	<Message Text="  ProjectPath:              $(ProjectPath)" Importance="High" />
+    <Message Text="  Product:                  $(Product)" Importance="High" />
+    <Message Text="  Version:                  $(Version)" Importance="High" />
+    <Message Text="  PackageLicenseExpression: $(PackageLicenseExpression)" Importance="High" />
+	<Message Text="  Project References:       [@(ProjectReference->'%(Filename)', ', ')]" Importance="High" />
+    <Message Text="  =========================================" Importance="High" />
+  </Target>
+
+</Project>

@@ -5,5 +5,5 @@
     <File Path="doc/Grouping.dox" />
   </Folder>
   <Project Path="GertToUTW/GertToUTW.csproj" />
-  <Project Path="RegressionTest/RegressionTest.csproj" />
+  <Project Path="RegressionTests/RegressionTests.csproj" />
 </Solution>

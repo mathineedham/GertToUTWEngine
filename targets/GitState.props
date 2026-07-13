@@ -1,0 +1,128 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <GitHeadPath>$([System.IO.Path]::Combine('$(SolutionRoot)', '.git', 'HEAD'))</GitHeadPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="Exists('$(GitHeadPath)')">
+    <IsGitRepo>true</IsGitRepo>
+    <RawGitHead>$([System.IO.File]::ReadAllText('$(GitHeadPath)').Trim())</RawGitHead>
+    <GitBranch Condition="$(RawGitHead.StartsWith('ref: refs/heads/'))">$(RawGitHead.Replace('ref: refs/heads/', ''))</GitBranch>
+    <GitBranch Condition="'$(GitBranch)' == ''">Detached HEAD ($(RawGitHead))</GitBranch>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="!Exists('$(GitHeadPath)')">
+    <IsGitRepo>false</IsGitRepo>
+    <GitBranch>None</GitBranch>
+  </PropertyGroup>
+
+
+  <UsingTask TaskName="GetGitStateTask" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <GitBranchName ParameterType="System.String" Output="true" />
+      <GitCommitHash ParameterType="System.String" Output="true" />
+      <GitCommitDate ParameterType="System.String" Output="true" />
+      <GitStatusHash ParameterType="System.String" Output="true" />
+      <GitBranchDiffHash ParameterType="System.String" Output="true" />
+      <GitIndexDiffHash ParameterType="System.String" Output="true" />
+      <GitSummaryDiffHash ParameterType="System.String" Output="true" />
+      <GitIsClean ParameterType="System.String" Output="true" />
+      <GitInSync ParameterType="System.String" Output="true" />
+	</ParameterGroup>
+    <Task>
+      <Using Namespace="System" />
+      <Using Namespace="System.Diagnostics" />
+      <Using Namespace="System.Security.Cryptography" />
+      <Using Namespace="System.Text" />
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+          // Helper method to run Git commands quietly and return standard output
+          Func<string, string> runGit = (args) => {
+              try {
+                  var psi = new ProcessStartInfo("git", args) {
+                      RedirectStandardOutput = true,
+                      RedirectStandardError = true,
+                      UseShellExecute = false,
+                      CreateNoWindow = true,
+                      // Run Git from the solution root so it correctly targets the repo
+                      WorkingDirectory = @"$(SolutionRoot)"
+                  };
+                  using (var process = Process.Start(psi)) {
+                      string output = process.StandardOutput.ReadToEnd();
+                      process.WaitForExit();
+                      if (process.ExitCode != 0) return string.Empty;
+                      return output.Trim();                  
+                  }
+              } catch {
+                  return string.Empty;
+              }
+          };
+
+          Func<string, string> getFullHash = (input) => {
+              if (string.IsNullOrEmpty(input)) return "none";
+              using (var sha = SHA256.Create()) {
+                  var bytes = sha.ComputeHash(Encoding.UTF8.GetBytes(input));
+                  return BitConverter.ToString(bytes).Replace("-", "").ToLower();
+              }
+          };
+		  
+          GitBranchName = runGit("rev-parse --abbrev-ref HEAD");
+          if (string.IsNullOrEmpty(GitBranchName)) {
+              Log.LogMessage(MessageImportance.High, "  Git status: Not a valid Git repository or Git is not installed.");
+              return true; // Exit gracefully
+          }
+          
+          GitCommitHash = runGit("rev-parse HEAD");
+          GitCommitDate = runGit("log -1 --format=%cd");
+
+          string workingDiff = runGit("diff");
+          string indexDiff = runGit("diff --cached");
+          string branchDiff = runGit("diff @{u}...HEAD");
+          
+          GitStatusHash = getFullHash(workingDiff);
+          GitIndexDiffHash = getFullHash(indexDiff);
+          GitBranchDiffHash = getFullHash(branchDiff);
+          GitSummaryDiffHash = getFullHash(workingDiff + indexDiff + branchDiff);
+
+          string porcelainStatus = runGit("status --porcelain");
+          bool isClean = string.IsNullOrEmpty(porcelainStatus);
+          GitIsClean = isClean ? "true" : "false";
+		  
+          string sbStatus = runGit("status -sb");
+          bool inSync = !sbStatus.Contains("[ahead") && !sbStatus.Contains("[behind");
+          if (!sbStatus.Contains("...")) inSync = false;
+          GitInSync = inSync ? "true" : "false";
+		  
+          Log.LogMessage(MessageImportance.High, "  =========================================");
+          Log.LogMessage(MessageImportance.High, "  GitBranchName:            {0}", GitBranchName);
+          Log.LogMessage(MessageImportance.High, "  GitCommitHash:            {0}", GitCommitHash);
+          Log.LogMessage(MessageImportance.High, "  GitCommitDate:            {0}", GitCommitDate);
+          Log.LogMessage(MessageImportance.High, "  GitStatusHash:            {0}", GitStatusHash);
+          Log.LogMessage(MessageImportance.High, "  GitBranchDiffHash:        {0}", GitBranchDiffHash);
+          Log.LogMessage(MessageImportance.High, "  GitIndexDiffHash:         {0}", GitIndexDiffHash);
+          Log.LogMessage(MessageImportance.High, "  GitSummaryDiffHash:       {0}", GitSummaryDiffHash);
+          Log.LogMessage(MessageImportance.High, "  GitIsClean:               {0}", GitIsClean);
+          Log.LogMessage(MessageImportance.High, "    * Git is clean:         {0}", isClean ? "clean" : "dirty");
+          Log.LogMessage(MessageImportance.High, "  GitInSync:                {0}", GitInSync);
+          Log.LogMessage(MessageImportance.High, "    * Git in sync:          {0}", inSync ? "sync" : "async");
+          Log.LogMessage(MessageImportance.High, "  =========================================");
+        ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+
+  <Target Name="CaptureGitState" BeforeTargets="GenerateProjectInfo;Restore;Build">
+    <GetGitStateTask>
+      <Output TaskParameter="GitBranchName" PropertyName="GitBranchName" />
+      <Output TaskParameter="GitCommitHash" PropertyName="GitCommitHash" />
+      <Output TaskParameter="GitCommitDate" PropertyName="GitCommitDate" />
+      <Output TaskParameter="GitStatusHash" PropertyName="GitStatusHash" />
+      <Output TaskParameter="GitBranchDiffHash" PropertyName="GitBranchDiffHash" />
+      <Output TaskParameter="GitIndexDiffHash" PropertyName="GitIndexDiffHash" />
+      <Output TaskParameter="GitSummaryDiffHash" PropertyName="GitSummaryDiffHash" />
+      <Output TaskParameter="GitIsClean" PropertyName="GitIsClean" />
+      <Output TaskParameter="GitInSync" PropertyName="GitInSync" />
+  </GetGitStateTask>
+  </Target>
+
+</Project>
