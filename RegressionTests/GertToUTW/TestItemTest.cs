@@ -20,7 +20,7 @@ using GertToUTW;
                 handling of various Type configurations and expected exception handling in error scenarios.
     @}
 */
-namespace RegressionTest.GertToUTW;
+namespace RegressionTests.GertToUTW;
 
 /** @class      TestItemTests
     @ingroup    REF_GertToUTWEngine_RegressionTest_GertToUTW_TestItemTest

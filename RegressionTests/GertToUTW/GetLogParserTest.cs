@@ -22,7 +22,7 @@ using System.Text.RegularExpressions;
 
 using GertToUTW;
 
-namespace RegressionTest.GertToUTW;
+namespace RegressionTests.GertToUTW;
 
 
 /** @class      TestParseDateTests
@@ -268,5 +268,4 @@ public class GertLogParserFlowControlTests
         Assert.IsNotNull(result);
         Assert.HasCount(expected_run_count, result, $"Expected file '{relative_file_name}' to extract exactly {expected_run_count} compiled run records.");
         }
-
     }

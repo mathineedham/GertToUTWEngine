@@ -48,7 +48,7 @@ public sealed class SanitizeForXmlTests
     [DataRow("", "")]
     public void TestSanitizeForXml_RemovesInvalidCharacters( string input, string expected )
         {
-        string result = XElementExtensions.sanitize_for_xml(input);
+        string result = XElementExtension.sanitize_for_xml(input);
         Assert.AreEqual(expected, result);
         }
     }

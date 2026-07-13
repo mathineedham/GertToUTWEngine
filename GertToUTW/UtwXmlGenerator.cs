@@ -94,7 +94,7 @@ public static partial class UtwXmlGenerator
             new XElement("OperatingSystem", "OS"),
             new XElement("OperatingMode", "OPERATING"),
             new XElement("SequencerId", test_run_instance.SequencerId),
-            new XElement("Result", test_run_instance.Result?.Value), // Note: Make sure to pull the inner text value if Result is an object!
+            new XElement("Result", test_run_instance.Result.Value), // Note: Make sure to pull the inner text value if Result is an object!
             new XElement("StartTime", format_time(test_run_instance.StartTime)),
             new XElement("EndTime", format_time(test_run_instance.EndTime))
         );

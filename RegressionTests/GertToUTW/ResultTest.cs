@@ -18,7 +18,7 @@ using GertToUTW;
 
     @}
 */
-namespace RegressionTest.GertToUTW;
+namespace RegressionTests.GertToUTW;
 
 /** @class      ResultTest
     @ingroup    REF_GertToUTWEngine_RegressionTest_GertToUTW_ResultTest
