@@ -257,6 +257,7 @@ public class GertLogParserFlowControlTests
 
     [TestMethod]
     [DataRow("GertToUTW\\LogTestFiles\\Valid\\valid_singlerun.log", 1)]
+    [DataRow("GertToUTW\\LogTestFiles\\Valid\\valid_emptystring.log", 1)]
     [DataRow("GertToUTW\\LogTestFiles\\Valid\\valid_doublerun.log", 2)]
     [DataRow("GertToUTW\\LogTestFiles\\Valid\\valid_1022000000.log", 2)]
     public void GertLogParserTest_Valid( string relative_file_name, int expected_run_count )
@@ -268,13 +269,4 @@ public class GertLogParserFlowControlTests
         Assert.HasCount(expected_run_count, result, $"Expected file '{relative_file_name}' to extract exactly {expected_run_count} compiled run records.");
         }
 
-    [TestMethod]
-    [DataRow("Invalid/invalid_singlerun.log")] // doesnt have testrun rresult
-    [DataRow("Invalid/invalid_doublerun.log")] // doesnt have macadress
-    [DataRow("Invalid/invalid3.log")] //
-    [DataRow("Invalid/invalid4.log")] //
-    public void GertLogParserTest_Invalid( string relative_file_name )
-        {
-        //todo
-        }
     }
