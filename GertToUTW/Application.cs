@@ -29,7 +29,7 @@ public class Application
             string file_name_without_ext = Path.GetFileNameWithoutExtension(Output_xml_path);
             string unique_xml_path = Path.Combine(directory, $"{file_name_without_ext}_{i}.xml");
             UtwXmlGenerator.GenerateUtwXml(test_run, unique_xml_path);
-            }
+            }  
         Console.WriteLine("Success");
         }
     }
