@@ -121,7 +121,7 @@ public class TestMapTests
     public void MapResult( string raw_result, string expected_result )
         {
         string result = GertLogParser.map_result(raw_result);
-        Assert.AreEqual(expected_result, result, $"Mapping outcome did not match expectations for input: '{raw_result}'");
+        Assert.AreEqual(expected_result, result);
         }
     }
 
@@ -232,8 +232,8 @@ public class ParseStepItemTests
     public void ParseTestItems_EvaluatesLogStructures_AndReturnsExpectedCount( string raw_content, int expected_count )
         {
         List<TestItem> result = GertLogParser.parse_test_items(raw_content);
-        Assert.IsNotNull(result, "The method should always return a valid list instance, never null.");
-        Assert.HasCount(expected_count, result, $"Expected to extract exactly {expected_count} items from the payload string.");
+        Assert.IsNotNull(result);
+        Assert.HasCount(expected_count, result);
         }
     }
 

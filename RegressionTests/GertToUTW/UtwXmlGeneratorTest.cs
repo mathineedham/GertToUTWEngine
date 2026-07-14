@@ -113,32 +113,77 @@ public class UtwXmlGeneratorTests
         TestRun test_run_fixture = create_test_run_fixture(mat_num, mat_text, mat_rev, serial_num, op_name, comp_name, result_val,test_items,serial_attrs);
 
         XDocument doc = UtwXmlGenerator.build_utw_xml_document(test_run_fixture);
-        XElement root = doc.Root;
+        XElement? root = doc.Root;
 
-        Assert.IsNotNull(root, "XML Document generation failed to produce a valid root element node.");
+        Assert.IsNotNull(root);
 
-        string? mat_num_value = root.Element("MaterialNumber")?.Value;
-        Assert.IsNotNull(mat_num_value);
+        XElement? mn = root.Element("MaterialNumber");
+        Assert.IsNotNull(mn);
+        string mat_num_value = mn.Value;
         Assert.AreEqual(mat_num, mat_num_value);
-        string lot_value = root.Element("Lot").Value;
-        Assert.AreEqual(mat_num, lot_value, "The 'Lot' element must always mirror the primary MaterialNumber.");
-        string mat_text_value = root.Element("MaterialText").Value;
-        Assert.AreEqual(mat_text,mat_text_value);
-        string mat_rev_value = root.Element("MaterialRevision").Value;
-        Assert.AreEqual(mat_rev, mat_rev_value);
-        string serial_num_value = root.Element("SerialNumber").Value;
-        Assert.AreEqual(serial_num, serial_num_value);
-        Assert.AreEqual(op_name, root.Element("OperatorName")?.Value);
-        Assert.AreEqual(comp_name, root.Element("ComputerName")?.Value);
-        Assert.AreEqual(result_val, root.Element("Result")?.Value);
 
-        Assert.AreEqual("01", root.Element("TestRun_Key")?.Value);
-        Assert.AreEqual("GERT", root.Element("SequencerId")?.Value);
-        Assert.AreEqual("2026-07-10T12:00:00.000+02:00", root.Element("StartTime")?.Value);
-        Assert.AreEqual("2026-07-10T12:05:00.000+02:00", root.Element("EndTime")?.Value);
-        Assert.AreEqual("0.0.0", root.Element("SoftwareVersion")?.Value);
-        Assert.AreEqual("OS", root.Element("OperatingSystem")?.Value);
-        Assert.AreEqual("OPERATING", root.Element("OperatingMode")?.Value);
+        XElement? lot = root.Element("Lot");
+        Assert.IsNotNull(lot);
+        string lot_value = lot.Value;
+        Assert.AreEqual(mat_num, lot_value);
+
+        XElement? mt = root.Element("MaterialText");
+        Assert.IsNotNull(mt);
+        string mat_text_value = mt.Value;
+        Assert.AreEqual(mat_text, mat_text_value);
+
+        XElement? mr = root.Element("MaterialRevision");
+        Assert.IsNotNull(mr);
+        string mat_rev_value = mr.Value;
+        Assert.AreEqual(mat_rev, mat_rev_value);
+
+        XElement? sn = root.Element("SerialNumber");
+        Assert.IsNotNull(sn);
+        string serial_num_value = sn.Value;
+        Assert.AreEqual(serial_num, serial_num_value);
+
+        XElement? on = root.Element("OperatorName");
+        Assert.IsNotNull(on);
+        string op_name_value = on.Value;
+        Assert.AreEqual(op_name, op_name_value);
+
+        XElement? cn = root.Element("ComputerName");
+        Assert.IsNotNull(cn);
+        string comp_name_value = cn.Value;
+        Assert.AreEqual(comp_name, comp_name_value);
+
+        XElement? result = root.Element("Result");
+        Assert.IsNotNull(result);
+        string result_value = result.Value;
+        Assert.AreEqual(result_val, result_value);
+
+        XElement? testrunkey = root.Element("TestRun_Key");
+        Assert.IsNotNull(testrunkey);
+        Assert.AreEqual("01",testrunkey.Value);
+
+        XElement? sequencerid = root.Element("SequencerId");
+        Assert.IsNotNull(sequencerid);
+        Assert.AreEqual("GERT", sequencerid.Value);
+
+        XElement? starttime = root.Element("StartTime");
+        Assert.IsNotNull(starttime);
+        Assert.AreEqual("2026-07-10T12:00:00.000+02:00", starttime.Value);
+
+        XElement? endtime = root.Element("EndTime");
+        Assert.IsNotNull(endtime);
+        Assert.AreEqual("2026-07-10T12:05:00.000+02:00", endtime.Value);
+
+        XElement? softwareversion = root.Element("SoftwareVersion");
+        Assert.IsNotNull(softwareversion);
+        Assert.AreEqual("0.0.0", softwareversion.Value);
+
+        XElement? operatingsystem = root.Element("OperatingSystem");
+        Assert.IsNotNull(operatingsystem);
+        Assert.AreEqual("OS", operatingsystem.Value);
+
+        XElement? operatingmode = root.Element("OperatingMode");
+        Assert.IsNotNull(operatingmode);
+        Assert.AreEqual("OPERATING", operatingmode.Value);
         }
     }
 
