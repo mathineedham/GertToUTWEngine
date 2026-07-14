@@ -95,6 +95,14 @@ public static partial class GertLogParser
     */
     public static List<TestRun> ParseGertLog( string filepath )
         {
+        if( string.IsNullOrEmpty(filepath) )
+            {
+            throw new ArgumentNullException(nameof(filepath), "The provided file path cannot be null or empty.");
+            }
+        if (!File.Exists(filepath) )
+            {
+            throw new FileNotFoundException(null, filepath);
+            }
         string content = File.ReadAllText(filepath, Encoding.UTF8);
         List<TestRun> test_runs = [];
 

@@ -279,4 +279,19 @@ public class GertLogParserFlowControlTests
         Assert.IsNotNull(result);
         Assert.HasCount(expected_run_count, result);
         }
+
+    [TestMethod]
+    [DataRow("")]
+    [DataRow(null)]
+    public void GertLogParserTest_EmptyOrNull( string relative_file_name )
+        {
+        _ = Assert.Throws<ArgumentException>(() => GertLogParser.ParseGertLog(relative_file_name));
+        }
+
+    [TestMethod]
+    public void GertLogParserTest_NonExistentFile()
+        {
+        string non_existent_file = "GertToUTW\\LogTestFiles\\Invalid\\nonexistent.log";
+        _ = Assert.Throws<FileNotFoundException>(() => GertLogParser.ParseGertLog(non_existent_file));
+        }
     }
