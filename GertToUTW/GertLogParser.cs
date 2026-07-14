@@ -79,6 +79,9 @@ public static partial class GertLogParser
     /** @brief      Validates internal parameters, descriptions, variables, and output scopes. */
     [GeneratedRegex(@"Step\s+(\d+):\s*\[(.*?)\]\s*\n([^\n\r]*)(?:\s*\n(?:.*?INFO::FillVariables.*?: SET .*?\n)*\s*(.*?))?\s*\nResult:\s*(\S+)", RegexOptions.Singleline)]
     internal static partial Regex step_item_regex();
+    /** @brief      QS Ticket pattern to find routestep*/
+    [GeneratedRegex(@"(?:SET\s+\[[^\]]+\][\s\S]*?){1}SET\s+\[(?<target>[^\]]+)\]", RegexOptions.Singleline)]
+    internal static partial Regex routestep_regex();
     /** @brief      Internal static key translation reference map for input abbreviations. */
     internal static readonly Dictionary<string, string> theResultRules = new(StringComparer.Ordinal)
     {
@@ -86,6 +89,37 @@ public static partial class GertLogParser
         { "FAIL", "FAILED" },
         { "SKIP", "SKIPPED" }
     };
+
+    /** @brief Function that finds the test item with "Write QS-Ticket" in its name, and returns the routerstep
+     *  @param[in]  steps  The list of test steps to search through.
+     *  @return    routestep or our test run or Empty string if not found.
+     */
+    internal static string find_write_qs_ticket_step( List<TestItem> steps )
+        {
+        TestItem? qsstep = null;
+        foreach( TestItem step in steps )
+            {
+            if( step.Name.Contains("Write QS-Ticket", StringComparison.OrdinalIgnoreCase) )
+                {
+                qsstep = step;
+                break;
+                }
+            }
+        if( qsstep != null )
+            {
+            string? output = qsstep.Stdout;
+            if ( output != null )
+                {
+                return extract_field(routestep_regex(), output);
+                }
+            else
+                {
+                return string.Empty;
+                }
+            }
+        return string.Empty;
+        }
+
 
     /** @brief      Reads, isolates, maps, and structures complete session groups from a log payload.
 
@@ -124,6 +158,7 @@ public static partial class GertLogParser
 
             string result_raw = extract_field(result_regex(), chunk);
             List<TestItem> test_items = parse_test_items(chunk);
+            string routestep = find_write_qs_ticket_step(test_items);
 
             string mac_adress = extract_field(mac_address_regex(), chunk);
 
@@ -141,7 +176,8 @@ public static partial class GertLogParser
                 StartTime = parse_date(extract_field(start_time_regex(), chunk)),
                 EndTime = parse_date(extract_field(end_time_regex(), chunk)),
                 SerialNumberAttributes = build_serial_attributes([("MACAdress",mac_adress)]),
-                TestItem = test_items
+                TestItem = test_items,
+                Routestep = routestep
                 });
             }
 

@@ -295,3 +295,71 @@ public class GertLogParserFlowControlTests
         _ = Assert.Throws<FileNotFoundException>(() => GertLogParser.ParseGertLog(non_existent_file));
         }
     }
+
+/** @class      BuildSerialAttributesTest
+    @ingroup    REF_GertToUTWEngine_RegressionTest_GertToUTW_GerLogParserTest
+    @brief      Unit tests for the 'find_write_qs_ticket_step' method of the `GertLogParser` class.
+    @details    Verifies that the `find_write_qs_ticket_step` correctly identifies the step in the log that writes the QS ticket, and returns the expected result
+*/
+[TestClass]
+public class FindQsWriteTicket
+    {
+    /** @brief Verifies that the `find_write_qs_ticket_step` method correctly sends empty string if qs step not found */
+    [TestMethod]
+    public void FindQsWriteTicket_EmptyOutput( )
+        {
+        // empty list
+        string result = GertLogParser.find_write_qs_ticket_step([]); 
+        Assert.IsEmpty(result, "An empty input list should produce a null output.");
+
+        // list with no qs step
+        List<TestItem> empty_items =
+            [
+            new TestItem { Name = "Step 1: [Init]", Stdout = "INFO::ActionSteps\nResult: PASS" },
+            new TestItem { Name = "Step 2: [Teardown]", Stdout = "INFO::FillVariables\nResult: FAIL" }
+            ];
+        string result2 = GertLogParser.find_write_qs_ticket_step(empty_items);
+        Assert.IsEmpty(result2, "A list of test items without a QS ticket step should produce a null output.");
+
+        // list with a qs step but Stdout is empty
+        List<TestItem> qs_step_empty_stdout =
+            [
+            new TestItem { Name = "Step 1: [Init]", Stdout = "INFO::ActionSteps\nResult: PASS" },
+            new TestItem { Name = "Write QS-Ticket", Stdout = "" }
+            ];
+        string result3 = GertLogParser.find_write_qs_ticket_step(qs_step_empty_stdout);
+        Assert.IsEmpty(result3, "A list of test items with a QS ticket step but empty Stdout should produce a null output.");
+
+        // list with a qs step and vnull stdout
+        List<TestItem> qs_step_null_stdout =
+            [
+            new TestItem { Name = "Step 1: [Init]", Stdout = "INFO::ActionSteps\nResult: PASS" },
+            new TestItem { Name = "Write QS-Ticket", Stderr = "ERROR output" }
+            ];
+        string result4 = GertLogParser.find_write_qs_ticket_step(qs_step_null_stdout);
+        Assert.IsEmpty(result4);
+
+
+        }
+
+    [TestMethod]
+    public void FindQsWriteTicket_ValidOutput()
+        {
+        List<TestItem> items_with_qs_step =
+            [
+            new TestItem { Name = "Step 1: [Init]", Stdout = "INFO::ActionSteps\nResult: PASS" },
+            new TestItem { Name = "Write QS-Ticket", Stdout = """
+            
+            INFO::FillVariables(0): SET [WriteTicket]
+            INFO::FillVariables(0): SET [FT_FUNCTION]
+            INFO::FillVariables(0): SET [Baugruppe_Ausfall_Funktionstest]
+            INFO::WriteTicket(0): 
+            #####  Internal Cmd WriteTicket:
+            args=[['FT_FUNCTION', 'Baugruppe_Ausfall_Funktionstest']]
+            """ },
+            new TestItem { Name = "Step 3: [Teardown]", Stdout = "INFO::FillVariables\nResult: FAIL" }
+            ];
+        string result = GertLogParser.find_write_qs_ticket_step(items_with_qs_step);
+        Assert.AreEqual("FT_FUNCTION", result);
+        }
+    }
