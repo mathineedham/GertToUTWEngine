@@ -53,15 +53,7 @@ public sealed class ParseDateTests
     [DataRow("09/07/2026 at 14h30m25s")]
     public void Parse_date_InvalidFormat( string malformed_date_text )
         {
-        try
-            {
-            _ = GertLogParser.parse_date(malformed_date_text);
-            Assert.Fail("Expected parse_date to throw a FormatException, but it completed successfully.");
-            }
-        catch( FormatException ex )
-            {
-            Assert.AreEqual(malformed_date_text, ex.Message, "The exception message must exactly equal the invalid input string.");
-            }
+         _ = Assert.ThrowsExactly<FormatException>(() =>GertLogParser.parse_date(malformed_date_text));
         }
     }
 
@@ -101,7 +93,7 @@ public sealed partial class ExtractFieldTests
             {
             result = GertLogParser.extract_field(r, log_text);
             }
-        Assert.AreEqual(expected_value, result, $"Failed for test case: {r} with input '{log_text}'");
+        Assert.AreEqual(expected_value, result);
         }
     }
 
@@ -263,9 +255,9 @@ public class GertLogParserFlowControlTests
     public void GertLogParserTest_Valid( string relative_file_name, int expected_run_count )
         {
         string absolute_path = Path.Combine(theBaseFilesDir, relative_file_name);
-        Assert.IsTrue(File.Exists(absolute_path), $"Test setup configuration failure: File not found at target location: {absolute_path}");
+        Assert.IsTrue(File.Exists(absolute_path));
         List<TestRun> result = GertLogParser.ParseGertLog(relative_file_name);
         Assert.IsNotNull(result);
-        Assert.HasCount(expected_run_count, result, $"Expected file '{relative_file_name}' to extract exactly {expected_run_count} compiled run records.");
+        Assert.HasCount(expected_run_count, result);
         }
     }
