@@ -77,7 +77,7 @@ public static partial class GertLogParser
     [GeneratedRegex(@"-{20,}\s*(?=Step\s+\d+:|INFO::CloseTestLog)")]
     internal static partial Regex steps_split_regex();
     /** @brief      Validates internal parameters, descriptions, variables, and output scopes. */
-    [GeneratedRegex(@"Step\s+(\d+):\s*\[(.*?)\]\s*((?:INFO::FillVariables|INFO::ActionSteps).*?)\s*\n(?:.*?INFO::FillVariables.*?: SET .*?\n)*\s*(.*?)Result:\s*(\S+)", RegexOptions.Singleline)]
+    [GeneratedRegex(@"Step\s+(\d+):\s*\[(.*?)\]\s*\n([^\n\r]*)(?:\s*\n(?:.*?INFO::FillVariables.*?: SET .*?\n)*\s*(.*?))?\s*\nResult:\s*(\S+)", RegexOptions.Singleline)]
     internal static partial Regex step_item_regex();
     /** @brief      Internal static key translation reference map for input abbreviations. */
     internal static readonly Dictionary<string, string> theResultRules = new(StringComparer.Ordinal)

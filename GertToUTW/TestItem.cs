@@ -53,7 +53,7 @@ public class TestItem
 
     /** @brief      The optional description text of the test item.
       
-        @details    In the case of transforming test logs from GERT to UTW, the description holds the second line of a test step log, giving use the step command
+        @details    In the case of transforming test logs from GERT to UTW, the description holds the second line of a test step log, which often contains more information on the command
 
         @return     The description string, or null if no description is provided.
     */

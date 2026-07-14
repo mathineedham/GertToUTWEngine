@@ -194,8 +194,8 @@ public class BuildTestItemTest
             string expected_stderr )
             {
             string target_log_block =
-                $"Step 12: [StepName] INFO::ActionSteps details\n" +
-                $"{middle_string}" +
+                $"Step 12: [StepName] \nINFO::ActionSteps details\n" +
+                $"{middle_string}\n" +
                 $"Result: {raw_result_input}";
 
             Match raw_match = GertLogParser.step_item_regex().Match(target_log_block);
@@ -227,8 +227,27 @@ public class ParseStepItemTests
     [TestMethod]
     [DataRow("[LogData = Start]\nSome unrelated body noise\n[LogData = End]", 0)]
     [DataRow("[LogData = Start]\nJunkBlock 1: [Noise] text\n[LogData = End]", 0)]
-    [DataRow("[LogData = Start]\nStep 1: [Init] INFO::ActionSteps\nResult: PASS\n--------------------\n[LogData = End]", 1)]
-    [DataRow("[LogData = Start]\nStep 1: [Init] INFO::ActionSteps\nResult: PASS\nSome Interstitial Trash Text\n--------------------\nStep 2: [Teardown] INFO::FillVariables\nResult: FAIL\n--------------------\n[LogData = End]", 2)]
+    [DataRow("[LogData = Start]\nStep 1: [Init]\nINFO::ActionSteps\nResult: PASS\n--------------------\n[LogData = End]", 1)]
+    [DataRow("[LogData = Start]\nStep 1: [Init]\nINFO::ActionSteps\nResult: PASS\nSome Interstitial Trash Text\n--------------------\nStep 2: [Teardown]\n INFO::FillVariables\nResult: FAIL\n--------------------\n[LogData = End]", 2)]
+    [DataRow("""
+        [LogData = Start]
+        Step  1: [I.1.1. Prepare]
+
+        ##### WaitOnReply
+        send command : [cd /cygdrive/c/DMS_Testenvironment_HW/Scripts4Gert]
+        received data:
+        | cd /cygdrive/c/DMS_Testenvironment_HW/Scripts4Gert]0;/cygdrive/c/DMS_Testenvironment_HW/Scripts4Gert[32madmtsg@DESTSM3WK07176N [33m/cygdrive/c/DMS_Testenvironment_HW/Scripts4Gert[0m$ 
+        Time elapsed= 0.10
+        Result: PASS
+        --------------------
+        Step  2: [I.1.3. Anschliessen]
+        INFO::AskUserImage(0): 
+        #####  Internal Cmd AskUserImage:
+        args=[['\n CFAST Karte gesteckt und alles angeschlossen ?', 'ALL_CONNECTED1.JPG']]
+        Result: PASS
+        --------------------
+        [LogData = End]
+        """, 2)]
     public void ParseTestItems_EvaluatesLogStructures_AndReturnsExpectedCount( string raw_content, int expected_count )
         {
         List<TestItem> result = GertLogParser.parse_test_items(raw_content);
