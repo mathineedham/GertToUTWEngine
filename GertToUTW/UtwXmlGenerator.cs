@@ -90,7 +90,8 @@ public static partial class UtwXmlGenerator
             new XElement("MaterialNumber", test_run_instance.MaterialNumber),
             new XElement("MaterialText", test_run_instance.MaterialText),
             new XElement("MaterialRevision", test_run_instance.MaterialRevision),
-            new XElement("Lot",lot_number), 
+            new XElement("Lot",lot_number),
+            new XElement("Routestep", test_run_instance.Routestep),
             new XElement("SerialNumber", test_run_instance.SerialNumber)
         );
         // Add any SerialNumber Attributes
