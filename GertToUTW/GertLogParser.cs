@@ -77,7 +77,7 @@ public static partial class GertLogParser
     [GeneratedRegex(@"-{20,}\s*(?=Step\s+\d+:|INFO::CloseTestLog)")]
     internal static partial Regex steps_split_regex();
     /** @brief      Validates internal parameters, descriptions, variables, and output scopes. */
-    [GeneratedRegex(@"Step\s+(\d+):\s*\[(.*?)\]\s*\n([^\n\r]*)(?:\s*\n(?:.*?INFO::FillVariables.*?: SET .*?\n)*\s*(.*?))?\s*\nResult:\s*(\S+)", RegexOptions.Singleline)]
+    [GeneratedRegex(@"Step\s+(\d+):\s*\[(.*?)\]\s*\n([^\n\r]*)(?:\s*\n(.*?))?\s*\nResult:\s*(\S+)", RegexOptions.Singleline)]
     internal static partial Regex step_item_regex();
     /** @brief      QS Ticket pattern to find routestep*/
     [GeneratedRegex(@"(?:SET\s+\[[^\]]+\][\s\S]*?){1}SET\s+\[(?<target>[^\]]+)\]", RegexOptions.Singleline)]
@@ -110,10 +110,12 @@ public static partial class GertLogParser
             string? output = qsstep.Stdout;
             if ( output != null )
                 {
+                Console.WriteLine( output );
                 return extract_field(routestep_regex(), output);
                 }
             else
                 {
+                Console.WriteLine("bip");
                 return string.Empty;
                 }
             }
@@ -154,11 +156,10 @@ public static partial class GertLogParser
                 continue;
                 }
 
-            Console.WriteLine( chunk.Length ); 
-
             string result_raw = extract_field(result_regex(), chunk);
             List<TestItem> test_items = parse_test_items(chunk);
             string routestep = find_write_qs_ticket_step(test_items);
+            Console.WriteLine($"Routestep: {routestep}");
 
             string mac_adress = extract_field(mac_address_regex(), chunk);
 
