@@ -56,6 +56,23 @@ public static partial class UtwXmlGenerator
         document.Save(writer, SaveOptions.None);
         }
 
+    /**@brief      Generates lot number from material number and revision number.
+     * @param[in]  string     The material number.
+     * @param[in]  string     The revision number, in hexadecimal format.
+     * @return     string     The generated lot number.
+     */
+    internal static string generate_lot_number( string? material_number, string? revision_number )
+        {
+        if( material_number == null || revision_number == null )
+            {
+            throw new ArgumentNullException(material_number,revision_number);
+            }
+        int mn = int.Parse(material_number, CultureInfo.InvariantCulture);
+        int rn = Convert.ToInt32(revision_number,16);
+        return (mn + rn).ToString(CultureInfo.InvariantCulture);
+
+        }
+
     /** @brief      Creates a UTW-compliant XML document from a TestRun instance.
 
         @param[in]  test_run_instance  The TestRun instance containing the test run data.
@@ -65,14 +82,15 @@ public static partial class UtwXmlGenerator
     internal static XDocument build_utw_xml_document( TestRun test_run_instance )
         {
         ArgumentNullException.ThrowIfNull(test_run_instance);
-
+        // lot number = material number + revision number where revision number is converted from hex to decimal
+        string lot_number = generate_lot_number(test_run_instance.MaterialNumber, test_run_instance.MaterialRevision);
         // Root element with header information
         XElement root = new("TestRun",
             new XElement("TestRun_Key", "01"),
             new XElement("MaterialNumber", test_run_instance.MaterialNumber),
             new XElement("MaterialText", test_run_instance.MaterialText),
             new XElement("MaterialRevision", test_run_instance.MaterialRevision),
-            new XElement("Lot", test_run_instance.MaterialNumber), // MATERIAL NUMBER AS LOT NUMBER
+            new XElement("Lot",lot_number), 
             new XElement("SerialNumber", test_run_instance.SerialNumber)
         );
         // Add any SerialNumber Attributes
