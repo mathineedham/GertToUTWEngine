@@ -4,17 +4,17 @@ internal static class Program
     {
     private static void Main()
         {
-        string input_log_path = @"C:\Users\needhamm\Documents\Getting started\logs\GERT\1022000000.log";
-        string output_xml_path = @"C:\Users\needhamm\Documents\Getting started\pythonparser\1022000000.xml";
+        string input_log_path = @"C:\Users\needhamm\Documents\GertToUTWEngine\GertToUTW\valid_singlerun.log";
+        string output_xml_path = @"C:\Users\needhamm\Documents\GertToUTWEngine\GertToUTW\valid_singlerun.xml";
 
         try
             {
-            Application App = new(input_log_path, output_xml_path);
-            App.Execute();
+            Application app = new(input_log_path, output_xml_path);
+            _ = app.Execute();
             }
-        catch( Exception ex )
+        catch(Exception ex )
             {
-            Console.WriteLine( ex.ToString() );
+            Console.WriteLine(ex.Message );
             }
         Console.WriteLine("\n Press Enter to close this window...");
         Console.ReadLine();
