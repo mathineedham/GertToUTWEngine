@@ -16,7 +16,6 @@ UserSpec1: IMX6S-
 UserSpec2: 009_
 CustomerProductRevision: 016
 Revision: E001
-MACAddress1: 000463A79D70
 CustomerProductName: rob-nR-imx6
 
 [LogData = Start]
