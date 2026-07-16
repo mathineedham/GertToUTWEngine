@@ -39,6 +39,13 @@ public class Result
         "INCOMPLETE",
         "ERROR"
     ];
+    /** @brief      Internal static key translation reference map for input abbreviations. */
+    internal static readonly Dictionary<string, string> theResultRules = new(StringComparer.Ordinal)
+    {
+        { "PASS", "PASSED" },
+        { "FAIL", "FAILED" },
+        { "SKIP", "SKIPPED" }
+    };
 
     /** @brief      The output outcome of testing.
 
@@ -69,5 +76,23 @@ public class Result
                 }
             }
         } = string.Empty;
+    /** @brief      Normalizes incoming status variations into standard validation strings.
 
+    @param[in]  raw_result   The target unstructured log string status entry.
+
+    @return     The corresponding upper-case tracking state outcome token.
+    */
+    internal static string map_result( string raw_result )
+        {
+        return theResultRules.TryGetValue(raw_result, out string? transformed) ? transformed : raw_result;
+        }
+
+    public Result(string value )
+        {
+        Value = map_result(value);
+        }
+
+    public Result()
+        {
+        }
     }

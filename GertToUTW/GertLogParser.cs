@@ -80,14 +80,6 @@ public static partial class GertLogParser
     [GeneratedRegex(@"Step\s+(\d+):\s*\[(.*?)\]\s*\n([^\n\r]*)(?:\s*\n(.*?))?\s*\nResult:\s*(\S+)", RegexOptions.Singleline)]
     internal static partial Regex step_item_regex();
 
-    /** @brief      Internal static key translation reference map for input abbreviations. */
-    internal static readonly Dictionary<string, string> theResultRules = new(StringComparer.Ordinal)
-    {
-        { "PASS", "PASSED" },
-        { "FAIL", "FAILED" },
-        { "SKIP", "SKIPPED" }
-    };
-
     /** @brief      Reads, isolates, maps, and structures complete session groups from a log payload.
 
         @param[in]  filepath   The explicit layout system access path to the target document.
@@ -134,7 +126,7 @@ public static partial class GertLogParser
                 MaterialText = extract_field(material_text_regex(), chunk),
                 MaterialRevision = extract_field(material_revision_regex(), chunk),
                 SerialNumber = extract_field(serial_number_regex(), chunk),
-                Result = new Result { Value = map_result(result_raw) },
+                Result = new Result(result_raw) ,
                 SequencerId = "GERT",
                 StartTime = parse_date(extract_field(start_time_regex(), chunk)),
                 EndTime = parse_date(extract_field(end_time_regex(), chunk)),
@@ -158,17 +150,6 @@ public static partial class GertLogParser
         {
         Match match = regex.Match(text);
         return match.Success ? match.Groups[1].Value.Trim() : @default;
-        }
-
-    /** @brief      Normalizes incoming status variations into standard validation strings.
-
-        @param[in]  raw_result   The target unstructured log string status entry.
-
-        @return     The corresponding upper-case tracking state outcome token.
-    */
-    internal static string map_result( string raw_result )
-        {
-        return theResultRules.TryGetValue(raw_result, out string? transformed) ? transformed : raw_result;
         }
 
     /** @brief      Parses specific standard logging calendar strings into concrete DateTime instances.
@@ -217,48 +198,10 @@ public static partial class GertLogParser
             Match match = step_item_regex().Match(step_chunk);
             if( match.Success )
                 {
-                test_items.Add(build_test_item(match));
+                test_items.Add(new TestItem(match));
                 }
             }
 
         return test_items;
-        }
-
-    /** @brief      Transforms an internal regex tracking capture match into a structural object instance.
-
-        @param[in]  match   The analytical capturing map tracker containing parsed indices.
-
-        @return     An initialized structural item definition.
-    */
-    internal static TestItem build_test_item( Match match )
-        {
-        string result_raw = map_result(match.Groups[5].Value.Trim());
-        string middle_string = match.Groups[4].Value.Trim();
-
-        string? stdout_val = null;
-        string? stderr_val = null;
-
-        if( !string.IsNullOrEmpty(middle_string) )
-            {
-            if( result_raw == "FAILED" )
-                {
-                stderr_val = middle_string;
-                }
-            else
-                {
-                stdout_val = middle_string;
-                }
-            }
-
-        return new TestItem
-            {
-            TestItem_Key = 1,
-            Idx = int.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture),
-            Name = match.Groups[2].Value.Trim(),
-            Description = match.Groups[3].Value.Trim(),
-            Result = new Result { Value = result_raw },
-            Stdout = stdout_val,
-            Stderr = stderr_val
-            };
         }
     }

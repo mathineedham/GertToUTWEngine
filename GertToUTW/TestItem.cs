@@ -18,7 +18,10 @@
                 and validating matching XSD result states.
     @}
 */
+using System.Globalization;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
+
 
 [assembly: InternalsVisibleTo("RegressionTests")]
 namespace GertToUTW;
@@ -37,6 +40,8 @@ public class TestItem
 {
     internal static readonly int theMinIndexLimit;
     internal static readonly int theMaxIndexLimit = 32767;
+
+
     /** @brief      The unique database or configuration key identifier for the test item.
 
         @return     The key of the test item.
@@ -106,5 +111,40 @@ public class TestItem
 
         @return     The uppercase normalized result state string.
     */
-    public Result Result { get; set; } = new();
+    public Result Result
+        {
+        get; set;
+        } = new();
+
+    public TestItem()
+        {
+        }
+    public TestItem( Match match ) {
+        ArgumentNullException.ThrowIfNull(match);
+        string result_raw = match.Groups[5].Value.Trim();
+        string middle_string = match.Groups[4].Value.Trim();
+
+        string? stdout_val = null;
+        string? stderr_val = null;
+
+        if( !string.IsNullOrEmpty(middle_string) )
+            {
+            if( result_raw == "FAIL" )
+                {
+                stderr_val = middle_string;
+                }
+            else
+                {
+                stdout_val = middle_string;
+                }
+            }
+
+        TestItem_Key = 1;
+        Idx = int.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture);
+        Name = match.Groups[2].Value.Trim();
+        Description = match.Groups[3].Value.Trim();
+        Result = new Result(result_raw);
+        Stdout = stdout_val;
+        Stderr = stderr_val;
+        }
     }

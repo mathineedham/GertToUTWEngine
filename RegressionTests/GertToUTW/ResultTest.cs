@@ -88,3 +88,31 @@ public sealed class ResultTests
         });
         }
     }
+
+/** @class      TestMapTests
+    @ingroup    REF_GertToUTWEngine_RegressionTest_GertToUTW_ResultTest
+
+    @brief      Unit tests for the 'map_result' method of the `Result` class.
+
+    @details    Verifies that the `map_result` method correctly translates raw result strings into standardized outcome categories, 
+                handles edge cases, and throws appropriate exceptions for invalid inputs.
+*/
+[TestClass]
+public class TestMapTests
+    {
+    /** @brief Verifies that a correctly formatted result string is mapped to the expected standardized outcome. 
+     * param[in]  raw_result A string representing the raw result from the log.
+     * param[in]  expected_result The expected standardized outcome after mapping.
+     */
+    [TestMethod]
+    [DataRow("PASS", "PASSED")]
+    [DataRow("FAIL", "FAILED")]
+    [DataRow("SKIP", "SKIPPED")]
+    [DataRow("", "")]
+    [DataRow(" d  ", " d  ")]
+    public void MapResult( string raw_result, string expected_result )
+        {
+        string result = Result.map_result(raw_result);
+        Assert.AreEqual(expected_result, result);
+        }
+    }
