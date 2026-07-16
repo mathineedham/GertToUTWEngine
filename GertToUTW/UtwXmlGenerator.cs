@@ -45,12 +45,11 @@ public static partial class UtwXmlGenerator
     /** @brief      Creates a UTW-compliant XML file from a TestRun instance and saves it to the specified output path.
 
         @param[in]  test_run_instance  The TestRun instance containing the test run data.
-        @param[in]  output_file_path    The path where the generated XML file will be saved.
+        @param[in]  output_file_path    The path to the file where the generated XML file will be saved.
     */
     public static void GenerateUtwXml( TestRun test_run_instance, string output_filepath )
         {
         ArgumentException.ThrowIfNullOrEmpty(output_filepath);
-
         XDocument document = build_utw_xml_document(test_run_instance);
         using StreamWriter writer = new(output_filepath, false, Encoding.UTF8);
         document.Save(writer, SaveOptions.None);
