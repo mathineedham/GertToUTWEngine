@@ -30,6 +30,12 @@
 		<None Update="GertToUTW\LogTestFiles\**\*.log">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
-	</ItemGroup>
+	<None Update="GertToUTW\XmlTestFiles\**\*.xml">
+		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</None>	
+	<None Update="GertToUTW\XmlTestFiles\Structure\machine-readable-logs.xsd">
+		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</None>
 
+	</ItemGroup>
 </Project>
