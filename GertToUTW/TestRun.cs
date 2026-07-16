@@ -18,6 +18,7 @@
                 and regulatory data boundary compliance tracking.
     @}
 */
+using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 
@@ -41,11 +42,12 @@ public partial class TestRun
     private static partial Regex MatNb();
     [GeneratedRegex(@"^\d{1,18}$")]
     private static partial Regex MatNb2();
-    [GeneratedRegex(@"^[0-9]{6,7}$")]
-    private static partial Regex LotNb();
     [GeneratedRegex(@"^([A-Z0-9]{4})*$")]
     private static partial Regex MatRev();
-    
+    /** @brief Pattern to find and extract both the RouteStep and PHandle from LinkPHandle's SET outputs */
+    [GeneratedRegex(@"SET\s+\[LinkPHandle\][\s\S]*?SET\s+\[(?<routestep>[^\]]+)\][\s\S]*?SET\s+\[[^\]]+\][\s\S]*?SET\s+\[(?<phandle>[^\]]+)\]", RegexOptions.Singleline)]
+    internal static partial Regex LinkPHandleRegex();
+
     private static readonly HashSet<string> theValidOperatingModes =
     [
         "OPERATING",
@@ -87,6 +89,7 @@ public partial class TestRun
                 }
 
             field = value;
+            try_auto_generate_lot();
             }
         } = string.Empty;
 
@@ -114,6 +117,7 @@ public partial class TestRun
                 }
 
             field = value;
+            try_auto_generate_lot();
             }
         } = string.Empty;
 
@@ -205,16 +209,7 @@ public partial class TestRun
     public string Lot
         {
         get;
-        set
-            {
-            // Validates against target mask constraint: empty string or exactly 6 to 7 digits
-            if( value != string.Empty && !LotNb().IsMatch(value) )
-                {
-                throw new ArgumentException(null, nameof(value));
-                }
-
-            field = value;
-            }
+        private set;
         } = "000000";
 
     /** @brief      An optional open-ended string comment detailing general aspects of this test execution run.
@@ -282,4 +277,72 @@ public partial class TestRun
             }
         } = "OPERATING";
 
+    /** @brief Automatically generates a lot number if the current lot is empty and the material revision is set. */
+    private void try_auto_generate_lot()
+        {
+        try
+            {
+            // lot number = material number + revision number where revision number is converted from hex to decimal
+            Lot = generate_lot_number(MaterialNumber, MaterialRevision);
+            }
+        catch( FormatException )
+            {}
+        catch( ArgumentException )
+            {}
+        catch( OverflowException )
+            {}
+        }
+
+    /**@brief      Generates 6 digit lot number from material number and revision number.
+     * @param[in]  string     The material number.
+     * @param[in]  string     The revision number, in hexadecimal format.
+     * @return     string     The generated lot number.
+     */
+    internal static string generate_lot_number( string? material_number, string? revision_number )
+        {
+        if( string.IsNullOrEmpty(material_number) || string.IsNullOrEmpty(revision_number) )
+            {
+            throw new ArgumentException(material_number, revision_number);
+            }
+        int mn = int.Parse(material_number, CultureInfo.InvariantCulture);
+        int rn = Convert.ToInt32(revision_number, 16);
+        string value = ((mn + rn) % 1000000).ToString("D6", CultureInfo.InvariantCulture);
+        return value;
+
+        }
+
+    /** @brief Function that finds the test item with "Write QS-Ticket" in its name, and returns the routerstep
+     *  @param[in]  steps  The list of test steps to search through.
+     *  @return    routestep or our test run or Empty string if not found.
+     */
+    public TestRun Find_link_phandle_step()
+        {
+        TestItem? linkstep = null;
+        foreach( TestItem step in TestItem )
+            {
+            if( step.Name.Contains("Link PHandle", StringComparison.OrdinalIgnoreCase) )
+                {
+                linkstep = step;
+                break;
+                }
+            }
+        if( linkstep != null )
+            {
+            string? output = linkstep.Stdout;
+            string res = linkstep.Result.Value;
+            if( output != null)
+                {
+                Match match = LinkPHandleRegex().Match(output);
+                if( match.Success )
+                    {
+                    Routestep = match.Groups["routestep"].Value;
+                    if( res == "PASSED")
+                        {
+                        SerialNumberAttributes.Add(new SerialNumberAttributes { SerialNumberAttributes_Key = 1, Name = "PHandle", Value = match.Groups["phandle"].Value });
+                        }
+                    }
+                }
+            }
+        return this;
+        }
     }

@@ -79,9 +79,7 @@ public static partial class GertLogParser
     /** @brief      Validates internal parameters, descriptions, variables, and output scopes. */
     [GeneratedRegex(@"Step\s+(\d+):\s*\[(.*?)\]\s*\n([^\n\r]*)(?:\s*\n(.*?))?\s*\nResult:\s*(\S+)", RegexOptions.Singleline)]
     internal static partial Regex step_item_regex();
-    /** @brief      QS Ticket pattern to find routestep*/
-    [GeneratedRegex(@"(?:SET\s+\[[^\]]+\][\s\S]*?){1}SET\s+\[(?<target>[^\]]+)\]", RegexOptions.Singleline)]
-    internal static partial Regex routestep_regex();
+
     /** @brief      Internal static key translation reference map for input abbreviations. */
     internal static readonly Dictionary<string, string> theResultRules = new(StringComparer.Ordinal)
     {
@@ -89,39 +87,6 @@ public static partial class GertLogParser
         { "FAIL", "FAILED" },
         { "SKIP", "SKIPPED" }
     };
-
-    /** @brief Function that finds the test item with "Write QS-Ticket" in its name, and returns the routerstep
-     *  @param[in]  steps  The list of test steps to search through.
-     *  @return    routestep or our test run or Empty string if not found.
-     */
-    internal static string find_write_qs_ticket_step( List<TestItem> steps )
-        {
-        TestItem? qsstep = null;
-        foreach( TestItem step in steps )
-            {
-            if( step.Name.Contains("Write QS-Ticket", StringComparison.OrdinalIgnoreCase) )
-                {
-                qsstep = step;
-                break;
-                }
-            }
-        if( qsstep != null )
-            {
-            string? output = qsstep.Stdout;
-            if ( output != null )
-                {
-                Console.WriteLine( output );
-                return extract_field(routestep_regex(), output);
-                }
-            else
-                {
-                Console.WriteLine("bip");
-                return string.Empty;
-                }
-            }
-        return string.Empty;
-        }
-
 
     /** @brief      Reads, isolates, maps, and structures complete session groups from a log payload.
 
@@ -158,9 +123,6 @@ public static partial class GertLogParser
 
             string result_raw = extract_field(result_regex(), chunk);
             List<TestItem> test_items = parse_test_items(chunk);
-            string routestep = find_write_qs_ticket_step(test_items);
-            Console.WriteLine($"Routestep: {routestep}");
-
             string mac_adress = extract_field(mac_address_regex(), chunk);
 
             test_runs.Add(new TestRun
@@ -176,10 +138,9 @@ public static partial class GertLogParser
                 SequencerId = "GERT",
                 StartTime = parse_date(extract_field(start_time_regex(), chunk)),
                 EndTime = parse_date(extract_field(end_time_regex(), chunk)),
-                SerialNumberAttributes = build_serial_attributes([("MACAdress",mac_adress)]),
-                TestItem = test_items,
-                Routestep = routestep
-                });
+                SerialNumberAttributes = [new SerialNumberAttributes { SerialNumberAttributes_Key = 1, Name = "MACAdress", Value = mac_adress }],
+                TestItem = test_items
+                }.Find_link_phandle_step());
             }
 
         return test_runs;
@@ -224,17 +185,6 @@ public static partial class GertLogParser
             }
 
         throw new FormatException(date_str);
-        }
-
-    /** @brief      Constructs peripheral identifier containers around physical device logs.
-
-    @param[in]  attributes   A dictionary containing the identifier names and their corresponding values.
-
-    @return     An explicit relational layout tracking entry list.
-*/
-    internal static List<SerialNumberAttributes> build_serial_attributes( List<(string, string)> attributes )
-        {
-        return [.. attributes.Select(attr => new SerialNumberAttributes { SerialNumberAttributes_Key = 1,Name = attr.Item1, Value = attr.Item2 })];
         }
 
     /** @brief      Isolates step records embedded directly inside structural file body payloads.

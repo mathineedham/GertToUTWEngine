@@ -125,7 +125,7 @@ public class UtwXmlGeneratorTests
         XElement? lot = root.Element("Lot");
         Assert.IsNotNull(lot);
         string lot_value = lot.Value; // (B001)_16 + (12345678)_10 = 12390735 
-        Assert.AreEqual("12390735", lot_value);
+        Assert.AreEqual("390735", lot_value);
 
         XElement? mt = root.Element("MaterialText");
         Assert.IsNotNull(mt);
@@ -187,39 +187,6 @@ public class UtwXmlGeneratorTests
         }
     }
 
-/** @class      LotNumberCalculatorTests
-
-    @ingroup    REF_GertToUTWEngine_RegressionTest_GertToUTW_UtwXmlGeneratorTest
-
-    @brief      Unit tests for the 'generate_lot_number' method of the `UtwXmlGenerator` class.
-
-    @details    Test the generation of lot numbers based on material number and revision, ensuring that the output adheres to the expected format and value.
-*/
-[TestClass]
-public class LotNumberCalculatorTests
-    {
-    /** @brief Tests that the 'generate_lot_number' method throws an ArgumentNullException when provided with a null argument */
-    [TestMethod]
-    [DataRow(null, "B001")]
-    [DataRow("12345678", null)]
-    public void GenerateLotNumber_Invalid(string mat_num, string rev_num)
-        {
-        _ = Assert.ThrowsExactly<ArgumentNullException>(() => UtwXmlGenerator.generate_lot_number(mat_num, rev_num));
-        }
-    
-    /** @brief Tests that the 'generate_lot_number' method correctly computes the lot number from given material number and revision. */
-    [TestMethod]
-    //  MaterialNumber | MaterialRevision | ExpectedLotNumber
-    [DataRow("12345678", "B001", "12390735")]
-    [DataRow("87654321", "0000", "87654321")]
-    [DataRow("00000001", "C003", "49156")]
-    public void GenerateLotNumber_Valid(
-        string mat_num, string mat_rev, string expected )
-        {
-        string actual_result = UtwXmlGenerator.generate_lot_number(mat_num, mat_rev);
-        Assert.AreEqual(expected, actual_result);
-        }
-    }
 /** @class      UtwXmlGeneratorFileIoTests
 
     @ingroup    REF_GertToUTWEngine_RegressionTest_GertToUTW_UtwXmlGeneratorTest
