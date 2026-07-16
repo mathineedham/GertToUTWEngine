@@ -6,8 +6,11 @@ namespace RegressionTests.GertToUTW;
 [TestClass]
 public class XsdFormatTest
     {
+    // The base directory where the test files are located
     private static readonly string theBaseFilesDir = AppDomain.CurrentDomain.BaseDirectory;
+    // The path to the XSD file used for validation
     private static readonly string theXsdFilePath = Path.Combine(theBaseFilesDir, "GertToUTW\\XmlTestFiles\\Schema\\GertToUTW.xsd");
+
     [TestMethod]
     [DataRow("")]
     public void Invalid_Xml( string xml_file )
@@ -15,6 +18,7 @@ public class XsdFormatTest
         // to do
         }
 
+    /** @brief Validates the XML file against the XSD schema and asserts that there are no validation errors. */
     [TestMethod]
     [DataRow("input.log")]
     public void Valid_Xml( string xml_file )
