@@ -1,7 +1,4 @@
-﻿
-using System.Reflection.Metadata.Ecma335;
-
-/** @file
+﻿  /** @file
 
     @copyright  &copy; 2024, Tria Technologies GmbH
                 SPDX-License-Identifier: (GPL-2.0-or-later OR LGPL-2.1-or-later)
