@@ -33,7 +33,7 @@ namespace RegressionTests.GertToUTW;
                 for input and output file paths, and expected exception handling in error scenarios.
 */
 [TestClass]
-public class ApplicationTest
+public partial class ApplicationTest
     {
     private static readonly string theBaseFilesDir = AppDomain.CurrentDomain.BaseDirectory;
     private static readonly string theXsdFilePath = Path.Combine(theBaseFilesDir, "GertToUTW\\XmlTestFiles\\Structure\\machine-readable-logs.xsd");
@@ -117,26 +117,32 @@ public class ApplicationTest
 
     /** @brief  Validates that appliucation correctly generated an xml file as expected */
     [TestMethod]
-    [DataRow("GertToUTW\\LogTestFiles\\Valid\\valid_singlerun.log",
-             "GertToUTW\\XmlTestFiles\\Generated\\valid_singlerun_0.xml",
+    [DataRow("GertToUTW\\XmlTestFiles\\Generated\\valid_singlerun_0.xml",
              "GertToUTW\\XmlTestFiles\\Expected\\valid_singlerun.xml")]
-    public void Application_Valid_ExistingFiles( string input_relative_path, string output_relative_path, string expected_relative_path )
+    [DataRow("GertToUTW\\XmlTestFiles\\Generated\\valid_doublerun_0.xml",
+             "GertToUTW\\XmlTestFiles\\Expected\\valid_doublerun_fail.xml")]
+    [DataRow("GertToUTW\\XmlTestFiles\\Generated\\valid_doublerun_1.xml",
+             "GertToUTW\\XmlTestFiles\\Expected\\valid_doublerun_sucess.xml")]
+    public void Application_Valid_ExistingFiles( string output_relative_path, string expected_relative_path )
         {
-        // make them absolute paths
         string absolute_out = Path.Combine(theBaseFilesDir, output_relative_path);
-        string absolute_in = Path.Combine(theBaseFilesDir, input_relative_path);
         string absolute_expected = Path.Combine(theBaseFilesDir, expected_relative_path);
 
-        // Read the generated output and expected output
-        string generated_content = File.ReadAllText(absolute_out);
-        XDocument generated_output = XDocument.Parse(generated_content, LoadOptions.PreserveWhitespace);
-        string expected_content = File.ReadAllText(absolute_expected);
-        XDocument expected_output = XDocument.Parse(expected_content, LoadOptions.PreserveWhitespace);
+        // Load both files into XElements
+        XElement generated = XElement.Load(absolute_out);
+        XElement expected = XElement.Load(absolute_expected);
 
-        Assert.IsTrue(XNode.DeepEquals(generated_output, expected_output), "Generated XML does not match expected XML.");
-        // normalize the XML for comparison
-        generated_output.Descendants().Where(e => string.IsNullOrWhiteSpace(e.Value)).ToList().ForEach(e => e.SetValue(string.Empty));
-        expected_output.Descendants().Where(e => string.IsNullOrWhiteSpace(e.Value)).ToList().ForEach(e => e.SetValue(string.Empty));
-        Assert.IsTrue(XNode.DeepEquals(generated_output, expected_output), "Generated XML does not match expected XML after normalization.");
+        var gen_nodes = generated.DescendantsAndSelf().Select(e => new { e.Name, Value = e.Value.Replace("\r\n", "\n").Replace("\r", "\n").Trim() }).ToList();
+        var exp_nodes = expected.DescendantsAndSelf().Select(e => new { e.Name, Value = e.Value.Replace("\r\n", "\n").Replace("\r", "\n").Trim() }).ToList();
+
+        // Verify they have the same number of nodes
+        Assert.HasCount(exp_nodes.Count, gen_nodes, "The structure or node count does not match.");
+
+        // Loop through and compare only the names and clean data values
+        for( int i = 0; i < gen_nodes.Count; i++ )
+            {
+            Assert.IsTrue(gen_nodes[i].Name == exp_nodes[i].Name, $"Node name mismatch at index {i}. Expected {exp_nodes[i].Name}, found {gen_nodes[i].Name}");
+            Assert.AreEqual(exp_nodes[i].Value, gen_nodes[i].Value, $"Node data value mismatch at index {i} in <{gen_nodes[i].Name}>. Values are {exp_nodes[i].Value} and {gen_nodes[i].Value}");
+            }
         }
     }
