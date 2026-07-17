@@ -114,18 +114,4 @@ INFO::LinkPHandle(0):
 args=[['FT_FUNCTION', '1022000000', 'F60287RA']]]]></Stdout>
     <StartTime>2026-04-16T14:20:40.000+02:00</StartTime>
   </TestItem>
-  <TestItem>
-    <TestItem_Key>01</TestItem_Key>
-    <Idx>12</Idx>
-    <Result>PASSED</Result>
-    <Name>F.050.02. Write QS-Ticket</Name>
-    <Description><![CDATA[INFO::FillVariables(0): FillVariables(args=['WriteTicket', '$QS_RouteStep', '$QS_DEFECTLABEL'])]]></Description>
-    <Stdout><![CDATA[INFO::FillVariables(0): SET [WriteTicket]
-INFO::FillVariables(0): SET [FT_FUNCTION]
-INFO::FillVariables(0): SET [Baugruppe_Ausfall_Funktionstest]
-INFO::WriteTicket(0): 
-#####  Internal Cmd WriteTicket:
-args=[['FT_FUNCTION', 'Baugruppe_Ausfall_Funktionstest']]]]></Stdout>
-    <StartTime>2026-04-16T14:20:40.000+02:00</StartTime>
-  </TestItem>
 </TestRun>

@@ -18,6 +18,7 @@
     @}
 */
 using System.Xml;
+using System.Xml.Linq;
 using System.Xml.Schema;
 
 using GertToUTW;
@@ -41,11 +42,14 @@ public class ApplicationTest
     [ClassInitialize]
     public static void Init( TestContext test_context )
         {
-        string absolute_input_file = Path.Combine(theBaseFilesDir, "GertToUTW\\LogTestFiles\\Valid\\valid_singlerun.log");
-        string absolute_output_dir = Path.Combine(theBaseFilesDir, "GertToUTW\\XmlTestFiles\\Generated");
-        Application app_valid_singlerun = new(absolute_input_file, absolute_output_dir);
-        List<string> l_valid_singlerun = app_valid_singlerun.Execute(); // contains "Expected\\valid_singlerun_0.xml"
-        Console.WriteLine($"Generated {l_valid_singlerun[0]}");
+        string absolute_input_file1 = Path.Combine(theBaseFilesDir, "GertToUTW\\LogTestFiles\\Valid\\valid_singlerun.log");
+        string absolute_output_dir1 = Path.Combine(theBaseFilesDir, "GertToUTW\\XmlTestFiles\\Generated");
+        Application app_valid_singlerun = new(absolute_input_file1, absolute_output_dir1);
+        _ = app_valid_singlerun.Execute(); // contains "Expected\\valid_singlerun_0.xml"
+        string absolute_input_file2 = Path.Combine(theBaseFilesDir, "GertToUTW\\LogTestFiles\\Valid\\valid_doublerun.log");
+        string absolute_output_dir2 = Path.Combine(theBaseFilesDir, "GertToUTW\\XmlTestFiles\\Generated");
+        Application app_valid_doublerun = new(absolute_input_file2, absolute_output_dir2);
+        _ = app_valid_doublerun.Execute(); // contains "Expected\\valid_doublerun_0.xml" and "Expected\\valid_doublerun_1.xml"
         }
 
 
@@ -68,8 +72,6 @@ public class ApplicationTest
              "GertToUTW\\XmlTestFiles\\Generated")]
     public void Application_Valid( string input, string output )
         {
-        //string absolute_input_file = Path.Combine(theBaseFilesDir, input);
-        //string absolute_output_dir = Path.Combine(theBaseFilesDir, output);
         Application app = new(input, output);
         Assert.AreEqual(input, app.Input_log_path);
         Assert.AreEqual(output, app.Output_xml_dir);
@@ -78,6 +80,8 @@ public class ApplicationTest
     /** @brief Validates the XML file against the XSD schema and asserts that there are no validation errors. */
     [TestMethod]
     [DataRow("GertToUTW\\XmlTestFiles\\Generated\\valid_singlerun_0.xml")]
+    [DataRow("GertToUTW\\XmlTestFiles\\Generated\\valid_doublerun_0.xml")]
+    [DataRow("GertToUTW\\XmlTestFiles\\Generated\\valid_doublerun_1.xml")]
     public void Valid_Xsd( string xml_file )
         {
         string absolute_xml = Path.Combine(theBaseFilesDir, xml_file);
@@ -111,33 +115,28 @@ public class ApplicationTest
             }
         }
 
-    ///** @brief  Validates that appliucation correctly generated an xml file as expected */
-    //[TestMethod]
-    //[DataRow("GertToUTW\\LogTestFiles\\Valid\\valid_singlerun.log",
-    //         "GertToUTW\\XmlTestFiles\\Generated",
-    //         "GertToUTW\\XmlTestFiles\\Expected\\valid_singlerun.xml")]
-    //public void Application_Valid_ExistingFiles( string input_relative_path, string output_relative_path, string expected_relative_path )
-    //    {
-    //    // make them absolute paths
-    //    string absolute_out = Path.Combine(theBaseFilesDir, output_relative_path);
-    //    string absolute_in = Path.Combine(theBaseFilesDir, input_relative_path);
-    //    string absolute_expected = Path.Combine(theBaseFilesDir, expected_relative_path);
+    /** @brief  Validates that appliucation correctly generated an xml file as expected */
+    [TestMethod]
+    [DataRow("GertToUTW\\LogTestFiles\\Valid\\valid_singlerun.log",
+             "GertToUTW\\XmlTestFiles\\Generated\\valid_singlerun_0.xml",
+             "GertToUTW\\XmlTestFiles\\Expected\\valid_singlerun.xml")]
+    public void Application_Valid_ExistingFiles( string input_relative_path, string output_relative_path, string expected_relative_path )
+        {
+        // make them absolute paths
+        string absolute_out = Path.Combine(theBaseFilesDir, output_relative_path);
+        string absolute_in = Path.Combine(theBaseFilesDir, input_relative_path);
+        string absolute_expected = Path.Combine(theBaseFilesDir, expected_relative_path);
 
-    //    // Create Application and execute
-    //    Application app = new(absolute_in, absolute_out);
-    //    _ = app.Execute();
+        // Read the generated output and expected output
+        string generated_content = File.ReadAllText(absolute_out);
+        XDocument generated_output = XDocument.Parse(generated_content, LoadOptions.PreserveWhitespace);
+        string expected_content = File.ReadAllText(absolute_expected);
+        XDocument expected_output = XDocument.Parse(expected_content, LoadOptions.PreserveWhitespace);
 
-
-    //    // Read the generated output and expected output
-    //    string generated_content = File.ReadAllText(absolute_out);
-    //    XDocument generated_output = XDocument.Parse(generated_content, LoadOptions.PreserveWhitespace);
-    //    string expected_content = File.ReadAllText(absolute_expected);
-    //    XDocument expected_output = XDocument.Parse(expected_content, LoadOptions.PreserveWhitespace);
-
-    //    Assert.IsTrue(XNode.DeepEquals(generated_output, expected_output), "Generated XML does not match expected XML.");
-    //    // normalize the XML for comparison
-    //    generated_output.Descendants().Where(e => string.IsNullOrWhiteSpace(e.Value)).ToList().ForEach(e => e.SetValue(string.Empty));
-    //    expected_output.Descendants().Where(e => string.IsNullOrWhiteSpace(e.Value)).ToList().ForEach(e => e.SetValue(string.Empty));
-    //    Assert.IsTrue(XNode.DeepEquals(generated_output, expected_output), "Generated XML does not match expected XML after normalization.");
-    //    }
+        Assert.IsTrue(XNode.DeepEquals(generated_output, expected_output), "Generated XML does not match expected XML.");
+        // normalize the XML for comparison
+        generated_output.Descendants().Where(e => string.IsNullOrWhiteSpace(e.Value)).ToList().ForEach(e => e.SetValue(string.Empty));
+        expected_output.Descendants().Where(e => string.IsNullOrWhiteSpace(e.Value)).ToList().ForEach(e => e.SetValue(string.Empty));
+        Assert.IsTrue(XNode.DeepEquals(generated_output, expected_output), "Generated XML does not match expected XML after normalization.");
+        }
     }
