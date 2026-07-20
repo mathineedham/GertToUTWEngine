@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <TestRun>
   <TestRun_Key>01</TestRun_Key>
   <MaterialNumber>066872</MaterialNumber>
@@ -6,6 +6,15 @@
   <MaterialRevision>E001</MaterialRevision>
   <Lot>124217</Lot>
   <Routestep />
+  <Comment>[BOARDDATA]
+[GUIDATA]
+BoardId: 1022000000
+UserSpec1: IMX6S-
+UserSpec2: 009_
+CustomerProductRevision: 016
+Revision: E001
+MACAddress1: 000463A79D70
+CustomerProductName: rob-nR-imx6</Comment>
   <SerialNumber>1022000000</SerialNumber>
   <SerialNumberAttributes SerialNumberAttributes_Key="1" Name="MACAdress" Value="000463A79D70" />
   <DUTPosition>01</DUTPosition>

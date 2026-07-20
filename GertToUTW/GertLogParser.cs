@@ -70,6 +70,8 @@ public static partial class GertLogParser
     /** @brief      Extracts peripheral hardware network adapter identifier codes. */
     [GeneratedRegex(@"MACAddress1:\s*(\S+)")]
     internal static partial Regex mac_address_regex();
+    [GeneratedRegex(@"\[BoardID =[^\]]+\](.*?)\[LogData = Start\]", RegexOptions.Singleline)]
+    internal static partial Regex comment_regex();
     /** @brief      Captures core body segments containing isolated step-by-step arrays. */
     [GeneratedRegex(@"\[LogData = Start\](.*?)\[LogData = End\]", RegexOptions.Singleline)]
     internal static partial Regex log_data_regex();
@@ -131,7 +133,8 @@ public static partial class GertLogParser
                 StartTime = parse_date(extract_field(start_time_regex(), chunk)),
                 EndTime = parse_date(extract_field(end_time_regex(), chunk)),
                 SerialNumberAttributes = [new SerialNumberAttributes { SerialNumberAttributes_Key = 1, Name = "MACAdress", Value = mac_adress }],
-                TestItem = test_items
+                TestItem = test_items,
+                Comment = extract_field(comment_regex(), chunk)
                 }.Find_link_phandle_step());
             }
 
