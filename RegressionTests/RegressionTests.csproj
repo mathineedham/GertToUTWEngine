@@ -25,6 +25,7 @@
     <Folder Include="GertToUTW\LogTestFiles\Invalid\" />
     <Folder Include="GertToUTW\LogTestFiles\Valid\" />
     <Folder Include="GertToUTW\XmlTestFiles\Expected\" />
+	<Folder Include="GertToUTW\LogTestFiles\testsample\" />
   </ItemGroup>
     <ItemGroup>
 		<None Update="GertToUTW\LogTestFiles\**\*.log">
@@ -32,8 +33,8 @@
 		</None>
 	<None Update="GertToUTW\XmlTestFiles\**\*.xml">
 		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</None>	
-	<None Update="GertToUTW\XmlTestFiles\Structure\machine-readable-logs.xsd">
+	</None>
+		<None Update="GertToUTW\XmlTestFiles\Structure\machine-readable-logs.xsd">
 		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</None>
 	</ItemGroup>

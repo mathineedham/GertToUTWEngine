@@ -277,6 +277,12 @@ public partial class TestRun
             }
         } = "OPERATING";
 
+    public IEnumerable<TestItem> TestItems
+        {
+        get;
+        internal set;
+        }
+
     /** @brief Automatically generates a lot number if the current lot is empty and the material revision is set. */
     private void try_auto_generate_lot()
         {

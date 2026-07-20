@@ -44,7 +44,8 @@ public class Result
     {
         { "PASS", "PASSED" },
         { "FAIL", "FAILED" },
-        { "SKIP", "SKIPPED" }
+        { "SKIP", "SKIPPED" },
+        {"STOPPED", "INCOMPLETE"  }
     };
 
     /** @brief      The output outcome of testing.
