@@ -18,7 +18,6 @@
                 into serializable structural objects.
     @}
 */
-using System.Collections;
 using System.Text.RegularExpressions;
 
 using GertToUTW;
@@ -147,7 +146,7 @@ public class ParseStepItemTests
         }
     }
 
-/** @class      ParseGertLog
+/** @class      GertLogParserFlowControlTests
     @ingroup    REF_GertToUTWEngine_RegressionTest_GertToUTW_GerLogParserTest
     @brief      Unit tests for the 'ParseGertLog' method of the `GertLogParser` class.
     @details    Uses testfiles to verify that the `ParseGertLog` method correctly parses entire log files and produces the expected number of test runs
@@ -187,7 +186,10 @@ public class GertLogParserFlowControlTests
         }
     }
 
-
+/** @class      GertLogParserTestSampleTest
+    @ingroup    REF_GertToUTWEngine_RegressionTest_GertToUTW_GerLogParserTest
+    @brief      Uses sample log files to test it
+*/
 [TestClass]
 public class  GertLogParserTestSampleTest
     {
@@ -210,6 +212,6 @@ public class  GertLogParserTestSampleTest
         {
         string absolute_path = Path.Combine(theBaseFilesDir, log_filepath);
         Assert.IsTrue(File.Exists(absolute_path));
-        List<TestRun> result = GertLogParser.ParseGertLog(log_filepath);
+        _ = GertLogParser.ParseGertLog(log_filepath);
         }
     }

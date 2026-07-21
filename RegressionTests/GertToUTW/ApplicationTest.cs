@@ -50,6 +50,9 @@ public partial class ApplicationTest
         string absolute_output_dir2 = Path.Combine(theBaseFilesDir, "GertToUTW\\XmlTestFiles\\Generated");
         Application app_valid_doublerun = new(absolute_input_file2, absolute_output_dir2);
         _ = app_valid_doublerun.Execute(); // contains "Expected\\valid_doublerun_0.xml" and "Expected\\valid_doublerun_1.xml"
+
+        // Ensure the schema file exists prior to test execution
+        Assert.IsTrue(File.Exists(theXsdFilePath), $"XSD file not found at: {theXsdFilePath}");
         }
 
 
@@ -84,35 +87,25 @@ public partial class ApplicationTest
     [DataRow("GertToUTW\\XmlTestFiles\\Generated\\valid_doublerun_1.xml")]
     public void Valid_Xsd( string xml_file )
         {
-        string absolute_xml = Path.Combine(theBaseFilesDir, xml_file);
-        List<string> validation_errors = [];
-        XmlReaderSettings settings = new()
-            {
-            ValidationType = ValidationType.Schema
-            };
-        settings.ValidationFlags |= XmlSchemaValidationFlags.ProcessInlineSchema;
-        settings.ValidationFlags |= XmlSchemaValidationFlags.ProcessSchemaLocation;
-        settings.ValidationFlags |= XmlSchemaValidationFlags.ReportValidationWarnings;
+        string xml_file_path = Path.Combine(theBaseFilesDir,xml_file);
 
-        settings.ValidationEventHandler += ( sender, args ) =>
+        XmlReaderSettings xml_settings = new();
+        _ = xml_settings.Schemas.Add("", theXsdFilePath);
+        xml_settings.ValidationType = ValidationType.Schema;
+
+        XmlDocument xml_doc = new();
+
+        using XmlReader reader = XmlReader.Create(xml_file_path, xml_settings);
+        xml_doc.Load(reader);
+
+        xml_doc.Validate(( sender, e ) =>
         {
-            string severity = args.Severity == XmlSeverityType.Error ? "Error" : "Warning";
-            validation_errors.Add($"[{severity}] Line {args.Exception.LineNumber}, Col {args.Exception.LinePosition}: {args.Message}");
-        };
-
-        _ = settings.Schemas.Add(targetNamespace: null, schemaUri: theXsdFilePath);
-
-        using( XmlReader reader = XmlReader.Create(absolute_xml, settings) )
-            {
-            while( reader.Read() )
+            if( e.Severity == XmlSeverityType.Error )
                 {
+                Assert.Fail($"XML Schema Validation Error: {e.Message}");
                 }
-            }
-        if( validation_errors.Count > 0 )
-            {
-            string combined_errors = string.Join("\n", validation_errors);
-            Assert.Fail($"XML Validation Failed with {validation_errors.Count} error(s):\n{combined_errors}");
-            }
+        });
+
         }
 
     /** @brief  Validates that appliucation correctly generated an xml file as expected */
