@@ -41,7 +41,7 @@ public sealed class FormatTimeTests
     [TestMethod]
     [DataRow("2026-07-10 08:30:15.123", "2026-07-10T08:30:15.123+02:00")]
     [DataRow("2026-07-10 22:15:45.999", "2026-07-10T22:15:45.999+02:00")]
-    [DataRow("2026-01-02 03:04:05.006", "2026-01-02T03:04:05.006+02:00")]
+    [DataRow("2026-01-02 03:04:05.006", "2026-01-02T03:04:05.006+01:00")]
     public void FormatTimeTest( string input, string expected )
         {
         DateTime test_date = DateTime.Parse(input, System.Globalization.CultureInfo.InvariantCulture);
