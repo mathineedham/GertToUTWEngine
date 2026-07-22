@@ -72,6 +72,20 @@ public partial class ApplicationTest
         _ = Assert.ThrowsExactly<FileNotFoundException>(() => new Application(absolute_input_file2, "output"));
         }
 
+    [TestMethod]
+    public void Application_create_directory_if_not_exists()
+        {
+        string absolute_input_file = Path.Combine(theBaseFilesDir, "GertToUTW\\LogTestFiles\\Valid\\valid_singlerun.log");
+        string absolute_output_dir = Path.Combine(theBaseFilesDir, "GertToUTW\\XmlTestFiles\\Generated\\NonExistentDir");
+        if( Directory.Exists(absolute_output_dir) )
+            {
+            Directory.Delete(absolute_output_dir, true);
+            }
+        Application app = new(absolute_input_file, absolute_output_dir);
+        _ = app.Execute();
+        Assert.IsTrue(Directory.Exists(absolute_output_dir), $"Output directory was not created: {absolute_output_dir}");
+        }
+
     /** @brief  Validates Application constructor with valid input and output file paths even if non existent */
     [TestMethod]
     [DataRow("GertToUTW\\LogTestFiles\\Valid\\valid_doublerun.log",

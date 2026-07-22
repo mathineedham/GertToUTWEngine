@@ -50,30 +50,44 @@ public sealed class TestItemTests
         }
 
 
-        [TestMethod]
-        [DataRow("  Stack trace exception details  ", "FAIL", null, "Stack trace exception details")]
-        [DataRow("  Standard informational output  ", "PASS", "Standard informational output", null)]
-        [DataRow("", "PASS", null, null)]
-        [DataRow("   ", "FAIL", null, null)]
-        public void BuildTestItem_ValidatesOutputRoutingLogicOnly(
-            string middle_string,
-            string raw_result_input,
-            string expected_stdout,
-            string expected_stderr )
-            {
-            string target_log_block =
-                $"Step 12: [StepName] \nINFO::ActionSteps details\n" +
-                $"{middle_string}\n" +
-                $"Result: {raw_result_input}";
+    [TestMethod]
+    [DataRow("  Stack trace exception details  ", "FAIL", null, "Stack trace exception details")]
+    [DataRow("  Standard informational output  ", "PASS", "Standard informational output", null)]
+    [DataRow("", "PASS", null, null)]
+    [DataRow("   ", "FAIL", null, null)]
+    public void BuildTestItem_ValidatesOutputRoutingLogicOnly(
+        string middle_string,
+        string raw_result_input,
+        string expected_stdout,
+        string expected_stderr )
+        {
+        string target_log_block =
+            $"Step 12: [StepName] \nINFO::ActionSteps details\n" +
+            $"{middle_string}\n" +
+            $"Result: {raw_result_input}";
 
-            Match raw_match = GertLogParser.step_item_regex().Match(target_log_block);
-            Assert.IsTrue(raw_match.Success, " The production step_item_regex failed to match the test logblock layout structure.");
-            TestItem result = new (raw_match);
-            Console.WriteLine($"TestItem Result: {result.Result.Value}, Stdout: {result.Stdout}, Stderr: {result.Stderr}");
-            Assert.AreEqual(expected_stdout, result.Stdout, "The value assigned to Stdout did not match routing expectations.");
-            Assert.AreEqual(expected_stderr, result.Stderr, "The value assigned to Stderr did not match routing expectations.");
-            }
-            
+        Match raw_match = GertLogParser.step_item_regex().Match(target_log_block);
+        Assert.IsTrue(raw_match.Success, " The production step_item_regex failed to match the test logblock layout structure.");
+        TestItem result = new (raw_match);
+        Console.WriteLine($"TestItem Result: {result.Result.Value}, Stdout: {result.Stdout}, Stderr: {result.Stderr}");
+        Assert.AreEqual(expected_stdout, result.Stdout, "The value assigned to Stdout did not match routing expectations.");
+        Assert.AreEqual(expected_stderr, result.Stderr, "The value assigned to Stderr did not match routing expectations.");
+        }
+
+    [TestMethod]
+    public void BuildTestItem_InvalidMatch()
+        {
+        string target_log_block =
+            $"Step 12: [StepName] \nINFO::ActionSteps details\n" ;
+        Match raw_match = GertLogParser.step_item_regex().Match(target_log_block);
+        _ = Assert.ThrowsExactly<ArgumentException>(() => new TestItem(raw_match), "Expected an ArgumentException to be thrown for an invalid match.");
+
+        string boardid = "[BoardID = 1012149159]";
+        Match wrong_match  = GertLogParser.serial_number_regex().Match(boardid);
+        _ = Assert.ThrowsExactly<ArgumentException>(() => new TestItem(wrong_match), "Expected an ArgumentException to be thrown for a match from the wrong regex.");
+
+        }
+        
 
     /** @brief      Validates that legal sequence indexing values correctly persist to the property.
      

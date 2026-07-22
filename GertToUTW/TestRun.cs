@@ -356,19 +356,6 @@ public partial class TestRun
             }
         } = "OPERATING";
 
-    /** @property TestItems
-        @brief
-            Gets or sets the internal enumeration of test items.
-
-        @return
-            Returns an enumerable sequence of @ref TestItem instances.
-    */
-    public IEnumerable<TestItem> TestItems
-        {
-        get;
-        internal set;
-        } = [];
-
     /** @brief
         Automatically attempts to generate a lot number if required material attributes are set.
 

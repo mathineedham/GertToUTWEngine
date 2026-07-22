@@ -146,22 +146,27 @@ public static partial class UtwXmlGenerator
         // Add all Test items
         foreach( TestItem item in test_run_instance.TestItem )
             {
-            XElement item_node = new("TestItem",
+            
+            root.Add(create_test_item_node(item));
+            }
+
+        // Create the XDocument and return it
+        return new XDocument(new XDeclaration("1.0", "utf-8", null), root);
+        }
+
+    internal static XElement create_test_item_node( TestItem item )
+        {
+        XElement item_node = new("TestItem",
                 new XElement("TestItem_Key", "01"),
                 new XElement("Idx", item.Idx?.ToString(CultureInfo.InvariantCulture) ?? string.Empty),
                 new XElement("Result", item.Result?.Value),
                 new XElement("Name", item.Name)
             );
 
-            item_node.AddIfNotEmpty("Description", item.Description);
-            item_node.AddIfNotEmpty("Stdout", item.Stdout);
-            item_node.AddIfNotEmpty("Stderr", item.Stderr);
+        item_node.AddIfNotEmpty("Description", item.Description);
+        item_node.AddIfNotEmpty("Stdout", item.Stdout);
+        item_node.AddIfNotEmpty("Stderr", item.Stderr);
 
-            item_node.Add(new XElement("StartTime", format_time(test_run_instance.StartTime)));
-            root.Add(item_node);
-            }
-
-        // Create the XDocument and return it
-        return new XDocument(new XDeclaration("1.0", "utf-8", null), root);
+        return item_node;
         }
     }

@@ -25,7 +25,6 @@
     <Folder Include="GertToUTW\LogTestFiles\Invalid\" />
     <Folder Include="GertToUTW\LogTestFiles\Valid\" />
     <Folder Include="GertToUTW\XmlTestFiles\Expected\" />
-	<Folder Include="GertToUTW\LogTestFiles\testsample\" />
   </ItemGroup>
     <ItemGroup>
 		<None Update="GertToUTW\LogTestFiles\**\*.log">

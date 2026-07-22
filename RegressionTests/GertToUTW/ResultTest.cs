@@ -110,6 +110,7 @@ public class TestMapTests
     [DataRow("SKIP", "SKIPPED")]
     [DataRow("", "")]
     [DataRow(" d  ", " d  ")]
+    [DataRow(null,null)]
     public void MapResult( string raw_result, string expected_result )
         {
         string result = Result.map_result(raw_result);

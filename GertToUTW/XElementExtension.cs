@@ -171,11 +171,6 @@ public static class XElementExtension
 
         string sanitized_value = sanitize_for_xml(value);
 
-        if( string.IsNullOrEmpty(sanitized_value) )
-            {
-            return;
-            }
-
         parent.Add(new XElement(element_name, new XCData(sanitized_value)));
         }
     }

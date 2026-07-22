@@ -44,6 +44,7 @@ public sealed class SanitizeForXmlTests
     [DataRow("StringWith\x0EShiftOut", "StringWithShiftOut")]
     [DataRow("StringWith\x0FShiftIn", "StringWithShiftIn")]
     [DataRow("dafdsfY>", "dafdsfY>")]
+    [DataRow("\x08", "")]
     [DataRow(null, "")]
     [DataRow("", "")]
     public void TestSanitizeForXml_RemovesInvalidCharacters( string input, string expected )

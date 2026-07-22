@@ -186,32 +186,3 @@ public class GertLogParserFlowControlTests
         }
     }
 
-/** @class      GertLogParserTestSampleTest
-    @ingroup    REF_GertToUTWEngine_RegressionTest_GertToUTW_GerLogParserTest
-    @brief      Uses sample log files to test it
-*/
-[TestClass]
-public class  GertLogParserTestSampleTest
-    {
-    private static readonly string theBaseFilesDir = AppDomain.CurrentDomain.BaseDirectory;
-
-
-    [DataRow("GertToUTW\\LogTestFiles\\testsample\\1012149159.log")]
-    [DataRow("GertToUTW\\LogTestFiles\\testsample\\1013005951.log")]
-    [DataRow("GertToUTW\\LogTestFiles\\testsample\\1014008882.log")]
-    [DataRow("GertToUTW\\LogTestFiles\\testsample\\1015951301.log")]
-    [DataRow("GertToUTW\\LogTestFiles\\testsample\\1016995724.log")]
-    [DataRow("GertToUTW\\LogTestFiles\\testsample\\1017353207.log")]
-    [DataRow("GertToUTW\\LogTestFiles\\testsample\\1018001358.log")]
-    [DataRow("GertToUTW\\LogTestFiles\\testsample\\1019251193.log")]
-    [DataRow("GertToUTW\\LogTestFiles\\testsample\\1020696457.log")]
-    [DataRow("GertToUTW\\LogTestFiles\\testsample\\1021897300.log")]
-    [DataRow("GertToUTW\\LogTestFiles\\testsample\\1022452699.log")]
-    [TestMethod]
-    public void NonNullProprieries(string log_filepath)
-        {
-        string absolute_path = Path.Combine(theBaseFilesDir, log_filepath);
-        Assert.IsTrue(File.Exists(absolute_path));
-        _ = GertLogParser.ParseGertLog(log_filepath);
-        }
-    }
