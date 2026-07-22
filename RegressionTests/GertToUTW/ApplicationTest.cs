@@ -60,13 +60,16 @@ public partial class ApplicationTest
     [TestMethod]
     [DataRow("", "")]
     [DataRow("GertToUTW\\XmlTestFiles\\Structure\\machine-readable-logs.xsd", "output")] //input must be .log
-    [DataRow("GertToUTW\\XmlTestFiles\\LogTestFiles\\nonexistent.log", "output")] //input must exists
-    public void Application_Invalid( string input, string output )
+    public void Application_Constructor_InvalidArguments_ThrowsArgumentException( string input, string output )
         {
-        string absolute_input_file = Path.Combine(theBaseFilesDir, input);
-        string absolute_output_dir = Path.Combine(theBaseFilesDir, output);
+        string absolute_input_file = string.IsNullOrEmpty(input) ? input : Path.Combine(theBaseFilesDir, input);
+        string absolute_output_dir = string.IsNullOrEmpty(output) ? output : Path.Combine(theBaseFilesDir, output);
 
         _ = Assert.ThrowsExactly<ArgumentException>(() => new Application(absolute_input_file, absolute_output_dir));
+
+        //input must exist
+        string absolute_input_file2 = Path.Combine(theBaseFilesDir, "GertToUTW\\XmlTestFiles\\LogTestFiles\\nonexistent.log");
+        _ = Assert.ThrowsExactly<FileNotFoundException>(() => new Application(absolute_input_file2, "output"));
         }
 
     /** @brief  Validates Application constructor with valid input and output file paths even if non existent */
