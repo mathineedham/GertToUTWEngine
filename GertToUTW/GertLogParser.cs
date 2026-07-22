@@ -5,88 +5,124 @@
 
     @date       08.07.2026
 
-    @author     Mathilde Needham (Mathilde.Needham@tria-technologies.com)
+    @author
+        Mathilde Needham (Mathilde.Needham@tria-technologies.com)
 
-    @defgroup   REF_GertToUTWEngine_GertToUTW_GertLogParser   GertLogParser 
+    @brief
+        Provides utility mechanisms to read, interpret, and parse execution log files.
+
+    @details
+        - The `GertLogParser` class splits raw file contents into individual historical test data chunks.
+        - Extracts metadata attributes, tracking evaluation criteria, and translating execution timelines.
+        - Transforms unstructured text streams into serializable structural objects.
+        - Contains no shared mutable state.
+
+    @defgroup REF_GertToUTWEngine_GertToUTW_GertLogParser GertLogParser
     @{
-    @ingroup    REF_GertToUTWEngine_GertToUTW
-
-    @brief      Provides utility mechanisms to read, interpret, and parse execution log files.
-
-    @details    The `GertLogParser` class splits raw file contents into individual historical test data chunks, 
-                extracting metadata attributes, tracking evaluation criteria, and translating execution timelines 
-                into serializable structural objects.
     @}
 */
+
 using System.Globalization;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 
-[assembly: InternalsVisibleTo("RegressionTests")]
 namespace GertToUTW;
 
-/** @ingroup    REF_GertToUTWEngine_GertToUTW_GertLogParser
+/** @ingroup REF_GertToUTWEngine_GertToUTW_GertLogParser
+    @class GertLogParser
+    @brief
+        Static parsing utility wrapper for unstructured textual logs.
 
-    @class      GertLogParser
+    @details
+        - Exposes specialized optimization rules driven by source-generated regular expressions.
+        - Matches and parses custom log variables, handling step iterations, standard error captures, and layout mappings.
+        - Contains no shared mutable state.
 
-    @brief      Static parsing utility wrapper for unstructured textual logs.
-
-    @details    Exposes specialized optimization rules driven by source-generated regular expressions to match 
-                and parse custom log variables, handling step iterations, standard error captures, and layout mappings.
+    @see TestRun
+    @see TestItem
+    @see Result
 */
 public static partial class GertLogParser
     {
-    /** @brief      Matches the starting environmental network host identifier. */
+    /** @brief Matches the starting environmental network host identifier. */
     [GeneratedRegex(@"GERT started on host:\s*(\S+)")]
     internal static partial Regex computer_name_regex();
-    /** @brief      Splits individual log report execution records safely. */
+
+    /** @brief Splits individual log report execution records safely. */
     [GeneratedRegex(@"(?=GERT started on host:)")]
     internal static partial Regex report_split_regex();
-    /** @brief      Matches the execution initialization timeline start flag. */
+
+    /** @brief Matches the execution initialization timeline start flag. */
     [GeneratedRegex(@"\[TestRunStart =\s*([^\]]+)\]")]
     internal static partial Regex start_time_regex();
-    /** @brief      Matches the associated operator validation credential marker. */
+
+    /** @brief Matches the associated operator validation credential marker. */
     [GeneratedRegex(@"\[OPER=\s*([^\]]+)\]")]
     internal static partial Regex operator_name_regex();
-    /** @brief      Extracts numerical product schematic indices. */
+
+    /** @brief Extracts numerical product schematic indices. */
     [GeneratedRegex(@"Script\s*=\s*(\d+)")]
     internal static partial Regex material_number_regex();
-    /** @brief      Matches plain-text descriptive product information strings. */
+
+    /** @brief Matches plain-text descriptive product information strings. */
     [GeneratedRegex(@"\[Product =\s*([^\]]+)\]")]
     internal static partial Regex material_text_regex();
-    /** @brief      Matches alpha-numeric engineering design index modifications. */
+
+    /** @brief Matches alpha-numeric engineering design index modifications. */
     [GeneratedRegex(@"\[Revision =\s*([^\]]+)\]")]
     internal static partial Regex material_revision_regex();
-    /** @brief      Matches individual target physical asset serial markings. */
+
+    /** @brief Matches individual target physical asset serial markings. */
     [GeneratedRegex(@"\[BoardID =\s*([^\]]+)\]")]
     internal static partial Regex serial_number_regex();
-    /** @brief      Extracts final evaluation context verdict indicators. */
+
+    /** @brief Extracts final evaluation context verdict indicators. */
     [GeneratedRegex(@"\[ScriptResult =\s*([^\]]+)\]")]
     internal static partial Regex result_regex();
-    /** @brief      Matches the absolute structural termination timestamp metadata flag. */
+
+    /** @brief Matches the absolute structural termination timestamp metadata flag. */
     [GeneratedRegex(@"\[TestRunEnd =\s*([^\]]+)\]")]
     internal static partial Regex end_time_regex();
-    /** @brief      Extracts peripheral hardware network adapter identifier codes. */
+
+    /** @brief Extracts peripheral hardware network adapter identifier codes. */
     [GeneratedRegex(@"MACAddress1:\s*(\S+)")]
     internal static partial Regex mac_address_regex();
+
+    /** @brief Matches board identification comments up to start of log data. */
     [GeneratedRegex(@"\[BoardID =[^\]]+\](.*?)\[LogData = Start\]", RegexOptions.Singleline)]
     internal static partial Regex comment_regex();
-    /** @brief      Captures core body segments containing isolated step-by-step arrays. */
+
+    /** @brief Captures core body segments containing isolated step-by-step arrays. */
     [GeneratedRegex(@"\[LogData = Start\](.*?)\[LogData = End\]", RegexOptions.Singleline)]
     internal static partial Regex log_data_regex();
-    /** @brief      Splits raw execution blocks into discrete functional milestones. */
+
+    /** @brief Splits raw execution blocks into discrete functional milestones. */
     [GeneratedRegex(@"-{20,}\s*(?=Step\s+\d+:|INFO::CloseTestLog)")]
     internal static partial Regex steps_split_regex();
-    /** @brief      Validates internal parameters, descriptions, variables, and output scopes. */
+
+    /** @brief Validates internal parameters, descriptions, variables, and output scopes. */
     [GeneratedRegex(@"Step\s+(\d+):\s*\[(.*?)\]\s*\n([^\n\r]*)(?:\s*\n(.*?))?\s*\nResult:\s*(\S+)", RegexOptions.Singleline)]
     internal static partial Regex step_item_regex();
 
-    /** @brief      Reads, isolates, maps, and structures complete session groups from a log payload.
+    /** @brief
+        Reads, isolates, maps, and structures complete session groups from a log payload file.
 
-        @param[in]  filepath   The explicit layout system access path to the target document.
+    @details
+        - Validates target file existence prior to performing read operations.
+        - Splits raw log content into discrete report sessions.
+        - Parses step execution metrics, MAC attributes, and timing metadata into structured objects.
 
-        @return     A collection containing valid structural execution models.
+    @param[in] filepath
+        The explicit layout system access path to the target document.
+
+    @return
+        Returns a list containing valid structural execution models.
+
+    @exception ArgumentNullException
+        Thrown when `filepath` is `null` or empty.
+
+    @exception FileNotFoundException
+        Thrown when the specified file path does not exist.
     */
     public static List<TestRun> ParseGertLog( string filepath )
         {
@@ -94,10 +130,12 @@ public static partial class GertLogParser
             {
             throw new ArgumentNullException(nameof(filepath), "The provided file path cannot be null or empty.");
             }
-        if (!File.Exists(filepath) )
+
+        if( !File.Exists(filepath) )
             {
-            throw new FileNotFoundException(null, filepath);
+            throw new FileNotFoundException("The specified GERT log file was not found.", filepath);
             }
+
         string content = File.ReadAllText(filepath, Encoding.UTF8);
         List<TestRun> test_runs = [];
 
@@ -110,7 +148,8 @@ public static partial class GertLogParser
                 {
                 continue;
                 }
-            if( !chunk.Contains("GERT started on host:") )
+
+            if( !chunk.Contains("GERT started on host:", StringComparison.Ordinal) )
                 {
                 continue;
                 }
@@ -128,7 +167,7 @@ public static partial class GertLogParser
                 MaterialText = extract_field(material_text_regex(), chunk),
                 MaterialRevision = extract_field(material_revision_regex(), chunk),
                 SerialNumber = extract_field(serial_number_regex(), chunk),
-                Result = new Result(result_raw) ,
+                Result = new Result(result_raw),
                 SequencerId = "GERT",
                 StartTime = parse_date(extract_field(start_time_regex(), chunk)),
                 EndTime = parse_date(extract_field(end_time_regex(), chunk)),
@@ -141,25 +180,45 @@ public static partial class GertLogParser
         return test_runs;
         }
 
-    /** @brief      Safely evaluates and captures targeted matching capturing groups.
+    /** @brief
+        Safely evaluates and captures targeted matching capturing groups.
 
-        @param[in]  regex     The specific analytical expression rule mapping context.
-        @param[in]  text      The raw source text segment to scan.
-        @param[in]  default   Fallback context value used when matching groups fail.
+    @details
+        - Returns the trimmed value of the first regex group on success.
+        - Returns `default_value` if matching fails.
 
-        @return     The extracted matched string chunk value or the requested default.
+    @param[in] regex
+        The specific analytical expression rule mapping context.
+
+    @param[in] text
+        The raw source text segment to scan.
+
+    @param[in] default_value
+        Fallback context value used when matching fails.
+
+    @return
+        Returns the extracted matched string value or the requested default.
     */
-    internal static string extract_field( Regex regex, string text, string @default = "" )
+    internal static string extract_field( Regex regex, string text, string default_value = "" )
         {
         Match match = regex.Match(text);
-        return match.Success ? match.Groups[1].Value.Trim() : @default;
+        return match.Success ? match.Groups[1].Value.Trim() : default_value;
         }
 
-    /** @brief      Parses specific standard logging calendar strings into concrete DateTime instances.
+    /** @brief
+        Parses specific standard logging calendar strings into concrete DateTime instances.
 
-        @param[in]  date_str   The raw text configuration segment tracking time.
+    @details
+        - Uses strict format matching (`dd.MM.yyyy 'at' HH:mm:ss`) with culture-invariant rules.
 
-        @return     The converted object timestamp data snapshot, or system runtime fallback `Now`.
+    @param[in] date_str
+        The raw text configuration segment tracking time.
+
+    @return
+        Returns the converted @ref DateTime snapshot.
+
+    @exception FormatException
+        Thrown when `date_str` fails to conform to the required date format string.
     */
     internal static DateTime parse_date( string date_str )
         {
@@ -168,14 +227,24 @@ public static partial class GertLogParser
             return parsed_date;
             }
 
-        throw new FormatException(date_str);
+        throw new FormatException($"Failed to parse date string '{date_str}' using expected format 'dd.MM.yyyy at HH:mm:ss'.");
         }
 
-    /** @brief      Isolates step records embedded directly inside structural file body payloads.
+    /** @brief
+        Isolates step records embedded directly inside structural file body payloads.
 
-        @param[in]  content   The overall multi-line log container layout block.
+    @details
+        - Validates presence of log data block boundaries.
+        - Splits log body into individual step records.
 
-        @return     An isolated array listing sub-milestone object definitions.
+    @param[in] content
+        The overall multi-line log container layout block.
+
+    @return
+        Returns a list of parsed @ref TestItem objects.
+
+    @exception FormatException
+        Thrown when log data boundary markers are missing.
     */
     internal static List<TestItem> parse_test_items( string content )
         {
@@ -184,7 +253,7 @@ public static partial class GertLogParser
 
         if( !log_data_match.Success )
             {
-            throw new FormatException();
+            throw new FormatException("Log payload content missing required '[LogData = Start]' or '[LogData = End]' section boundary tags.");
             }
 
         string log_body = log_data_match.Groups[1].Value;
