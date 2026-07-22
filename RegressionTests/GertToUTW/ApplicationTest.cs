@@ -52,7 +52,7 @@ public partial class ApplicationTest
         _ = app_valid_doublerun.Execute(); // contains "Expected\\valid_doublerun_0.xml" and "Expected\\valid_doublerun_1.xml"
 
         // Ensure the schema file exists prior to test execution
-        Assert.IsTrue(File.Exists(theXsdFilePath), $"XSD file not found at: {theXsdFilePath}");
+        Assert.IsTrue(File.Exists(theXsdFilePath),theXsdFilePath);
         }
 
 
@@ -76,14 +76,10 @@ public partial class ApplicationTest
     public void Application_create_directory_if_not_exists()
         {
         string absolute_input_file = Path.Combine(theBaseFilesDir, "GertToUTW\\LogTestFiles\\Valid\\valid_singlerun.log");
-        string absolute_output_dir = Path.Combine(theBaseFilesDir, "GertToUTW\\XmlTestFiles\\Generated\\NonExistentDir");
-        if( Directory.Exists(absolute_output_dir) )
-            {
-            Directory.Delete(absolute_output_dir, true);
-            }
-        Application app = new(absolute_input_file, absolute_output_dir);
+        string temp_dir = Path.Combine(theBaseFilesDir, Path.GetRandomFileName());
+        Application app = new(absolute_input_file, temp_dir);
         _ = app.Execute();
-        Assert.IsTrue(Directory.Exists(absolute_output_dir), $"Output directory was not created: {absolute_output_dir}");
+        Assert.IsTrue(Directory.Exists(temp_dir), temp_dir);
         }
 
     /** @brief  Validates Application constructor with valid input and output file paths even if non existent */
@@ -115,13 +111,7 @@ public partial class ApplicationTest
         using XmlReader reader = XmlReader.Create(xml_file_path, xml_settings);
         xml_doc.Load(reader);
 
-        xml_doc.Validate(( sender, e ) =>
-        {
-            if( e.Severity == XmlSeverityType.Error )
-                {
-                Assert.Fail($"XML Schema Validation Error: {e.Message}");
-                }
-        });
+        xml_doc.Validate(( sender, e ) =>Assert.Fail(e.Message));
 
         }
 
@@ -151,8 +141,8 @@ public partial class ApplicationTest
         // Loop through and compare only the names and clean data values
         for( int i = 0; i < gen_nodes.Count; i++ )
             {
-            Assert.IsTrue(gen_nodes[i].Name == exp_nodes[i].Name, $"Node name mismatch at index {i}. Expected {exp_nodes[i].Name}, found {gen_nodes[i].Name}");
-            Assert.AreEqual(exp_nodes[i].Value, gen_nodes[i].Value, $"Node data value mismatch at index {i} in <{gen_nodes[i].Name}>. Values are {exp_nodes[i].Value} and {gen_nodes[i].Value}");
+            Assert.IsTrue(gen_nodes[i].Name == exp_nodes[i].Name);
+            Assert.AreEqual(exp_nodes[i].Value, gen_nodes[i].Value);
             }
         }
     }

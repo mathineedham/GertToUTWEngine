@@ -22,7 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="GertToUTW\LogTestFiles\Invalid\" />
     <Folder Include="GertToUTW\LogTestFiles\Valid\" />
     <Folder Include="GertToUTW\XmlTestFiles\Expected\" />
   </ItemGroup>
