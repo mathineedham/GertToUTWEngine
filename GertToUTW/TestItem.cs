@@ -5,122 +5,213 @@
 
     @date       08.07.2026
 
-    @author     Mathilde Needham (Mathilde.Needham@tria-technologies.com)
+    @author
+        Mathilde Needham (Mathilde.Needham@tria-technologies.com)
 
-    @defgroup   REF_GertToUTWEngine_GertToUTW_TestItem   TestItem 
+    @brief
+        Represents a single test item step within an executed test run.
+
+    @details
+        - Encapsulates key identifiers, layout indices, names, descriptions, and standard execution logs.
+        - Enforces strict boundary constraints restricting sequence indices to valid 16-bit signed integer bounds.
+        - Integrates result state validation through the normalized Result model.
+        - Provides regular expression match parsing to initialize structured test item instances from raw log data.
+        - Contains no shared mutable state.
+
+    @defgroup REF_GertToUTWEngine_GertToUTW_TestItem TestItem
     @{
-    @ingroup    PROJ_GertToUTWEngine_GertToUTW
-
-    @brief      Represents a test item
-
-    @details    The `TestItem` class is used to handle and validate the attributes associated with an executed test. 
-                It allows for managing key identifiers, checking boundary constraints for individual indexes, 
-                and validating matching XSD result states.
     @}
 */
+
 using System.Globalization;
-using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 
-
-[assembly: InternalsVisibleTo("RegressionTests")]
 namespace GertToUTW;
 
-/** @ingroup    PROJ_GertToUTWEngine_GertToUTW_TestItem
+/** @ingroup REF_GertToUTWEngine_GertToUTW_TestItem
+    @class TestItem
+    @brief
+        Represents a single test step in a test run.
 
-    @class     TestItem
+    @details
+        - Handles property initialization, sequence indexing, and structural validation constraints.
+        - Restricts layout sequence indices to valid 16-bit signed integer ranges (`0` to `32767`).
+        - Normalizes raw test outcome logs into structured result state representations.
+        - Contains no shared mutable state.
 
-    @brief      Represents a single test step in a test run.
-
-    @details    This class handles the initialization, properties, and structural validation constraints of a test item.
-                It enforces strict range rules for sequence indices and strict string matching boundaries for 
-                the XML Schema definition result enumerations.
+    @see Result
 */
 public class TestItem
-{
+    {
+    /** @brief Private static lower boundary limit for the sequence index. */
     internal static readonly int theMinIndexLimit;
+
+    /** @brief Private static upper boundary limit for the sequence index corresponding to xsd:short limits. */
     internal static readonly int theMaxIndexLimit = 32767;
 
+    /** @property TestItem_Key
+        @brief
+            Gets or sets the unique database or configuration key identifier for the test item.
 
-    /** @brief      The unique database or configuration key identifier for the test item.
+        @details
+            - Serves as the primary reference key for database operations or configuration mapping.
+            - Defaults to `1`.
 
-        @return     The key of the test item.
+        @return
+            Returns the key identifier of the test item.
     */
-    public int TestItem_Key { get; set; } =1;
+    public int TestItem_Key { get; set; } = 1;
 
-    /** @brief      The name of the test item.
+    /** @property Name
+        @brief
+            Gets or sets the name of the test item.
 
-        @details    The `Name` property represents the name assigned to the test. It defaults to an empty string.
+        @details
+            - Stores the descriptive name assigned to the test step.
+            - Defaults to an empty string.
 
-        @return     The name of the test item.
+        @return
+            Returns the name of the test item.
     */
     public string Name { get; set; } = string.Empty;
 
-    /** @brief      The optional description text of the test item.
-      
-        @details    In the case of transforming test logs from GERT to UTW, the description holds the second line of a test step log, which often contains more information on the command
+    /** @property Description
+        @brief
+            Gets or sets the optional description text of the test item.
 
-        @return     The description string, or null if no description is provided.
+        @details
+            - Stores secondary detail lines or command metadata extracted from log outputs.
+            - May be `null` if no description is present.
+
+        @return
+            Returns the description string, or `null` if unassigned.
     */
-    public string? Description { get; set; }
+    public string? Description
+        {
+        get; set;
+        }
 
-    /** @brief      The standard output log produced by the test item execution.
+    /** @property Stdout
+        @brief
+            Gets or sets the standard output log produced by the test item execution.
 
-        @details    If the result of a test item is not FAILED all output from the test item is stored in Stdout
+        @details
+            - Stores execution standard output text when the result is not marked as FAILED.
+            - May be `null` if no standard output was captured.
 
-        @return     The standard output stream contents, or null if unavailable.
+        @return
+            Returns the standard output string, or `null` if unavailable.
     */
-    public string? Stdout { get; set; }
+    public string? Stdout
+        {
+        get; set;
+        }
 
-    /** @brief      The standard error log produced by the test item execution.
-     
-        @details    If the result of a test item is FAILED all output from the test item is stored in Stderr
+    /** @property Stderr
+        @brief
+            Gets or sets the standard error log produced by the test item execution.
 
-        @return     The standard error stream contents, or null if unavailable.
+        @details
+            - Stores execution error output text when the test outcome is FAILED.
+            - May be `null` if no error output was captured.
+
+        @return
+            Returns the standard error string, or `null` if unavailable.
     */
-    public string? Stderr { get; set; }
+    public string? Stderr
+        {
+        get; set;
+        }
 
-    /** @brief      The index number of the tet item in the test run
+    /** @property Idx
+        @brief
+            Gets or sets the index number of the test item in the test run.
 
-        @details    The `Idx` property tracks the relative layout position. It enforces a structural constraint 
-                    restricting values to fit strictly within valid xsd:short bounds, so that it will fulfill the xml structure.
+        @details
+            - Tracks the relative layout position within the test suite execution sequence.
+            - Restricts values to fit within valid `xsd:short` boundary limits (`0` to `32767`).
 
-        @throw      ArgumentOutOfRangeException if the value is negative or exceeds 32767.
+        @return
+            Returns the sequence index value, or `null` if unassigned.
 
-        @return     The numerical sequence short index value, or null if unassigned.
+        @exception ArgumentOutOfRangeException
+            Thrown when `value` is negative or exceeds `32767`.
     */
     public int? Idx
         {
         get;
         set
             {
-            if( value < theMinIndexLimit || ( value > theMaxIndexLimit ))
+            if( value.HasValue )
                 {
-                throw new ArgumentOutOfRangeException(nameof(value));
+                if( value.Value < theMinIndexLimit || value.Value > theMaxIndexLimit )
+                    {
+                    throw new ArgumentOutOfRangeException(nameof(value), value.Value, "The index must be between 0 and 32767.");
+                    }
                 }
+
             field = value;
             }
         }
 
-    /** @brief      The structural execution status outcome of the test item.
+    /** @property Result
+        @brief
+            Gets or sets the structural execution status outcome of the test item.
 
-        @details    The `Result` property guarantees a strict matching against the XSD result enumeration strings. 
-                    Assigned strings are transformed and stored normalized into upper-case invariants.
+        @details
+            - Guarantees valid mapping against target result state enumerations.
+            - Encapsulates state normalization using the @ref Result context class.
 
-        @throw      ArgumentException if the assigned string format fails to match PASSED, FAILED, SKIPPED, INCOMPLETE, or ERROR.
-
-        @return     The uppercase normalized result state string.
+        @return
+            Returns the @ref Result instance associated with this test item.
     */
-    public Result Result
-        {
-        get; set;
-        } = new();
+    public Result Result { get; set; } = new();
 
+    /** @brief
+        Initializes a new instance of the @ref TestItem class with default values.
+
+    @details
+        - Sets default key identifier to `1`.
+        - Initializes default empty string for `Name` and a new default @ref Result instance.
+    */
     public TestItem()
         {
         }
-    public TestItem( Match match ) {
+
+    /** @brief
+        Initializes a new instance of the @ref TestItem class by parsing regular expression match groups.
+
+    @details
+        - Extracts index, name, description, output details, and outcome state from the regex match.
+        - Routes middle execution output into `Stderr` if the result is `"FAIL"`, or into `Stdout` otherwise.
+        - Parses index sequence values using culture-invariant integer conversion.
+
+    @param[in] match
+        Provides the regular expression match object containing target log groups.
+
+    @exception ArgumentNullException
+        Thrown when `match` is `null`.
+
+    @exception FormatException
+        Thrown when index group `1` cannot be parsed as an integer.
+
+    @exception OverflowException
+        Thrown when index group `1` represents a value outside integer ranges.
+
+    @see Result
+    */
+    public TestItem( Match match )
+        {
         ArgumentNullException.ThrowIfNull(match);
+        if( !match.Success )
+            {
+            throw new ArgumentException("The provided match was not successful.", nameof(match));
+            }
+        if( match.Groups.Count < 6 )
+            {
+            throw new ArgumentException("The provided match does not contain the required number of groups.", nameof(match));
+            }
+
         string result_raw = match.Groups[5].Value.Trim();
         string middle_string = match.Groups[4].Value.Trim();
 
@@ -129,7 +220,7 @@ public class TestItem
 
         if( !string.IsNullOrEmpty(middle_string) )
             {
-            if( result_raw == "FAIL" )
+            if( string.Equals(result_raw, "FAIL", StringComparison.Ordinal) )
                 {
                 stderr_val = middle_string;
                 }
