@@ -80,6 +80,8 @@ public class XElementExtensionsTests
         XElement parent = new("Parent");
         parent.AddIfNotEmpty("TestElement", testing_value);
         Assert.IsFalse(parent.HasElements, "Parent should not have any child elements when value is null or empty.");
+        _ = Assert.ThrowsExactly<ArgumentException>(() => parent.AddIfNotEmpty("   ", "Valid value"));
+
         }
 
     /** @brief Tests that the 'AddIfNotEmpty' method correctly adds a child element with an XCData node when the value is valid. */
