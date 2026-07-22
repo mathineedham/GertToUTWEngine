@@ -5,49 +5,63 @@
 
     @date       08.07.2026
 
-    @author     Mathilde Needham (Mathilde.Needham@tria-technologies.com)
+    @author
+        Mathilde Needham (Mathilde.Needham@tria-technologies.com)
 
-    @defgroup   REF_GertToUTWEngine_GertToUTW_TestRun   TestRun 
+    @brief
+        Defines the context structure and property accessors representing a complete test run.
+
+    @details
+        - Encapsulates data spanning environmental properties, timestamps, target material metadata, and execution state.
+        - Provides validation logic for material numbers, material revisions, and operational mode constraints.
+        - Includes automatic production lot generation based on material and revision inputs.
+        - Supports routing step and process handle extraction from test output logs.
+        - Contains no shared mutable state.
+
+    @defgroup REF_GertToUTWEngine_GertToUTW_TestRun TestRun
     @{
-    @ingroup    PROJ_GertToUTWEngine_GertToUTW
-
-    @brief      Defines data structures representing serial number attributes and a test run .
-
-    @details    This file includes metadata models used to serialize and manage properties 
-                associated with individual test sequence executions, hardware metadata, 
-                and regulatory data boundary compliance tracking.
     @}
 */
+
 using System.Globalization;
-using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 
-[assembly: InternalsVisibleTo("RegressionTests")]
 namespace GertToUTW;
 
-/** @ingroup    REF_GertToUTWEngine_GertToUTW_TestRun
+/** @ingroup REF_GertToUTWEngine_GertToUTW_TestRun
+    @class TestRun
+    @brief
+        Main context class capturing structural tracking metrics for a completed test sequence.
 
-    @class      TestRun
+    @details
+        - Encapsulates test run metrics, serial numbers, hardware metadata, and operator attributes.
+        - Validates input formats against XML schema constraints for material numbers and revisions.
+        - Automates lot identification number calculation.
+        - Contains no shared mutable state.
 
-    @brief      Main context class capturing structural tracking metrics for a completed test sequence.
-
-    @details    This class encapsulates data spanning environmental properties, time logs, target hardware 
-                serial designations, operator footprints, structural collections of executed sub-items, and strict validation 
-                bounds for string formatting patterns matching expected global XML target schemas.
+    @see TestItem
+    @see SerialNumberAttributes
+    @see Result
 */
 public partial class TestRun
     {
-
+    /** @brief Compiled regex validating non-zero positive integer sequence strings. */
     [GeneratedRegex(@"^\d*[1-9]+\d*$")]
     private static partial Regex MatNb();
+
+    /** @brief Compiled regex validating numeric sequence strings up to 18 digits. */
     [GeneratedRegex(@"^\d{1,18}$")]
     private static partial Regex MatNb2();
+
+    /** @brief Compiled regex validating 4-character uppercase alphanumeric revision identifiers. */
     [GeneratedRegex(@"^([A-Z0-9]{4})*$")]
     private static partial Regex MatRev();
-    /** @brief Pattern to find and extract both the RouteStep and PHandle from LinkPHandle's SET outputs */
+
+    /** @brief Pattern to find and extract both the RouteStep and PHandle from LinkPHandle's SET outputs. */
     [GeneratedRegex(@"SET\s+\[LinkPHandle\][\s\S]*?SET\s+\[(?<routestep>[^\]]+)\][\s\S]*?SET\s+\[[^\]]+\][\s\S]*?SET\s+\[(?<phandle>[^\]]+)\]", RegexOptions.Singleline)]
     internal static partial Regex LinkPHandleRegex();
 
+    /** @brief Set of valid operational mode tokens. */
     private static readonly HashSet<string> theValidOperatingModes =
     [
         "OPERATING",
@@ -57,19 +71,31 @@ public partial class TestRun
         "RMA"
     ];
 
+    /** @property TestRun_Key
+        @brief
+            Gets or sets the unique key identifier for the test run context.
 
-    /** @brief      key identifier 
+        @details
+            - Defaults to `1`.
 
-        @return     The key value.
+        @return
+            Returns the key integer value.
     */
     public int TestRun_Key { get; set; } = 1;
 
-    /** @brief      The structural material index number identification pattern.
+    /** @property MaterialNumber
+        @brief
+            Gets or sets the structural material index number identification pattern.
 
-        @details    Enforces patterns for XML schema definitions. 
-                    either `\d*[1-9]+\d*` or `\d{1,18}` 
+        @details
+            - Enforces pattern matching against `\d*[1-9]+\d*` or `\d{1,18}`.
+            - Automatically triggers lot number recalculation when updated.
 
-        @return     The string value of the material number, or null if undefined.
+        @return
+            Returns the material number string, or `null` if undefined.
+
+        @exception ArgumentException
+            Thrown when `value` does not conform to valid numeric material patterns.
     */
     public string? MaterialNumber
         {
@@ -81,11 +107,10 @@ public partial class TestRun
                 field = null;
                 return;
                 }
-            if( value != string.Empty &&
-                !MatNb().IsMatch(value) &&
-                !MatNb2().IsMatch(value) )
+
+            if( value != string.Empty && !MatNb().IsMatch(value) && !MatNb2().IsMatch(value) )
                 {
-                throw new ArgumentException(null, nameof(value));
+                throw new ArgumentException("Material number must be non-empty and match numeric pattern constraints.", nameof(value));
                 }
 
             field = value;
@@ -93,27 +118,37 @@ public partial class TestRun
             }
         } = string.Empty;
 
-    /** @brief      Plain-text naming description of the material unit under test.
+    /** @property MaterialText
+        @brief
+            Gets or sets the plain-text descriptive name of the material unit under test.
 
-        @return     The descriptive string text for the material.
+        @return
+            Returns the material description string.
     */
     public string MaterialText { get; set; } = string.Empty;
 
-    /** @brief      The production revision of the product.
+    /** @property MaterialRevision
+        @brief
+            Gets or sets the production revision of the product.
 
-        @details    Formatted identifiers are strictly configured to structure patterns like `([A-Z0-9]{4})*`.
+        @details
+            - Formatted identifiers are restricted to 4-character alphanumeric patterns matching `([A-Z0-9]{4})*`.
+            - Automatically triggers lot number recalculation when updated.
 
-        @return     The item revision string.
+        @return
+            Returns the item revision string.
+
+        @exception ArgumentException
+            Thrown when `value` does not match valid 4-character alphanumeric patterns.
     */
     public string MaterialRevision
         {
         get;
         set
             {
-            if( value != string.Empty &&
-                !MatRev().IsMatch(value)  )
+            if( value != string.Empty && !MatRev().IsMatch(value) )
                 {
-                throw new ArgumentException(null, nameof(value));
+                throw new ArgumentException("Material revision must match valid 4-character uppercase alphanumeric patterns.", nameof(value));
                 }
 
             field = value;
@@ -121,138 +156,182 @@ public partial class TestRun
             }
         } = string.Empty;
 
-    /** @brief      The unique factory physical serial number value of the product.
+    /** @property SerialNumber
+        @brief
+            Gets or sets the unique factory physical serial number value of the product.
 
-        @return     The hardware identity serial number string.
+        @return
+            Returns the serial number string.
     */
     public string SerialNumber { get; set; } = string.Empty;
 
-    /** @brief      The login credential name tracking the human operator conducting the run.
+    /** @property OperatorName
+        @brief
+            Gets or sets the login credential name tracking the operator conducting the run.
 
-        @return     The operator configuration identity string.
+        @return
+            Returns the operator identity string.
     */
     public string OperatorName { get; set; } = string.Empty;
 
-    /** @brief      The structural machine network node or workstation name executing the sequence.
+    /** @property ComputerName
+        @brief
+            Gets or sets the workstation host name executing the test sequence.
 
-        @return     The physical client workstation name string.
+        @return
+            Returns the client computer name string.
     */
     public string ComputerName { get; set; } = string.Empty;
 
-    /** @brief      The engine identifier (UTW/GERT) executing the test sequence.
-     * 
-        @return     The sequencer program ID token.
+    /** @property SequencerId
+        @brief
+            Gets or sets the engine identifier executing the test sequence.
+
+        @return
+            Returns the program ID token.
     */
     public string SequencerId { get; set; } = string.Empty;
 
-    /** @brief      The strict structural output outcome result tracking tag.
+    /** @property Result
+        @brief
+            Gets or sets the strict structural output outcome result tracking object.
 
-        @details    Explicitly bounded states map directly against specific enumerated configurations 
-                    namely: FAILED, PASSED, SKIPPED, INCOMPLETE, or ERROR state strings.
-
-        @return     The matching categorical result outcome string state token.
+        @return
+            Returns the @ref Result context instance.
     */
     public Result Result { get; set; } = new();
 
-    /** @brief      The absolute localized starting timestamp tracking the test execution initialization.
+    /** @property StartTime
+        @brief
+            Gets or sets the starting timestamp tracking test execution initialization.
 
-        @details    Formatted to comply sequentially with serialization constraints governing `xsd:dateTime`.
-
-        @return     The starting timeline event timestamp.
+        @return
+            Returns the starting local @ref DateTime.
     */
     public DateTime StartTime
         {
         get; set;
         }
 
-    /** @brief      The absolute localized end timestamp tracking the completed test execution run conclusion.
+    /** @property EndTime
+        @brief
+            Gets or sets the ending timestamp tracking test sequence completion.
 
-        @details    Formatted to comply sequentially with serialization constraints governing `xsd:dateTime`.
-
-        @return     The ending timeline event timestamp.
+        @return
+            Returns the ending local @ref DateTime.
     */
     public DateTime EndTime
         {
         get; set;
         }
 
-    /** @brief      The structured relational list container holding all test steps/items.
+    /** @property TestItem
+        @brief
+            Gets or sets the list container holding all child test steps.
 
-        @return     An iterable list of underlying child `TestItem` validation models.
+        @return
+            Returns a list of underlying @ref TestItem models.
     */
     public List<TestItem> TestItem { get; set; } = [];
 
-    /** @brief      The internal test station tracking identity node.
+    /** @property Station
+        @brief
+            Gets or sets the internal test station tracking identity node.
 
-        @return     The testing physical facility name string context, or null if generic.
+        @return
+            Returns the facility station identifier, or `null` if unassigned.
     */
     public string? Station
         {
         get; set;
         }
 
-    /** @brief      The exact operational test process step context string identifier.
+    /** @property Routestep
+        @brief
+            Gets or sets the operational test process route step context string.
 
-        @return     The process route stage name descriptor tracking string, or null if unspecified.
+        @return
+            Returns the process route stage descriptor, or `null` if unspecified.
     */
     public string? Routestep
         {
         get; set;
         }
 
-    /** @brief      The factory batch production lot allocation context mask.
+    /** @property Lot
+        @brief
+            Gets the factory batch production lot allocation string.
 
-        @details    Formatted values must fit structural validation tracking layouts matching `([0-9]{6,7})*`.
+        @details
+            - Defaults to `"000000"`.
+            - Managed internally via @ref generate_lot_number.
 
-        @return     The production lot id string.
+        @return
+            Returns the 6-digit production lot identifier.
     */
-    public string Lot
+    public string Lot { get; private set; } = "000000";
+
+    /** @property Comment
+        @brief
+            Gets or sets an optional comment detailing general execution notes.
+
+        @return
+            Returns the comment string, or `null` if unassigned.
+    */
+    public string? Comment
         {
-        get;
-        private set;
-        } = "000000";
+        get; set;
+        }
 
-    /** @brief      An optional open-ended string comment detailing general aspects of this test execution run.
+    /** @property SerialNumberAttributes
+        @brief
+            Gets or sets custom property attributes associated with item serial configurations.
 
-        @return     The comment description text, or null if unassigned.
-    */
-    public string? Comment { get; set; }
-
-    /** @brief      The custom key-value property tracking collection mapping unique attributes for item serial configurations.
-
-        @return     An iterable array tracking specific custom variable entries.
+        @return
+            Returns a list of @ref SerialNumberAttributes instances.
     */
     public List<SerialNumberAttributes> SerialNumberAttributes { get; set; } = [];
 
-    /** @brief      The individual physical slot or device under test layout station index assignment value.
+    /** @property DUTPosition
+        @brief
+            Gets or sets the physical slot index assignment value for the device under test.
 
-        @details    Structural parameters must fall into bounds that are convertible to a valid standard `xsd:short` format integer.
-
-        @return     The numerical physical slot layout index location, or null if generic.
+        @return
+            Returns the slot index location, or `null` if generic.
     */
     public int? DUTPosition { get; set; } = 1;
 
-    /** @brief      The application software version tag context running the sequence.
+    /** @property SoftwareVersion
+        @brief
+            Gets or sets the application software version running the sequence.
 
-        @details    Follows structured format validation boundaries matching standard sequence masks: 
-                    `[0-9]{1,2}.[0-9]{1,2}(.[0-9]{1,2})*(.[0-9]{1,4})*`.
-
-        @return     The system application software version string identifier, or null if generic.
+        @return
+            Returns the software version string identifier, or `null` if unspecified.
     */
     public string? SoftwareVersion { get; set; } = "0.0.0";
 
-    /** @brief      The background runtime operating system environment infrastructure details tag context.
+    /** @property OperatingSystem
+        @brief
+            Gets or sets the background runtime operating system environment context string.
 
-        @return     The platform environment text identification string, or null if generalized.
+        @return
+            Returns the operating system string, or `null` if unspecified.
     */
     public string? OperatingSystem { get; set; } = "OS";
 
-    /** @brief      The execution environment state configuration mode context string token.
+    /** @property OperatingMode
+        @brief
+            Gets or sets the execution mode configuration context string.
 
-        @details    The value assigned must fit explicitly matching options: `OPERATING`, `ENGINEERING`, 
-                    `REPAIR`, `DEVELOPMENT`, or `RMA`.
+        @details
+            - Validates input against accepted tokens: `OPERATING`, `ENGINEERING`, `REPAIR`, `DEVELOPMENT`, or `RMA`.
+            - Converts input strings to uppercase invariant form.
 
-        @return     The structural operational execution state type tracking token string, or null if generic.
+        @return
+            Returns the normalized operational mode string, or `null` if unassigned.
+
+        @exception ArgumentException
+            Thrown when `value` is not one of the allowed operational mode strings.
     */
     public string? OperatingMode
         {
@@ -272,55 +351,99 @@ public partial class TestRun
                 }
             else
                 {
-                throw new ArgumentException(null, nameof(value));
+                throw new ArgumentException("OperatingMode must be one of: OPERATING, ENGINEERING, REPAIR, DEVELOPMENT, RMA.", nameof(value));
                 }
             }
         } = "OPERATING";
 
+    /** @property TestItems
+        @brief
+            Gets or sets the internal enumeration of test items.
+
+        @return
+            Returns an enumerable sequence of @ref TestItem instances.
+    */
     public IEnumerable<TestItem> TestItems
         {
         get;
         internal set;
-        }
+        } = [];
 
-    /** @brief Automatically generates a lot number if the current lot is empty and the material revision is set. */
+    /** @brief
+        Automatically attempts to generate a lot number if required material attributes are set.
+
+    @details
+        - Swallows format and numerical overflow exceptions if material or revision inputs cannot be parsed.
+    */
     private void try_auto_generate_lot()
         {
         try
             {
-            // lot number = material number + revision number where revision number is converted from hex to decimal
             Lot = generate_lot_number(MaterialNumber, MaterialRevision);
             }
         catch( FormatException )
-            {}
+            {
+            }
         catch( ArgumentException )
-            {}
+            {
+            }
         catch( OverflowException )
-            {}
+            {
+            }
         }
 
-    /**@brief      Generates 6 digit lot number from material number and revision number.
-     * @param[in]  string     The material number.
-     * @param[in]  string     The revision number, in hexadecimal format.
-     * @return     string     The generated lot number.
-     */
+    /** @brief
+        Generates a 6-digit lot number from material number and hexadecimal revision strings.
+
+    @details
+        - Parses `material_number` using culture-invariant integer parsing.
+        - Parses `revision_number` as a base-16 hexadecimal integer.
+        - Combines parsed inputs modulo `1000000` formatted as a 6-digit zero-padded string.
+
+    @param[in] material_number
+        Provides the raw material number string.
+
+    @param[in] revision_number
+        Provides the hexadecimal revision string.
+
+    @return
+        Returns the generated 6-digit zero-padded lot number string.
+
+    @exception ArgumentException
+        Thrown when `material_number` or `revision_number` is `null` or empty.
+
+    @exception FormatException
+        Thrown when `material_number` or `revision_number` cannot be parsed into numeric form.
+
+    @exception OverflowException
+        Thrown when parsed numeric values exceed maximum bounds.
+    */
     internal static string generate_lot_number( string? material_number, string? revision_number )
         {
         if( string.IsNullOrEmpty(material_number) || string.IsNullOrEmpty(revision_number) )
             {
-            throw new ArgumentException(material_number, revision_number);
+            throw new ArgumentException("Both material number and revision number must be provided to generate a lot number.");
             }
-        int mn = int.Parse(material_number, CultureInfo.InvariantCulture);
+
+        long mn = long.Parse(material_number, CultureInfo.InvariantCulture);
         int rn = Convert.ToInt32(revision_number, 16);
         string value = ((mn + rn) % 1000000).ToString("D6", CultureInfo.InvariantCulture);
         return value;
-
         }
 
-    /** @brief Function that finds the test item with "Write QS-Ticket" in its name, and returns the routerstep
-     *  @param[in]  steps  The list of test steps to search through.
-     *  @return    routestep or our test run or Empty string if not found.
-     */
+    /** @brief
+        Searches test step outputs for Link PHandle metadata and extracts route step and PHandle attributes.
+
+    @details
+        - Scans child @ref TestItem entries for names containing `"Link PHandle"`.
+        - Uses regular expression parsing on stdout text to extract `Routestep` and `PHandle` entries.
+        - Appends extracted `PHandle` entries to @ref SerialNumberAttributes when the step result is `"PASSED"`.
+
+    @return
+        Returns the current @ref TestRun instance.
+
+    @see LinkPHandleRegex
+    */
     public TestRun Find_link_phandle_step()
         {
         TestItem? linkstep = null;
@@ -332,23 +455,30 @@ public partial class TestRun
                 break;
                 }
             }
+
         if( linkstep != null )
             {
             string? output = linkstep.Stdout;
             string res = linkstep.Result.Value;
-            if( output != null)
+            if( output != null )
                 {
                 Match match = LinkPHandleRegex().Match(output);
                 if( match.Success )
                     {
                     Routestep = match.Groups["routestep"].Value;
-                    if( res == "PASSED")
+                    if( string.Equals(res, "PASSED", StringComparison.Ordinal) )
                         {
-                        SerialNumberAttributes.Add(new SerialNumberAttributes { SerialNumberAttributes_Key = 1, Name = "PHandle", Value = match.Groups["phandle"].Value });
+                        SerialNumberAttributes.Add(new SerialNumberAttributes
+                            {
+                            SerialNumberAttributes_Key = 1,
+                            Name = "PHandle",
+                            Value = match.Groups["phandle"].Value
+                            });
                         }
                     }
                 }
             }
+
         return this;
         }
     }

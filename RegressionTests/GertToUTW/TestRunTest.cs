@@ -215,7 +215,7 @@ public class LotNumberCalculatorTests
         TestRun test_run = new()
             {
             MaterialRevision = "B001",
-            MaterialNumber = "999999999999999999"
+            MaterialNumber = "99999999999999999999"
             };
         Assert.AreEqual("000000", test_run.Lot);
         }
