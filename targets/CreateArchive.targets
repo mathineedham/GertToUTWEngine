@@ -1,0 +1,90 @@
+<Project>
+  <UsingTask TaskName="CreateSolutionZip" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <SourceDir ParameterType="System.String" Required="true" />
+      <ZipFileName ParameterType="System.String" Required="true" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System.IO" />
+      <Using Namespace="System.IO.Compression" />
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+          string[] excludes = new string[] { ".vs", ".git", "bin", "obj", "artifacts", "TestResults", "html", "latex" };
+          
+          if (File.Exists(ZipFileName)) 
+          {
+              File.Delete(ZipFileName);
+              Log.LogMessage(MessageImportance.High, $"Existing archive '{ZipFileName}' was deleted.");
+          }
+
+          Log.LogMessage(MessageImportance.High, $"Creating '{ZipFileName}'...");
+          
+          using (ZipArchive archive = ZipFile.Open(ZipFileName, ZipArchiveMode.Create)) 
+          {
+              string[] allFiles = Directory.GetFiles(SourceDir, "*.*", SearchOption.AllDirectories);
+              
+              foreach (string filePath in allFiles) 
+              {
+                  // Ignore the archive currently being created
+                  if (filePath.EndsWith(ZipFileName)) 
+                  {
+                      continue;
+                  }
+                  
+                  // Determine relative path
+                  string relativePath = filePath.Substring(SourceDir.Length);
+                  relativePath = relativePath.TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+                  
+                  string[] pathParts = relativePath.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+                  
+                  // Check if any part of the path is in the exclude list
+                  bool excludeFile = false;
+                  foreach (string part in pathParts) 
+                  {
+                          foreach (string excludeItem in excludes) 
+                          {
+                              if (string.Equals(part, excludeItem, StringComparison.OrdinalIgnoreCase)) 
+                              {
+                                  excludeFile = true;
+                                  break;
+                              }
+                          }
+                          
+                          if (excludeFile) 
+                          {
+                              break;
+                          }
+                  }
+                  
+                  // Add file if it was not excluded
+                  if (excludeFile == false) 
+                  {
+                      archive.CreateEntryFromFile(filePath, relativePath);
+                  }
+              }
+          }
+          Log.LogMessage(MessageImportance.High, "Archiving successfully completed.");
+        ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+
+<Target Name="Archive">
+    <PropertyGroup>
+      <RootDirectory>$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)\..'))</RootDirectory>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <SlnxFiles Include="$(RootDirectory)\*.slnx" />
+    </ItemGroup>
+    
+    <PropertyGroup>
+      <SlnxName>%(SlnxFiles.Filename)</SlnxName>
+      <ZipName>$(RootDirectory)\$(SlnxName).zip</ZipName>
+    </PropertyGroup>
+    
+    <Error Condition="'@(SlnxFiles)' == ''" Text="Error: No .slnx file found in $(RootDirectory)!" />
+    
+    <CreateSolutionZip SourceDir="$(RootDirectory)" ZipFileName="$(ZipName)" />
+  </Target>
+</Project>
