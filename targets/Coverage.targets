@@ -17,10 +17,10 @@
     <ReportGeneratorCmd>reportgenerator</ReportGeneratorCmd>
 
     <!-- Include app + tests (no comments: this is just a note here for you) -->
-    <CoverletIncludeFilter>[HelloWorld*]*</CoverletIncludeFilter>
-    <CoverletIncludeTestsFilter>[RegressionTests*]*</CoverletIncludeTestsFilter>
+    <CoverletIncludeFilter Condition="'$(CoverletIncludeFilter)' == ''">[*]*</CoverletIncludeFilter>
+    <CoverletIncludeTestsFilter Condition="'$(CoverletIncludeTestsFilter)' == ''">[$(MSBuildProjectName)*]*</CoverletIncludeTestsFilter>
     <CoverletIncludeTestAssembly Condition="'$(CoverletIncludeTestAssembly)'==''">true</CoverletIncludeTestAssembly>
-
+	
     <CoverletArgsString Condition="'$(CoverletArgsString)'==''">$(COVERLET_ARGS)</CoverletArgsString>
     <ReportGeneratorArgsString Condition="'$(ReportGeneratorArgsString)'==''">$(REPORTGENERATOR_ARGS)</ReportGeneratorArgsString>
   </PropertyGroup>
@@ -35,13 +35,13 @@
     <MakeDir Directories="$(CoverageHistoryDir)" />
 
     <PropertyGroup>
-      <CoverletIncludeFilter Condition="$([System.String]::IsNullOrWhiteSpace('$(CoverletIncludeFilter)'))">[HelloWorld*]*</CoverletIncludeFilter>
-      <CoverletIncludeTestsFilter Condition="$([System.String]::IsNullOrWhiteSpace('$(CoverletIncludeTestsFilter)'))">[RegressionTests*]*</CoverletIncludeTestsFilter>
+      <CoverletIncludeFilter Condition="$([System.String]::IsNullOrWhiteSpace('$(CoverletIncludeFilter)'))">[*]*</CoverletIncludeFilter>
+      <CoverletIncludeTestsFilter Condition="$([System.String]::IsNullOrWhiteSpace('$(CoverletIncludeTestsFilter)'))">[$(MSBuildProjectName)*]*</CoverletIncludeTestsFilter>
 
       <IncludeArg1 Condition="!$([System.String]::IsNullOrWhiteSpace('$(CoverletIncludeFilter)'))">--include "$(CoverletIncludeFilter)"</IncludeArg1>
       <IncludeArg2 Condition="!$([System.String]::IsNullOrWhiteSpace('$(CoverletIncludeTestsFilter)'))">--include "$(CoverletIncludeTestsFilter)"</IncludeArg2>
     </PropertyGroup>
-
+	
     <!-- Files we want hidden from the report -->
     <ItemGroup>
       <ExcludedReportFiles Include="**/Microsoft.NET.Test.Sdk.Program.cs" />
