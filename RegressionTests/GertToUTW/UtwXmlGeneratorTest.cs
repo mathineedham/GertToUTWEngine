@@ -234,6 +234,7 @@ public class UtwXmlGeneratorFileIoTests
             {
             StartTime = new DateTime(2026, 07, 10),
             EndTime = new DateTime(2026, 07, 10),
+            DUTPosition =null,
             MaterialRevision = "0000",
             MaterialNumber = "12345678",
             SerialNumberAttributes = [],

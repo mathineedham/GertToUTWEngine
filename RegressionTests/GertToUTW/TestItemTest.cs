@@ -104,6 +104,12 @@ public sealed class TestItemTests
             Idx = valid_idx
             };
         Assert.AreEqual(valid_idx, item.Idx);
+
+        TestItem item2 = new()
+            {
+            Idx = null
+            };
+        Assert.IsNull(item2.Idx);
         }
 
     /** @brief      Ensures that setting an index outside valid bounds throws an ArgumentOutOfRangeException.
