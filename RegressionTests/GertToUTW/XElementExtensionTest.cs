@@ -69,7 +69,11 @@ public class XElementExtensionsTests
     public void AddIfNotEmpty_ParentNull()
         {
         XElement? null_parent = null;
-        _ = Assert.ThrowsExactly<ArgumentNullException>(() =>null_parent!.AddIfNotEmpty("TestElement", "Valid Value"));
+        _ = Assert.ThrowsExactly<ArgumentNullException>(
+            () =>
+            {
+                null_parent!.AddIfNotEmpty("TestElement", "Valid Value");
+            });
         }
 
     /** @brief Tests that the 'AddIfNotEmpty' method does not add a child element when the value is null or empty. */
@@ -81,7 +85,11 @@ public class XElementExtensionsTests
         XElement parent = new("Parent");
         parent.AddIfNotEmpty("TestElement", testing_value);
         Assert.IsFalse(parent.HasElements, "Parent should not have any child elements when value is null or empty.");
-        _ = Assert.ThrowsExactly<ArgumentException>(() => parent.AddIfNotEmpty("   ", "Valid value"));
+        _ = Assert.ThrowsExactly<ArgumentException>(
+            () =>
+            {
+                parent.AddIfNotEmpty("   ", "Valid value");
+            });
 
         }
 

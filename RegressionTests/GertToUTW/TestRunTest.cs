@@ -73,7 +73,11 @@ public sealed class TestRunTests
     public void MaterialNumberPropertyInvalidInputThrowsTest( string invalid_material )
         {
         TestRun run = new();
-        _ = Assert.ThrowsExactly<ArgumentException>(() => run.MaterialNumber = invalid_material);
+        _ = Assert.ThrowsExactly<ArgumentException>(
+            () =>
+            {
+                return run.MaterialNumber = invalid_material;
+            });
         }
 
     /** @brief Validates compliant material engineering revisions match expectations. */
@@ -98,7 +102,11 @@ public sealed class TestRunTests
     public void MaterialRevisionPropertyInvalidInputThrowsTest( string invalid_revision )
         {
         TestRun run = new();
-        _ = Assert.ThrowsExactly<ArgumentException>(() => run.MaterialRevision = invalid_revision);
+        _ = Assert.ThrowsExactly<ArgumentException>(
+            () =>
+            {
+                return run.MaterialRevision = invalid_revision;
+            });
         }
 
 
@@ -126,7 +134,11 @@ public sealed class TestRunTests
     public void OperatingModePropertyInvalidInputThrowsTest( string invalid_mode )
         {
         TestRun run = new();
-        _ = Assert.ThrowsExactly<ArgumentException>(() => run.OperatingMode = invalid_mode);
+        _ = Assert.ThrowsExactly<ArgumentException>(
+            () =>
+            {
+                return run.OperatingMode = invalid_mode;
+            });
         }
 
 
@@ -164,7 +176,11 @@ public class LotNumberCalculatorTests
     [DataRow("12345678", "")]
     public void GenerateLotNumber_Invalid( string? mat_num, string? rev_num )
         {
-        _ = Assert.ThrowsExactly<ArgumentException>(() => TestRun.generate_lot_number(mat_num, rev_num));
+        _ = Assert.ThrowsExactly<ArgumentException>(
+            () =>
+            {
+                return TestRun.generate_lot_number(mat_num, rev_num);
+            });
         }
 
     /** @brief Tests that empty or non-numeric strings throw a FormatException */
@@ -173,9 +189,11 @@ public class LotNumberCalculatorTests
     [DataRow("12345678", "not_hex")]
     public void GenerateLotNumber_InvalidFormat_ThrowsFormatException( string mat_num, string rev_num )
         {
-        _ = Assert.ThrowsExactly<FormatException>(() =>
-            TestRun.generate_lot_number(mat_num, rev_num)
-        );
+        _ = Assert.ThrowsExactly<FormatException>(
+            () =>
+            {
+                return TestRun.generate_lot_number(mat_num, rev_num);
+            });
         }
 
     /** @brief Tests that the 'GenerateLotNumber' method correctly computes the lot number from given material number and revision. */

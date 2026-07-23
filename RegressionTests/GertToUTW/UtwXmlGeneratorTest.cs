@@ -66,7 +66,11 @@ public class UtwXmlGeneratorTests
     [TestMethod]
     public void BuildUTWXMLDOC_Error()
         {
-        _ = Assert.ThrowsExactly<ArgumentNullException>(() => UtwXmlGenerator.build_utw_xml_document(null!));
+        _ = Assert.ThrowsExactly<ArgumentNullException>(
+            () =>
+            {
+                return UtwXmlGenerator.build_utw_xml_document(null!);
+            });
         }
 
     /** @brief Allows us to test using DataRow method */
@@ -222,7 +226,11 @@ public class UtwXmlGeneratorFileIoTests
         {
         TestRun valid_test_run = new()
             { StartTime = DateTime.Now, EndTime = DateTime.Now };
-        _ = Assert.ThrowsExactly<ArgumentException>(() => UtwXmlGenerator.GenerateUtwXml(valid_test_run, ""));
+        _ = Assert.ThrowsExactly<ArgumentException>(
+            () =>
+            {
+                UtwXmlGenerator.GenerateUtwXml(valid_test_run, "");
+            });
        
         }
 
@@ -245,7 +253,7 @@ public class UtwXmlGeneratorFileIoTests
 
         Assert.IsTrue(File.Exists(m_temp_file_path), "The function completed execution but failed to create a physical file on disk.");
         string written_text = File.ReadAllText(m_temp_file_path, Encoding.UTF8);
-        StringAssert.Contains(written_text, "<TestRun>", "The output file content stream is missing the fundamental XML document root wrapper element.");
-        StringAssert.Contains(written_text, "encoding=\"utf-8\"", "The document declaration tag was not written out using standard explicit UTF-8 encoding strings.");
+        Assert.Contains("<TestRun>", written_text, "The output file content stream is missing the fundamental XML document root wrapper element.");
+        Assert.Contains("encoding=\"utf-8\"", written_text, "The document declaration tag was not written out using standard explicit UTF-8 encoding strings.");
         }
     }

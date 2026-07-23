@@ -64,11 +64,17 @@ public partial class ApplicationTest
         string absolute_input_file = string.IsNullOrEmpty(input) ? input : Path.Combine(theBaseFilesDir, input);
         string absolute_output_dir = string.IsNullOrEmpty(output) ? output : Path.Combine(theBaseFilesDir, output);
 
-        _ = Assert.ThrowsExactly<ArgumentException>(() => new Application(absolute_input_file, absolute_output_dir));
+        _ = Assert.ThrowsExactly<ArgumentException>(() =>
+        {
+            return new Application(absolute_input_file, absolute_output_dir);
+        });
 
         //input must exist
         string absolute_input_file2 = Path.Combine(theBaseFilesDir, "GertToUTW\\XmlTestFiles\\LogTestFiles\\nonexistent.log");
-        _ = Assert.ThrowsExactly<FileNotFoundException>(() => new Application(absolute_input_file2, "output"));
+        _ = Assert.ThrowsExactly<FileNotFoundException>(() =>
+        {
+            return new Application(absolute_input_file2, "output");
+        });
         }
 
     [TestMethod]
@@ -110,7 +116,12 @@ public partial class ApplicationTest
         using XmlReader reader = XmlReader.Create(xml_file_path, xml_settings);
         xml_doc.Load(reader);
 
-        xml_doc.Validate(( sender, e ) =>Assert.Fail(e.Message));
+        xml_doc.Validate(
+            ( sender, e ) =>
+                {
+                    Assert.Fail(e.Message);
+                }
+        );
 
         }
 
@@ -131,8 +142,24 @@ public partial class ApplicationTest
         XElement generated = XElement.Load(absolute_out);
         XElement expected = XElement.Load(absolute_expected);
 
-        var gen_nodes = generated.DescendantsAndSelf().Select(e => new { e.Name, Value = e.Value.Replace("\r\n", "\n").Replace("\r", "\n").Trim() }).ToList();
-        var exp_nodes = expected.DescendantsAndSelf().Select(e => new { e.Name, Value = e.Value.Replace("\r\n", "\n").Replace("\r", "\n").Trim() }).ToList();
+        var gen_nodes = generated.DescendantsAndSelf().Select(
+            e =>
+            {
+                return new
+                    {
+                    e.Name,
+                    Value = e.Value.Replace("\r\n", "\n").Replace("\r", "\n").Trim()
+                    };
+            }).ToList();
+        var exp_nodes = expected.DescendantsAndSelf().Select(
+            e =>
+            {
+                return new
+                    {
+                    e.Name,
+                    Value = e.Value.Replace("\r\n", "\n").Replace("\r", "\n").Trim()
+                    };
+            }).ToList();
 
         // Verify they have the same number of nodes
         Assert.HasCount(exp_nodes.Count, gen_nodes, "The structure or node count does not match.");

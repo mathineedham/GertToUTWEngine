@@ -80,11 +80,19 @@ public sealed class TestItemTests
         string target_log_block =
             $"Step 12: [StepName] \nINFO::ActionSteps details\n" ;
         Match raw_match = GertLogParser.step_item_regex().Match(target_log_block);
-        _ = Assert.ThrowsExactly<ArgumentException>(() => new TestItem(raw_match), "Expected an ArgumentException to be thrown for an invalid match.");
+        _ = Assert.ThrowsExactly<ArgumentException>(
+            () =>
+            {
+                return new TestItem(raw_match);
+            }, "Expected an ArgumentException to be thrown for an invalid match.");
 
         string boardid = "[BoardID = 1012149159]";
         Match wrong_match  = GertLogParser.serial_number_regex().Match(boardid);
-        _ = Assert.ThrowsExactly<ArgumentException>(() => new TestItem(wrong_match), "Expected an ArgumentException to be thrown for a match from the wrong regex.");
+        _ = Assert.ThrowsExactly<ArgumentException>(
+            () =>
+            {
+                return new TestItem(wrong_match);
+            }, "Expected an ArgumentException to be thrown for a match from the wrong regex.");
 
         }
         

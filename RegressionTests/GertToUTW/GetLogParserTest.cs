@@ -53,7 +53,12 @@ public sealed class ParseDateTests
     [DataRow("09/07/2026 at 14h30m25s")]
     public void Parse_date_InvalidFormat( string malformed_date_text )
         {
-         _ = Assert.ThrowsExactly<FormatException>(() =>GertLogParser.parse_date(malformed_date_text));
+         _ = Assert.ThrowsExactly<FormatException>(
+             () =>
+                 {
+                     return GertLogParser.parse_date(malformed_date_text);
+                 }
+         );
         }
     }
 
@@ -110,7 +115,12 @@ public class ParseStepItemTests
     public void ParseTestItems_NoTopLevelEnvelopeMatch_ThrowsFormatException()
         {
         string invalid_content = "Random invalid file context without log envelopes";
-        _ = Assert.Throws<FormatException>(() => GertLogParser.parse_test_items(invalid_content));
+        _ = Assert.Throws<FormatException>(
+            () =>
+            {
+                return GertLogParser.parse_test_items(invalid_content);
+            }
+            );
         }
 
     /** @brief Verifies that the `parse_test_items` correctly parses a valid log block and returns the expected number of test items. */
@@ -175,14 +185,23 @@ public class GertLogParserFlowControlTests
     [DataRow(null)]
     public void GertLogParserTest_EmptyOrNull( string relative_file_name )
         {
-        _ = Assert.Throws<ArgumentException>(() => GertLogParser.ParseGertLog(relative_file_name));
+        _ = Assert.Throws<ArgumentException>(
+            () =>
+            {
+                return GertLogParser.ParseGertLog(relative_file_name);
+            });
         }
 
     [TestMethod]
     public void GertLogParserTest_NonExistentFile()
         {
         string non_existent_file = "GertToUTW\\LogTestFiles\\Invalid\\nonexistent.log";
-        _ = Assert.Throws<FileNotFoundException>(() => GertLogParser.ParseGertLog(non_existent_file));
+        _ = Assert.Throws<FileNotFoundException>(
+            () =>
+            {
+                return GertLogParser.ParseGertLog(non_existent_file);
+            }
+            );
         }
     }
 
