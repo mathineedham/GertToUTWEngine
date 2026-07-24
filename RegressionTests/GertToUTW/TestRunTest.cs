@@ -66,7 +66,7 @@ public sealed class TestRunTests
 
     /** @brief Confirms that malformed Material Numbers trigger an ArgumentException. */
     [TestMethod]
-    [DataRow("abc")]
+    [DataRow("cat")]
     [DataRow("0000000000000000000")] // Length greater than 18 digits
     [DataRow("-12.5")]
     [DataRow("AB34 7")]
@@ -262,7 +262,7 @@ public class FindLinkPHandleStepTests
             TestItem =
                 [
                 new TestItem { Name = "Step 1: [Init]", Stdout = "INFO::ActionSteps\nResult: PASS" },
-                new TestItem { Name = "Step 2: [Teardown]", Stdout = "INFO::FillVariables\nResult: FAIL" }
+                new TestItem { Name = "Step 2: [Rush]", Stdout = "INFO::FillVariables\nResult: FAIL" }
                 ]
             };
         run2 =run2.Find_link_phandle_step();
@@ -325,7 +325,7 @@ public class FindLinkPHandleStepTests
                     """,
                     Result = new Result { Value = "PASSED" }
                     },
-                new TestItem { Name = "Step 3: [Teardown]", Stdout = "INFO::FillVariables\nResult: FAIL" }
+                new TestItem { Name = "Step 3: [Rush]", Stdout = "INFO::FillVariables\nResult: FAIL" }
                 ]
             };
 

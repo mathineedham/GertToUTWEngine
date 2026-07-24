@@ -11,9 +11,9 @@
     @{
     @ingroup    REF_GertToUTWEngine_RegressionTest_GertToUTW
 
-    @brief      Regression tests for the `XElementExtension` class, focusing on XML sanitization and conditional element addition.
+    @brief      Regression tests for the `XElementExtension` class, focusing on XML sanitation and conditional element addition.
 
-    @details    Validates the behavior of the `XElementExtension` class, including sanitization of strings for XML compatibility
+    @details    Validates the behavior of the `XElementExtension` class, including sanitation of strings for XML compatibility
                 and conditional addition of child elements to an `XElement`.
     @}
 */

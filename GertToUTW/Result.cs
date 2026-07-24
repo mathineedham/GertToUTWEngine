@@ -12,7 +12,7 @@
         Defines the Result context class ensuring strict target data compliance.
 
     @details
-        - Tracks final test result tokens and ensures compliance with global XML target schemas.
+        - Tracks final test result tokens and ensures compliance with global XML target schema.
         - Provides case-insensitive validation against documented target schema result strings.
         - Translates shorthand result abbreviations into canonical uppercase outcome strings.
         - Contains no shared mutable state.
@@ -27,7 +27,7 @@ namespace GertToUTW;
 /** @ingroup REF_GertToUTWEngine_GertToUTW_Result
     @class Result
     @brief
-        Encapsulates a normalized categorical result outcome token tracking global XML target schemas.
+        Encapsulates a normalized categorical result outcome token tracking global XML target schema.
 
     @details
         - Enforces strict validation against permitted result states: PASSED, FAILED, SKIPPED, INCOMPLETE, ERROR.

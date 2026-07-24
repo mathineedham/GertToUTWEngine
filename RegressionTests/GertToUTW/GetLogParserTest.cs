@@ -104,7 +104,7 @@ public sealed partial class ExtractFieldTests
 /** @class      ParseStepItemTests
     @ingroup    REF_GertToUTWEngine_RegressionTest_GertToUTW_GerLogParserTest
     @brief      Unit tests for the 'parse_test_items' method of the `GertLogParser` class.
-    @details    Verifies that the `parse_test_items` method correctly recognises all elements and all test steps
+    @details    Verifies that the `parse_test_items` method correctly recognizes all elements and all test steps
 */
 [TestClass]
 public class ParseStepItemTests
@@ -158,7 +158,7 @@ public class ParseStepItemTests
 /** @class      GertLogParserFlowControlTests
     @ingroup    REF_GertToUTWEngine_RegressionTest_GertToUTW_GerLogParserTest
     @brief      Unit tests for the 'ParseGertLog' method of the `GertLogParser` class.
-    @details    Uses testfiles to verify that the `ParseGertLog` method correctly parses entire log files and produces the expected number of test runs
+    @details    Uses test files to verify that the `ParseGertLog` method correctly parses entire log files and produces the expected number of test runs
 */
 [TestClass]
 public class GertLogParserFlowControlTests

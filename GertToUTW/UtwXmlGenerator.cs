@@ -9,7 +9,7 @@
         Mathilde Needham (Mathilde.Needham@tria-technologies.com)
 
     @brief
-        Provides methods to generate UTW-compliant XML files from testrun data.
+        Provides methods to generate UTW-compliant XML files from test run data.
 
     @details
         - Responsible for generating UTW-compliant XML files from parsed test run data.

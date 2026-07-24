@@ -55,7 +55,7 @@ public partial class ApplicationTest
         }
 
 
-    /** @brief  Validates that the constrcutor throws an ArgumentException when provided with an invalid file paths */
+    /** @brief  Validates that the constructor throws an ArgumentException when provided with an invalid file paths */
     [TestMethod]
     [DataRow("", "")]
     [DataRow("GertToUTW\\XmlTestFiles\\Structure\\machine-readable-logs.xsd", "output")] //input must be .log
@@ -125,7 +125,7 @@ public partial class ApplicationTest
 
         }
 
-    /** @brief  Validates that appliucation correctly generated an xml file as expected */
+    /** @brief  Validates that application correctly generated an xml file as expected */
     [TestMethod]
     [DataRow("GertToUTW\\XmlTestFiles\\Generated\\valid_singlerun_0.xml",
              "GertToUTW\\XmlTestFiles\\Expected\\valid_singlerun.xml")]

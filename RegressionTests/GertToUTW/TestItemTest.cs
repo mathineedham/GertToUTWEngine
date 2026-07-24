@@ -65,7 +65,7 @@ public sealed class TestItemTests
             $"Result: {raw_result_input}";
 
         Match raw_match = GertLogParser.step_item_regex().Match(target_log_block);
-        Assert.IsTrue(raw_match.Success, " The production step_item_regex failed to match the test logblock layout structure.");
+        Assert.IsTrue(raw_match.Success, " The production step_item_regex failed to match the test log block layout structure.");
         TestItem result = new (raw_match);
         Console.WriteLine($"TestItem Result: {result.Result.Value}, Stdout: {result.Stdout}, Stderr: {result.Stderr}");
         Assert.AreEqual(expected_stdout, result.Stdout, "The value assigned to Stdout did not match routing expectations.");

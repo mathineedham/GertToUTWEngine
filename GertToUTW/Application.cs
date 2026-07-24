@@ -128,7 +128,7 @@ public class Application
 
         @details
             - Parses input log sessions through @ref GertLogParser.
-            - Creates the configured output directory idempotently before writing files.
+            - Creates the configured output directory before writing files.
             - Generates deterministic file names from the input file stem and a zero-based, culture-invariant index.
             - Adds each output path to the result only after @ref UtwXmlGenerator completes successfully.
             - Does not synchronize concurrent executions that target the same output paths.

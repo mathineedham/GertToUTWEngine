@@ -9,7 +9,7 @@
         Mathilde Needham (Mathilde.Needham@tria-technologies.com)
 
     @brief
-        Defines the context structure and property accessors representing a complete test run.
+        Defines the context structure, properties and method representing a complete test run.
 
     @details
         - Encapsulates data spanning environmental properties, timestamps, target material metadata, and execution state.
