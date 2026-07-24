@@ -56,8 +56,7 @@ public sealed class ParseDateTests
              () =>
                  {
                      return GertLogParser.parse_date(malformed_date_text);
-                 }
-         );
+                 });
         }
     }
 
@@ -118,8 +117,7 @@ public class ParseStepItemTests
             () =>
             {
                 return GertLogParser.parse_test_items(invalid_content);
-            }
-            );
+            });
         }
 
     /** @brief Verifies that the `parse_test_items` correctly parses a valid log block and returns the expected number of test items. */
@@ -199,8 +197,7 @@ public class GertLogParserFlowControlTests
             () =>
             {
                 return GertLogParser.ParseGertLog(non_existent_file);
-            }
-            );
+            });
         }
     }
 

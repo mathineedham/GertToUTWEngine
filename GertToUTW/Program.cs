@@ -62,7 +62,7 @@ internal class Program
             }
         catch( Exception ex )
             {
-            Console.WriteLine($"Error: {ex.Message}");
+            Console.Error.WriteLine($"Error: {ex.Message}");
             }
         }
 
@@ -91,7 +91,7 @@ internal class Program
         input_file = string.Empty;
         output_dir = string.Empty;
 
-        if( args.Length == 1 && (args[0] is "-h" or "--help" or "/?" or "-help") )
+        if( args.Length == 1 && (args[0] is "-h" or "--help" or "-help") )
             {
             Console.WriteLine("Help:");
             Console.WriteLine("  Usage: App.exe [input_log_path] [output_xml_path]");

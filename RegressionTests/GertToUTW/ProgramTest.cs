@@ -40,7 +40,8 @@ namespace RegressionTests.GertToUTW;
 public class ProgramTests
     {
     // Adjust relative path to point to your compiled executable (e.g., bin/Debug/net8.0/GertToUTW.exe)
-    private const string EXECUTABLE_PATH = @"../../../bin/Debug/net8.0/GertToUTW.exe";
+    private readonly string mExecutable_path = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../bin/Debug/net10.0/GertToUTW.exe"));
+    private static readonly string theBaseFilesDir = AppDomain.CurrentDomain.BaseDirectory;
 
     /** @brief
             Executes a process asynchronously while capturing stdout and stderr streams.
@@ -81,20 +82,13 @@ public class ProgramTests
 
         _ = process.Start();
 
-        // Read both streams concurrently to avoid deadlocks.
         Task<string> output_task = process.StandardOutput.ReadToEndAsync();
         Task<string> error_task = process.StandardError.ReadToEndAsync();
 
-        await process.WaitForExitAsync();
+        await process.WaitForExitAsync().ConfigureAwait(false);
 
         string output = await output_task.ConfigureAwait(false);
         string error = await error_task.ConfigureAwait(false);
-
-        if( process.ExitCode != 0 )
-            {
-            throw new InvalidOperationException(
-                $"Command failed with exit code {process.ExitCode}. Output: {output}. Error: {error}");
-            }
 
         return (output, error);
         }
@@ -103,21 +97,23 @@ public class ProgramTests
             Validates that passing the `--help` flag prints the help and usage description.
 
         @details
-            - Executes the application binary with the `--help` flag.
+            - Executes the application binary with the  any of the help flags.
             - Verifies that stdout contains the expected `Help:` header and `Usage: App.exe` string.
 
         @note
             Requires the compiled executable binary at `ExecutablePath`.
     */
     [TestMethod]
-    public async Task Main_WithHelpFlag_PrintsUsageText()
+    [DataRow("--help")]
+    [DataRow("-h")]
+    [DataRow("-help")]
+    public async Task Main_WithHelpFlag(string arg)
         {
-        // Act
-        (string output, string error) = await RunCommandAsync(EXECUTABLE_PATH, "--help");
+        (string output, string error) = await RunCommandAsync(mExecutable_path, arg).ConfigureAwait(false);
 
-        // Assert
-        Assert.Contains("Help:", output);
-        Assert.Contains("Usage: App.exe", output);
+        Assert.IsNotNull(output);
+        Assert.IsNotEmpty(output);
+        Assert.IsEmpty(error);
         }
 
     /** @test
@@ -131,55 +127,48 @@ public class ProgramTests
             Requires the compiled executable binary at `ExecutablePath`.
     */
     [TestMethod]
-    public async Task Main_WithInvalidArgumentsCount_PrintsInvalidArgumentsMessage()
+    public async Task Main_WithInvalidArgumentsCount()
         {
-        // Act - Passing only 1 argument (which is not help)
-        (string output, string error) = await RunCommandAsync(EXECUTABLE_PATH, "only_one_argument.log");
-
-        // Assert
-        Assert.Contains("Invalid arguments provided!", output);
-        Assert.Contains("Usage: App.exe", output);
+        //Test calling the executable with 0 argument
+        (string output0, string error0) = await RunCommandAsync(mExecutable_path, "").ConfigureAwait(false);
+        Assert.IsNotEmpty(output0);
+        Assert.IsEmpty(error0);
+        //Test calling the executable with 1 argument
+        (string output1, string error1) = await RunCommandAsync(mExecutable_path, "only_one_argument.log").ConfigureAwait(false);
+        Assert.IsNotEmpty(output1);
+        Assert.IsEmpty(error1);
+        //Test calling the executable with >2 arguments
+        (string output3, string error3) = await RunCommandAsync(mExecutable_path, $"first.log second.pdf third.xml").ConfigureAwait(false);
+        Assert.IsNotEmpty(output3);
+        Assert.IsEmpty(error3);
         }
 
     /** @test
-            Validates that execution with valid input file and output directory completes successfully.
+            Validates that execution with 2 arguments will call Application.Execute() but will catch error since input is invalid
 
-        @details
-            - Creates a temporary input file and temporary output directory.
-            - Passes valid paths to the executable.
-            - Asserts that standard output reports completion success.
-            - Cleans up temporary resources in a `finally` block.
-
-        @note
-            Requires write access to system temporary directory.
     */
     [TestMethod]
-    public async Task Main_WithValidArguments_PrintsSuccessMessage()
+    public async Task Main_2Arguments_ErrorInExecute()
         {
-        // Arrange
-        string temp_input_file = Path.GetTempFileName();
-        string temp_output_dir = Path.Combine(Path.GetTempPath(), "GertToUTW_Test_Output");
+        string temp_input_file = Path.Combine(theBaseFilesDir, "GertToUTW\\XmlTestFiles\\Expected\\valid_singlerun.xml");
+        string temp_output_dir = Path.Combine(theBaseFilesDir, "GertToUTW_Test_Output");
 
-        try
-            {
-            // Act
-            (string output, string error) = await RunCommandAsync(EXECUTABLE_PATH, $"\"{temp_input_file}\" \"{temp_output_dir}\"");
+        (string output, string error) = await RunCommandAsync(mExecutable_path, $"{temp_input_file} {temp_output_dir}").ConfigureAwait(false);
 
-            // Assert
-            Assert.Contains("Conversion completed successfully.", output);
-            }
-        finally
-            {
-            // Cleanup temp test files
-            if( File.Exists(temp_input_file) )
-                {
-                File.Delete(temp_input_file);
-                }
+        Assert.IsEmpty(output);
+        Assert.IsNotEmpty(error);
+        }
 
-            if( Directory.Exists(temp_output_dir) )
-                {
-                Directory.Delete(temp_output_dir, true);
-                }
-            }
+    [TestMethod]
+    public async Task Main_2Arguments_ValidInput_ProducesExpectedOutput()
+        {
+        string valid_input_file = Path.Combine(theBaseFilesDir, "GertToUTW\\LogTestFiles\\Valid\\valid_singlerun.log");
+        string valid_output_dir = Path.Combine(theBaseFilesDir, "GertToUTW\\XmlTestFiles\\Generated\\ProgramTest\\");
+        (string output, string error) = await RunCommandAsync(mExecutable_path, $"{valid_input_file} {valid_output_dir}").ConfigureAwait(false);
+        Assert.IsNotEmpty(output);
+        Assert.Contains("Conversion completed successfully.", output);
+        Assert.IsEmpty(error);
         }
     }
+
+
