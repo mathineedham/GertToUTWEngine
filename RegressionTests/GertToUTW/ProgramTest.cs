@@ -24,7 +24,7 @@
 
 using System.Diagnostics;
 
-namespace RegressionTests.GertToUTW;
+namespace RegressionTests.GertToUTWEngine.Program_Tests;
 
 /** @ingroup REF_GertToUTWEngine_RegressionTests_GertToUTW_Program_Tests
     @class ProgramTests
@@ -39,7 +39,7 @@ namespace RegressionTests.GertToUTW;
 [TestClass]
 public class ProgramTests
     {
-    // Adjust relative path to point to your compiled executable (e.g., bin/Debug/net8.0/GertToUTW.exe)
+    // Adjust relative path to point to your compiled executable (e.g., bin/Debug/net10.0/GertToUTW.exe)
     private readonly string mExecutable_path = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../bin/Debug/net10.0/GertToUTW.exe"));
     private static readonly string theBaseFilesDir = AppDomain.CurrentDomain.BaseDirectory;
 
@@ -97,17 +97,20 @@ public class ProgramTests
             Validates that passing the `--help` flag prints the help and usage description.
 
         @details
-            - Executes the application binary with the  any of the help flags.
-            - Verifies that stdout contains the expected `Help:` header and `Usage: App.exe` string.
+            - Executes the application binary with any of the supported help flags (`--help`, `-h`, `-help`).
+            - Verifies that standard output contains text and standard error remains empty.
+
+        @param[in] arg
+            Provides the help command-line argument passed to the process.
 
         @note
-            Requires the compiled executable binary at `ExecutablePath`.
+            Requires the compiled executable binary at `mExecutable_path`.
     */
     [TestMethod]
     [DataRow("--help")]
     [DataRow("-h")]
     [DataRow("-help")]
-    public async Task Main_WithHelpFlag(string arg)
+    public async Task Main_WithHelpFlag( string arg )
         {
         (string output, string error) = await RunCommandAsync(mExecutable_path, arg).ConfigureAwait(false);
 
@@ -120,32 +123,40 @@ public class ProgramTests
             Validates that providing an invalid argument count outputs an error and usage message.
 
         @details
-            - Passes a single file argument without providing the output directory argument.
-            - Confirms that standard output contains the invalid arguments warning message.
+            - Tests execution with 0, 1, and more than 2 command-line arguments.
+            - Confirms that standard output contains usage instructions while error output remains empty.
 
         @note
-            Requires the compiled executable binary at `ExecutablePath`.
+            Requires the compiled executable binary at `mExecutable_path`.
     */
     [TestMethod]
     public async Task Main_WithInvalidArgumentsCount()
         {
-        //Test calling the executable with 0 argument
+        // Test calling the executable with 0 arguments
         (string output0, string error0) = await RunCommandAsync(mExecutable_path, "").ConfigureAwait(false);
         Assert.IsNotEmpty(output0);
         Assert.IsEmpty(error0);
-        //Test calling the executable with 1 argument
+
+        // Test calling the executable with 1 argument
         (string output1, string error1) = await RunCommandAsync(mExecutable_path, "only_one_argument.log").ConfigureAwait(false);
         Assert.IsNotEmpty(output1);
         Assert.IsEmpty(error1);
-        //Test calling the executable with >2 arguments
+
+        // Test calling the executable with >2 arguments
         (string output3, string error3) = await RunCommandAsync(mExecutable_path, $"first.log second.pdf third.xml").ConfigureAwait(false);
         Assert.IsNotEmpty(output3);
         Assert.IsEmpty(error3);
         }
 
     /** @test
-            Validates that execution with 2 arguments will call Application.Execute() but will catch error since input is invalid
+            Validates that execution with two arguments catches invalid input during application execution.
 
+        @details
+            - Passes an invalid or unexpected file format input path to the executable.
+            - Confirms that execution fails gracefully with empty standard output and non-empty standard error.
+
+        @note
+            Requires the compiled executable binary at `mExecutable_path`.
     */
     [TestMethod]
     public async Task Main_2Arguments_ErrorInExecute()
@@ -159,16 +170,26 @@ public class ProgramTests
         Assert.IsNotEmpty(error);
         }
 
+    /** @test
+            Validates that execution with valid input and output directory arguments produces expected output.
+
+        @details
+            - Passes a valid log file and valid target directory to the executable.
+            - Verifies that standard output confirms successful conversion and standard error remains empty.
+
+        @note
+            Requires the compiled executable binary at `mExecutable_path`.
+    */
     [TestMethod]
     public async Task Main_2Arguments_ValidInput_ProducesExpectedOutput()
         {
         string valid_input_file = Path.Combine(theBaseFilesDir, "GertToUTW\\LogTestFiles\\Valid\\valid_singlerun.log");
         string valid_output_dir = Path.Combine(theBaseFilesDir, "GertToUTW\\XmlTestFiles\\Generated\\ProgramTest\\");
+
         (string output, string error) = await RunCommandAsync(mExecutable_path, $"{valid_input_file} {valid_output_dir}").ConfigureAwait(false);
+
         Assert.IsNotEmpty(output);
         Assert.Contains("Conversion completed successfully.", output);
         Assert.IsEmpty(error);
         }
     }
-
-
