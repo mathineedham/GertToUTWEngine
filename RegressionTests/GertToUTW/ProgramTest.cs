@@ -24,7 +24,7 @@
 
 using System.Diagnostics;
 
-namespace RegressionTests.GertToUTWEngine.Program_Tests;
+namespace RegressionTests.GertToUTW;
 
 /** @ingroup REF_GertToUTWEngine_RegressionTests_GertToUTW_Program_Tests
     @class ProgramTests
