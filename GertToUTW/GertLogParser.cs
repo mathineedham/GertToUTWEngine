@@ -22,6 +22,7 @@
     @}
 */
 
+// Ignore Spelling: Gert, filepath
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -156,7 +157,7 @@ public static partial class GertLogParser
 
             string result_raw = extract_field(result_regex(), chunk);
             List<TestItem> test_items = parse_test_items(chunk);
-            string mac_adress = extract_field(mac_address_regex(), chunk);
+            string mac_address = extract_field(mac_address_regex(), chunk);
 
             test_runs.Add(new TestRun
                 {
@@ -171,7 +172,7 @@ public static partial class GertLogParser
                 SequencerId = "GERT",
                 StartTime = parse_date(extract_field(start_time_regex(), chunk)),
                 EndTime = parse_date(extract_field(end_time_regex(), chunk)),
-                SerialNumberAttributes = [new SerialNumberAttributes { SerialNumberAttributes_Key = 1, Name = "MACAdress", Value = mac_adress }],
+                SerialNumberAttributes = [new SerialNumberAttributes { SerialNumberAttributes_Key = 1, Name = "MACAddress", Value = mac_address }],
                 TestItem = test_items,
                 Comment = extract_field(comment_regex(), chunk)
                 }.Find_link_phandle_step());

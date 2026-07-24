@@ -22,7 +22,7 @@
     @{
     @}
 */
-
+// Ignore Spelling: Stdout Stderr
 using System.Globalization;
 using System.Text.RegularExpressions;
 

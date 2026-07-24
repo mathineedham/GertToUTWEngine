@@ -17,9 +17,9 @@
                 for input and output file paths, and expected exception handling in error scenarios.
     @}
 */
+// Ignore Spelling: XSD
 using System.Xml;
 using System.Xml.Linq;
-
 using GertToUTW;
 namespace RegressionTests.GertToUTW;
 
@@ -103,7 +103,7 @@ public partial class ApplicationTest
     [DataRow("GertToUTW\\XmlTestFiles\\Generated\\valid_singlerun_0.xml")]
     [DataRow("GertToUTW\\XmlTestFiles\\Generated\\valid_doublerun_0.xml")]
     [DataRow("GertToUTW\\XmlTestFiles\\Generated\\valid_doublerun_1.xml")]
-    public void Valid_Xsd( string xml_file )
+    public void Valid_XSD( string xml_file )
         {
         string xml_file_path = Path.Combine(theBaseFilesDir,xml_file);
 

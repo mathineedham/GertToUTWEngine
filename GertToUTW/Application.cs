@@ -22,7 +22,7 @@
     @{
     @}
 */
-
+// Ignore Spelling: Gert
 using System.Globalization;
 
 namespace GertToUTW;

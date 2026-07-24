@@ -80,7 +80,7 @@ public class XElementExtensionsTests
     [TestMethod]
     [DataRow(null)]
     [DataRow("")]
-    public void AddIfNotEmpty_ValueEmptyorNull( string? testing_value )
+    public void AddIfNotEmpty_ValueEmptyOrNull( string? testing_value )
         {
         XElement parent = new("Parent");
         parent.AddIfNotEmpty("TestElement", testing_value);

@@ -17,10 +17,9 @@
                 The tests ensure that the generated XML adheres to the expected structure and content, and that file I/O operations are performed correctly.
     @}
 */
-
+// Ignore Spelling: Utw, 
 using System.Text;
 using System.Xml.Linq;
-
 using GertToUTW;
 namespace RegressionTests.GertToUTW;
 
@@ -212,7 +211,7 @@ public class UtwXmlGeneratorFileIoTests
         }
 
     [TestCleanup]
-    public void Teardown()
+    public void Cleanup()
         {
         if( File.Exists(m_temp_file_path) )
             {

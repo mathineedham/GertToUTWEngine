@@ -1,7 +1,4 @@
-﻿
-using GertToUTW;
-
-/** @file
+﻿/** @file
 
     @copyright  &copy; 2024, Tria Technologies GmbH
                 SPDX-License-Identifier: (GPL-2.0-or-later OR LGPL-2.1-or-later)
@@ -20,7 +17,10 @@ using GertToUTW;
                 handling of various Type configurations and expected exception handling in error scenarios.
     @}
 */
+// Ignore Spelling: Routestep
+using GertToUTW;
 namespace RegressionTests.GertToUTW;
+
 /** @class      TestRunTest
     @ingroup    REF_GertToUTWEngine_RegressionTest_GertToUTW_TestRunTest
 
