@@ -64,7 +64,13 @@ public partial class ApplicationTest
         string absolute_input_file = string.IsNullOrEmpty(input) ? input : Path.Combine(theBaseFilesDir, input);
         string absolute_output_dir = string.IsNullOrEmpty(output) ? output : Path.Combine(theBaseFilesDir, output);
 
-        _ = Assert.ThrowsExactly<ArgumentException>(() => new Application(absolute_input_file, absolute_output_dir));
+        _ = Assert.ThrowsExactly<ArgumentException>
+            (
+            () =>
+                {
+                return new Application(absolute_input_file, absolute_output_dir);
+                }
+            );
 
         //input must exist
         string absolute_input_file2 = Path.Combine(theBaseFilesDir, "GertToUTW\\XmlTestFiles\\LogTestFiles\\nonexistent.log");

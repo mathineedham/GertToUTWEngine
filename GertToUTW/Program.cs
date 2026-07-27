@@ -55,6 +55,6 @@ internal static class Program
             }
 
         Console.WriteLine("\n Press Enter to close this window...");
-        Console.ReadLine();
+        _ = Console.ReadLine();
         }
     }

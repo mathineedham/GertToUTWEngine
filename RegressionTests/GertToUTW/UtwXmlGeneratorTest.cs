@@ -245,7 +245,7 @@ public class UtwXmlGeneratorFileIoTests
 
         Assert.IsTrue(File.Exists(m_temp_file_path), "The function completed execution but failed to create a physical file on disk.");
         string written_text = File.ReadAllText(m_temp_file_path, Encoding.UTF8);
-        StringAssert.Contains(written_text, "<TestRun>", "The output file content stream is missing the fundamental XML document root wrapper element.");
-        StringAssert.Contains(written_text, "encoding=\"utf-8\"", "The document declaration tag was not written out using standard explicit UTF-8 encoding strings.");
+        Assert.Contains("<TestRun>", written_text, "The output file content stream is missing the fundamental XML document root wrapper element.");
+        Assert.Contains("encoding=\"utf-8\"", written_text, "The document declaration tag was not written out using standard explicit UTF-8 encoding strings.");
         }
     }
