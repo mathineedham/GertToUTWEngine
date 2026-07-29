@@ -79,6 +79,20 @@ public class Application
         get;
         }
 
+    /** @property Given_lot_number
+     *  @brief 
+     *      Gets the lot number provided by the user.
+     *  @details
+     *      - Returns the lot number supplied during construction.
+     *      - The lot number is not validated or modified by the application.
+     *  @return
+     *      The lot number provided by the user.
+     */
+    public string Given_lot_number
+        {
+        get;
+        }
+
     /** @brief
         Initializes a new instance of the @ref Application class with validated input and output paths.
 
@@ -94,6 +108,9 @@ public class Application
 
         @param[in] output_xml_dir
             Provides the output directory path used for generated UTW XML files.
+
+        @param[in] given_lot_number
+            Provides the lot number to be used in the generated UTW XML files, is an optional parameter.
 
         @exception ArgumentNullException
             Thrown when `input_log_path` or `output_xml_dir` is `null`.
@@ -121,6 +138,7 @@ public class Application
 
         Input_log_path = input_log_path;
         Output_xml_dir = output_xml_dir;
+        Given_lot_number = given_lot_number;
         }
 
     /** @brief
@@ -147,7 +165,7 @@ public class Application
     */
     public List<string> Execute()
         {
-        List<TestRun> file_test_runs = GertLogParser.ParseGertLog(Input_log_path);
+        List<TestRun> file_test_runs = GertLogParser.ParseGertLog(Input_log_path, Given_lot_number); 
         int count = file_test_runs.Count;
         string file_name_without_ext = Path.GetFileNameWithoutExtension(Input_log_path);
         List<string> generated_xml_files = [];

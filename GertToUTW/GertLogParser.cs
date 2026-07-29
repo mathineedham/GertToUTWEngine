@@ -116,6 +116,9 @@ public static partial class GertLogParser
     @param[in] filepath
         The explicit layout system access path to the target document.
 
+    @param[in] givenlotnumber
+        Optional lot number to override the default extracted value.
+
     @return
         Returns a list containing valid structural execution models.
 
@@ -125,7 +128,7 @@ public static partial class GertLogParser
     @exception FileNotFoundException
         Thrown when the specified file path does not exist.
     */
-    public static List<TestRun> ParseGertLog( string filepath )
+    public static List<TestRun> ParseGertLog( string filepath, string given_lot_number ="")
         {
         if( string.IsNullOrEmpty(filepath) )
             {
@@ -174,6 +177,7 @@ public static partial class GertLogParser
                 EndTime = parse_date(extract_field(end_time_regex(), chunk)),
                 SerialNumberAttributes = [new SerialNumberAttributes { SerialNumberAttributes_Key = 1, Name = "MACAddress", Value = mac_address }],
                 TestItem = test_items,
+                Lot = given_lot_number,
                 Comment = extract_field(comment_regex(), chunk)
                 }.Find_link_phandle_step());
             }

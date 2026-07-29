@@ -204,7 +204,7 @@ public class LotNumberCalculatorTests
     [DataRow("00000001", "C003", "049156")]   // 1 + 49155 = 49156           -> Padded   -> 049156
     [DataRow("0", "0000", "000000")]
     public void GenerateLotNumber_Valid(
-        string mat_num, string mat_rev, string expected )
+        string mat_num, string mat_rev,  string expected )
         {
         string actual_result = TestRun.generate_lot_number(mat_num, mat_rev);
         Assert.AreEqual(expected, actual_result);
@@ -234,6 +234,27 @@ public class LotNumberCalculatorTests
             MaterialNumber = "99999999999999999999"
             };
         Assert.AreEqual("000000", test_run.Lot);
+        }
+
+    /** @brief Validates that the interaction between lot number, material number, revision number */
+    [TestMethod]
+    [DataRow("12345678", "B001","", "390735")]   
+    [DataRow("87654321", "0000","", "654321")]  
+    [DataRow("00000001", "C003","", "049156")]
+    [DataRow("00000001", "C003", "123456", "123456")]
+    [DataRow("00000001", "C003", "1234567", "1234567")]
+    [DataRow("00000001", "C003", "12345678", "049156")]
+    [DataRow("00000001", "C003", "12345", "049156")]
+    [DataRow("00000001", "C003", "12345B", "049156")]
+    public void TryAutoGenerate_CallingTime( string material_number, string revision_number, string lot_number, string expected_lot )
+        {
+        TestRun test_run = new()
+            {
+            MaterialRevision = revision_number,
+            MaterialNumber = material_number,
+            Lot = lot_number
+            };
+        Assert.AreEqual(expected_lot, test_run.Lot);
         }
     }
 

@@ -258,18 +258,32 @@ public partial class TestRun
         get; set;
         }
 
+    /** @brief Indicates whether a custom explicit lot number was set during initialization. */
+    private bool m_has_explicit_lot;
+
     /** @property Lot
         @brief
             Gets the factory batch production lot allocation string.
 
         @details
-            - Defaults to `"000000"`.
-            - Managed internally via @ref generate_lot_number.
+            - Defaults to `"000000"`or an automatically generated lot from material/revision
+            - If explicitly set to a non-null string, auto-generation is disabled
 
         @return
-            Returns the 6-digit production lot identifier.
+            Returns the production lot identifier.
     */
-    public string Lot { get; private set; } = "000000";
+    public string Lot
+        {
+        get => string.IsNullOrEmpty(field) ? "000000" : field;
+        set
+            {
+            if( !string.IsNullOrEmpty(value) && (value.Length is 6 or 7) && value.All(char.IsAsciiDigit) )
+                {
+                field = value;
+                m_has_explicit_lot = true;
+                }
+            }
+        } = string.Empty;
 
     /** @property Comment
         @brief
@@ -364,6 +378,10 @@ public partial class TestRun
     */
     private void try_auto_generate_lot()
         {
+        if ( m_has_explicit_lot )
+            {
+            return;
+            }
         try
             {
             Lot = generate_lot_number(MaterialNumber, MaterialRevision);
