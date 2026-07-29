@@ -45,10 +45,16 @@ public partial class ApplicationTest
         string absolute_output_dir1 = Path.Combine(theBaseFilesDir, "GertToUTW\\XmlTestFiles\\Generated");
         Application app_valid_singlerun = new(absolute_input_file1, absolute_output_dir1);
         _ = app_valid_singlerun.Execute(); // contains "Expected\\valid_singlerun_0.xml"
+
         string absolute_input_file2 = Path.Combine(theBaseFilesDir, "GertToUTW\\LogTestFiles\\Valid\\valid_doublerun.log");
         string absolute_output_dir2 = Path.Combine(theBaseFilesDir, "GertToUTW\\XmlTestFiles\\Generated");
         Application app_valid_doublerun = new(absolute_input_file2, absolute_output_dir2);
         _ = app_valid_doublerun.Execute(); // contains "Expected\\valid_doublerun_0.xml" and "Expected\\valid_doublerun_1.xml"
+
+        string absolute_input_file3 = Path.Combine(theBaseFilesDir, "GertToUTW\\LogTestFiles\\Valid\\valid_singlerun_lotnumberoption.log");
+        string absolute_output_dir3 = Path.Combine(theBaseFilesDir, "GertToUTW\\XmlTestFiles\\Generated");
+        Application app_valid_singlerun_lnoption = new(absolute_input_file3, absolute_output_dir3, "123456");
+        _ = app_valid_singlerun_lnoption.Execute(); 
 
         // Ensure the schema file exists prior to test execution
         Assert.IsTrue(File.Exists(theXsdFilePath),theXsdFilePath);
@@ -103,6 +109,7 @@ public partial class ApplicationTest
     [DataRow("GertToUTW\\XmlTestFiles\\Generated\\valid_singlerun_0.xml")]
     [DataRow("GertToUTW\\XmlTestFiles\\Generated\\valid_doublerun_0.xml")]
     [DataRow("GertToUTW\\XmlTestFiles\\Generated\\valid_doublerun_1.xml")]
+    [DataRow("GertToUTW\\XmlTestFiles\\Generated\\valid_singlerun_lotnumberoption_0.xml")]
     public void Valid_XSD( string xml_file )
         {
         string xml_file_path = Path.Combine(theBaseFilesDir,xml_file);
@@ -133,6 +140,8 @@ public partial class ApplicationTest
              "GertToUTW\\XmlTestFiles\\Expected\\valid_doublerun_fail.xml")]
     [DataRow("GertToUTW\\XmlTestFiles\\Generated\\valid_doublerun_1.xml",
              "GertToUTW\\XmlTestFiles\\Expected\\valid_doublerun_sucess.xml")]
+    [DataRow("GertToUTW\\XmlTestFiles\\Generated\\valid_singlerun_lotnumberoption_0.xml",
+             "GertToUTW\\XmlTestFiles\\Expected\\valid_singlerun_lotnumberoption.xml")]
     public void Application_Valid_ExistingFiles( string output_relative_path, string expected_relative_path )
         {
         string absolute_out = Path.Combine(theBaseFilesDir, output_relative_path);

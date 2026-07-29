@@ -23,7 +23,6 @@
 
   <ItemGroup>
     <Folder Include="GertToUTW\LogTestFiles\Valid\" />
-    <Folder Include="GertToUTW\XmlTestFiles\Expected\" />
   </ItemGroup>
     <ItemGroup>
 		<None Update="GertToUTW\LogTestFiles\**\*.log">
