@@ -43,11 +43,11 @@ public partial class ApplicationTest
         {
         string absolute_input_file1 = Path.Combine(theBaseFilesDir, "GertToUTW\\LogTestFiles\\Valid\\valid_singlerun.log");
         string absolute_output_dir1 = Path.Combine(theBaseFilesDir, "GertToUTW\\XmlTestFiles\\Generated");
-        Application app_valid_singlerun = new(absolute_input_file1, absolute_output_dir1);
+        Application app_valid_singlerun = new(absolute_input_file1, absolute_output_dir1, "");
         _ = app_valid_singlerun.Execute(); // contains "Expected\\valid_singlerun_0.xml"
         string absolute_input_file2 = Path.Combine(theBaseFilesDir, "GertToUTW\\LogTestFiles\\Valid\\valid_doublerun.log");
         string absolute_output_dir2 = Path.Combine(theBaseFilesDir, "GertToUTW\\XmlTestFiles\\Generated");
-        Application app_valid_doublerun = new(absolute_input_file2, absolute_output_dir2);
+        Application app_valid_doublerun = new(absolute_input_file2, absolute_output_dir2, "");
         _ = app_valid_doublerun.Execute(); // contains "Expected\\valid_doublerun_0.xml" and "Expected\\valid_doublerun_1.xml"
 
         // Ensure the schema file exists prior to test execution
@@ -66,14 +66,14 @@ public partial class ApplicationTest
 
         _ = Assert.ThrowsExactly<ArgumentException>(() =>
         {
-            return new Application(absolute_input_file, absolute_output_dir);
+            return new Application(absolute_input_file, absolute_output_dir, "");
         });
 
         //input must exist
         string absolute_input_file2 = Path.Combine(theBaseFilesDir, "GertToUTW\\XmlTestFiles\\LogTestFiles\\nonexistent.log");
         _ = Assert.ThrowsExactly<FileNotFoundException>(() =>
         {
-            return new Application(absolute_input_file2, "output");
+            return new Application(absolute_input_file2, "output","");
         });
         }
 
@@ -82,7 +82,7 @@ public partial class ApplicationTest
         {
         string absolute_input_file = Path.Combine(theBaseFilesDir, "GertToUTW\\LogTestFiles\\Valid\\valid_singlerun.log");
         string temp_dir = Path.Combine(theBaseFilesDir, Path.GetRandomFileName());
-        Application app = new(absolute_input_file, temp_dir);
+        Application app = new(absolute_input_file, temp_dir, "");
         _ = app.Execute();
         Assert.IsTrue(Directory.Exists(temp_dir), temp_dir);
         }
@@ -93,7 +93,7 @@ public partial class ApplicationTest
              "GertToUTW\\XmlTestFiles\\Generated")]
     public void Application_Valid( string input, string output )
         {
-        Application app = new(input, output);
+        Application app = new(input, output, "");
         Assert.AreEqual(input, app.Input_log_path);
         Assert.AreEqual(output, app.Output_xml_dir);
         }

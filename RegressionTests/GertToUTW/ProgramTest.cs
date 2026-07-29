@@ -109,14 +109,13 @@ public class ProgramTests
     [TestMethod]
     [DataRow("--help")]
     [DataRow("-h")]
-    [DataRow("-help")]
     public async Task Main_WithHelpFlag( string arg )
         {
         (string output, string error) = await RunCommandAsync(mExecutable_path, arg).ConfigureAwait(false);
 
-        Assert.IsNotNull(output);
-        Assert.IsNotEmpty(output);
-        Assert.IsEmpty(error);
+        Assert.IsNotNull(error);
+        Assert.IsEmpty(output);
+        Assert.IsNotEmpty(error);
         }
 
     /** @test
@@ -134,18 +133,18 @@ public class ProgramTests
         {
         // Test calling the executable with 0 arguments
         (string output0, string error0) = await RunCommandAsync(mExecutable_path, "").ConfigureAwait(false);
-        Assert.IsNotEmpty(output0);
-        Assert.IsEmpty(error0);
+        Assert.IsEmpty(output0);
+        Assert.IsNotEmpty(error0);
 
         // Test calling the executable with 1 argument
         (string output1, string error1) = await RunCommandAsync(mExecutable_path, "only_one_argument.log").ConfigureAwait(false);
-        Assert.IsNotEmpty(output1);
-        Assert.IsEmpty(error1);
+        Assert.IsEmpty(output1);
+        Assert.IsNotEmpty(error1);
 
         // Test calling the executable with >2 arguments
-        (string output3, string error3) = await RunCommandAsync(mExecutable_path, $"first.log second.pdf third.xml").ConfigureAwait(false);
-        Assert.IsNotEmpty(output3);
-        Assert.IsEmpty(error3);
+        (string output3, string error3) = await RunCommandAsync(mExecutable_path, $"first.log second.pdf third.xml ").ConfigureAwait(false);
+        Assert.IsEmpty(output3);
+        Assert.IsNotEmpty(error3);
         }
 
     /** @test
@@ -191,5 +190,26 @@ public class ProgramTests
         Assert.IsNotEmpty(output);
         Assert.Contains("Conversion completed successfully.", output);
         Assert.IsEmpty(error);
+
+        // Test calling executable with lot number option
+        (string output0, string error0) = await RunCommandAsync(mExecutable_path, $"{valid_input_file} {valid_output_dir} -l 123456").ConfigureAwait(false);
+        Assert.IsNotEmpty(output0);
+        Assert.Contains("Conversion completed successfully.", output0);
+        Assert.IsEmpty(error0);
+
+        (string output1, string error1) = await RunCommandAsync(mExecutable_path, $"{valid_input_file} -l 123456 {valid_output_dir}").ConfigureAwait(false);
+        Assert.IsNotEmpty(output1);
+        Assert.Contains("Conversion completed successfully.", output1);
+        Assert.IsEmpty(error1);
+
+        (string output3, string error3) = await RunCommandAsync(mExecutable_path, $"-l 123456 {valid_input_file} {valid_output_dir}").ConfigureAwait(false);
+        Assert.IsNotEmpty(output3);
+        Assert.Contains("Conversion completed successfully.", output3);
+        Assert.IsEmpty(error3);
+
+        (string output4, string error4) = await RunCommandAsync(mExecutable_path, $"--lot 123456 {valid_input_file} {valid_output_dir}").ConfigureAwait(false);
+        Assert.IsNotEmpty(output4);
+        Assert.Contains("Conversion completed successfully.", output4);
+        Assert.IsEmpty(error4);
         }
     }

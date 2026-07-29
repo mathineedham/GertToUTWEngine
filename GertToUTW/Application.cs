@@ -104,7 +104,7 @@ public class Application
         @exception FileNotFoundException
             Thrown when `input_log_path` does not identify an existing file.
     */
-    public Application( string input_log_path, string output_xml_dir )
+    public Application( string input_log_path, string output_xml_dir , string given_lot_number)
         {
         ArgumentException.ThrowIfNullOrWhiteSpace(input_log_path);
         ArgumentException.ThrowIfNullOrWhiteSpace(output_xml_dir);
