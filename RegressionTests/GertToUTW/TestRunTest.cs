@@ -251,8 +251,8 @@ public class LotNumberCalculatorTests
         TestRun test_run = new()
             {
             MaterialRevision = revision_number,
-            MaterialNumber = material_number,
-            Lot = lot_number
+            Lot = lot_number,
+            MaterialNumber = material_number
             };
         Assert.AreEqual(expected_lot, test_run.Lot);
         }
