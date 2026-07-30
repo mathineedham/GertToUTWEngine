@@ -349,11 +349,8 @@ public class FindLinkPHandleStepTests
                 new TestItem { Name = "Step 3: [Rush]", Stdout = "INFO::FillVariables\nResult: FAIL" }
                 ]
             };
-
-        // Act
         run=run.Find_link_phandle_step();
 
-        // Assert
         Assert.AreEqual("FT_FUNCTION", run.Routestep);
 
         Assert.HasCount(1, run.SerialNumberAttributes);

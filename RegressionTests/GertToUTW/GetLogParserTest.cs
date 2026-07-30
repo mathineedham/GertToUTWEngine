@@ -116,7 +116,7 @@ public class ParseStepItemTests
         _ = Assert.Throws<FormatException>(
             () =>
             {
-                return GertLogParser.parse_test_items(invalid_content);
+                return GertLogParser.parse_test_items(invalid_content,11164.99, new DateTime(2026,1,1,8,0,15));
             });
         }
 
@@ -147,7 +147,7 @@ public class ParseStepItemTests
         """, 2)]
     public void ParseTestItems_EvaluatesLogStructures_AndReturnsExpectedCount( string raw_content, int expected_count )
         {
-        List<TestItem> result = GertLogParser.parse_test_items(raw_content);
+        List<TestItem> result = GertLogParser.parse_test_items(raw_content,11164.99, new DateTime(2026, 1, 1, 8, 0, 15));
         Assert.IsNotNull(result);
         Assert.HasCount(expected_count, result);
         }
@@ -201,3 +201,38 @@ public class GertLogParserFlowControlTests
         }
     }
 
+/** @class     DurationParserTests
+ *  @ingroup   REF_GertToUTWEngine_RegressionTest_GertToUTW_GerLogParserTest
+ *  @brief     Unit tests for the "parse_duration" method of the `GertLogParser` class.
+ *  @details   
+ */
+[TestClass]
+public class DurationParserTests
+    {
+    /** @brief Verifies that any format mismatch causes return to be 0.0 */
+    [TestMethod]
+    [DataRow(null)]
+    [DataRow("")]
+    [DataRow("   ")]
+    [DataRow("invalid_string")]
+    [DataRow("12.34.56")]
+    [DataRow("abc123")]
+    public void ParseDuration_InvalidOrEmptyInput_ReturnsZero( string input )
+        {
+        double result = GertLogParser.parse_duration(input);
+        Assert.AreEqual(0.0, result, 0.0001, "Expected 0.0 for invalid or empty string inputs.");
+        }
+
+    /** @brief Verifies that a correctly formatted duration string parses into the exact expected double */
+    [TestMethod]
+    [DataRow("0", 0.0)]
+    [DataRow("10", 10.0)]
+    [DataRow("45.5", 45.5)]
+    [DataRow("-15.2", -15.2)]
+    [DataRow("  100.25  ", 100.25)] // Leading and trailing whitespace handling
+    public void ParseDuration_ValidNumericString_ReturnsParsedDouble( string input, double expected )
+        {
+        double result = GertLogParser.parse_duration(input);
+        Assert.AreEqual(expected, result, 0.0001, $"Failed parsing valid duration string: '{input}'");
+        }
+    }

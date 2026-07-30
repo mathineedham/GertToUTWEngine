@@ -16,7 +16,7 @@ Revision: E001
 MACAddress1: 000463A79D70
 CustomerProductName: rob-nR-imx6</Comment>
   <SerialNumber>1022000000</SerialNumber>
-  <SerialNumberAttributes SerialNumberAttributes_Key="1" Name="MACAdress" Value="000463A79D70" />
+  <SerialNumberAttributes SerialNumberAttributes_Key="1" Name="MACAddress" Value="000463A79D70" />
   <DUTPosition>01</DUTPosition>
   <OperatorName>ebersollt</OperatorName>
   <SoftwareVersion>0.0.0</SoftwareVersion>
@@ -33,6 +33,8 @@ CustomerProductName: rob-nR-imx6</Comment>
     <Result>PASSED</Result>
     <Name>I.010.01. Skip if NoChkPHandle</Name>
     <Description><![CDATA[INFO::FillVariables(0): FillVariables(args=['SkipStepsTilIf', '$PHandleLinkDisable', '==', 'TRUE', 'SKIP END: NoChkPHandle'])]]></Description>
+    <StartTime><![CDATA[2026-04-16T14:22:45.000+02:00]]></StartTime>
+    <Duration><![CDATA[PT13.3162222S]]></Duration>
   </TestItem>
   <TestItem>
     <TestItem_Key>01</TestItem_Key>
@@ -40,6 +42,8 @@ CustomerProductName: rob-nR-imx6</Comment>
     <Result>PASSED</Result>
     <Name>I.010.02. Check PHandle valid</Name>
     <Description><![CDATA[INFO::FillVariables(0): FillVariables(args=['CheckPHandleValid', '$QS_RouteStep', '$BoardId', '$UsedPhandleID'])]]></Description>
+    <StartTime><![CDATA[2026-04-16T14:22:58.316+02:00]]></StartTime>
+    <Duration><![CDATA[PT13.3162222S]]></Duration>
   </TestItem>
   <TestItem>
     <TestItem_Key>01</TestItem_Key>
@@ -47,6 +51,8 @@ CustomerProductName: rob-nR-imx6</Comment>
     <Result>PASSED</Result>
     <Name>I.020.01. Set Debuglevel DataMod</Name>
     <Description><![CDATA[INFO::FillVariables(0): FillVariables(args=['SetDebugLevel', '$_DebugLevel_04'])]]></Description>
+    <StartTime><![CDATA[2026-04-16T14:23:11.632+02:00]]></StartTime>
+    <Duration><![CDATA[PT13.3162222S]]></Duration>
   </TestItem>
   <TestItem>
     <TestItem_Key>01</TestItem_Key>
@@ -55,6 +61,8 @@ CustomerProductName: rob-nR-imx6</Comment>
     <Name>I.020.02. Set Debuglevel CASCON</Name>
     <Description><![CDATA[INFO::FillVariables(0): FillVariables(args=['SetDebugLevel', '$_DebugLevel_04'])]]></Description>
     <Stderr><![CDATA[SetDebugLevel::LogRecData(INFO): Time elapsed= 0.00]]></Stderr>
+    <StartTime><![CDATA[2026-04-16T14:23:24.948+02:00]]></StartTime>
+    <Duration><![CDATA[PT13.3162222S]]></Duration>
   </TestItem>
   <TestItem>
     <TestItem_Key>01</TestItem_Key>
@@ -62,6 +70,8 @@ CustomerProductName: rob-nR-imx6</Comment>
     <Result>PASSED</Result>
     <Name>I.020.03. Set Debug Level Wait</Name>
     <Description><![CDATA[SetDebugLevel::LogRecData(INFO): Time elapsed= 0.00]]></Description>
+    <StartTime><![CDATA[2026-04-16T14:23:38.264+02:00]]></StartTime>
+    <Duration><![CDATA[PT13.3162222S]]></Duration>
   </TestItem>
   <TestItem>
     <TestItem_Key>01</TestItem_Key>
@@ -69,6 +79,8 @@ CustomerProductName: rob-nR-imx6</Comment>
     <Result>PASSED</Result>
     <Name>I.020.04. Set Debuglevel IOW</Name>
     <Description><![CDATA[INFO::FillVariables(0): FillVariables(args=['SetDebugLevel', '$_DebugLevel_04'])]]></Description>
+    <StartTime><![CDATA[2026-04-16T14:23:51.581+02:00]]></StartTime>
+    <Duration><![CDATA[PT13.3162222S]]></Duration>
   </TestItem>
   <TestItem>
     <TestItem_Key>01</TestItem_Key>
@@ -76,6 +88,8 @@ CustomerProductName: rob-nR-imx6</Comment>
     <Result>PASSED</Result>
     <Name>I.020.05. Skip if !Std. Boot Timeout</Name>
     <Description><![CDATA[INFO::FillVariables(0): FillVariables(args=['SkipStepsTilIf', '$DUT_BOOT_TIMEOUT', '!=', '', 'SKIP END: !Std. Boot Timeout'])]]></Description>
+    <StartTime><![CDATA[2026-04-16T14:24:04.897+02:00]]></StartTime>
+    <Duration><![CDATA[PT13.3162222S]]></Duration>
   </TestItem>
   <TestItem>
     <TestItem_Key>01</TestItem_Key>
@@ -84,6 +98,8 @@ CustomerProductName: rob-nR-imx6</Comment>
     <Name>I.020.06. set USB0 Dev Name</Name>
     <Description><![CDATA[INFO::ActionSteps(0):]]></Description>
     <Stdout><![CDATA[Skip this teststep because [SKIP END: !Std. Boot Timeout] != [I.020.06. set USB0 Dev Name]]]></Stdout>
+    <StartTime><![CDATA[2026-04-16T14:24:18.213+02:00]]></StartTime>
+    <Duration><![CDATA[PT13.3162222S]]></Duration>
   </TestItem>
   <TestItem>
     <TestItem_Key>01</TestItem_Key>
@@ -97,5 +113,7 @@ INFO::FillVariables(0): FillVariables(args=['LogInfo', 'Needed if !Std. Boot Tim
 INFO::FillVariables(0): SET [LogInfo]
 INFO::FillVariables(0): SET [Needed if !Std. Boot Timeout]
 INFO::Needed if !Std. Boot Timeout]]></Stdout>
+    <StartTime><![CDATA[2026-04-16T14:24:31.529+02:00]]></StartTime>
+    <Duration><![CDATA[PT13.3162222S]]></Duration>
   </TestItem>
 </TestRun>

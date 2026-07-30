@@ -165,7 +165,8 @@ public static partial class UtwXmlGenerator
         item_node.AddIfNotEmpty("Description", item.Description);
         item_node.AddIfNotEmpty("Stdout", item.Stdout);
         item_node.AddIfNotEmpty("Stderr", item.Stderr);
-
+        item_node.AddIfNotEmpty("StartTime", format_time(item.StartTime));
+        item_node.AddIfNotEmpty("Duration",item.Duration);
         return item_node;
         }
     }

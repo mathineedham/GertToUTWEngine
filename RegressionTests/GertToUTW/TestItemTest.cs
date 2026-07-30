@@ -44,6 +44,7 @@ public sealed class TestItemTests
         Assert.IsNull(item.Stdout);
         Assert.IsNull(item.Stderr);
         Assert.IsNull(item.Idx);
+        Assert.IsEmpty(item.Duration);
         Assert.AreEqual(string.Empty, item.Result.Value);
         }
 

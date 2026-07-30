@@ -26,6 +26,7 @@
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Xml;
 
 namespace GertToUTW;
 
@@ -85,6 +86,11 @@ public static partial class GertLogParser
     [GeneratedRegex(@"\[TestRunEnd =\s*([^\]]+)\]")]
     internal static partial Regex end_time_regex();
 
+    /** @brief Matches the duration is seconds of the test rum */
+    [GeneratedRegex(@"\[ScriptElapsed =\s*([^\]]+)\]")]
+    internal static partial Regex duration_regex();
+
+
     /** @brief Extracts peripheral hardware network adapter identifier codes. */
     [GeneratedRegex(@"MACAddress1:\s*(\S+)")]
     internal static partial Regex mac_address_regex();
@@ -128,7 +134,7 @@ public static partial class GertLogParser
     @exception FileNotFoundException
         Thrown when the specified file path does not exist.
     */
-    public static List<TestRun> ParseGertLog( string filepath, string given_lot_number ="")
+    public static List<TestRun> ParseGertLog( string filepath, string given_lot_number = "" )
         {
         if( string.IsNullOrEmpty(filepath) )
             {
@@ -159,7 +165,9 @@ public static partial class GertLogParser
                 }
 
             string result_raw = extract_field(result_regex(), chunk);
-            List<TestItem> test_items = parse_test_items(chunk);
+            DateTime start_time = parse_date(extract_field(start_time_regex(), chunk));
+            double duration = parse_duration(extract_field(duration_regex(), chunk));
+            List<TestItem> test_items = parse_test_items(chunk, duration, start_time);
             string mac_address = extract_field(mac_address_regex(), chunk);
 
             test_runs.Add(new TestRun
@@ -173,7 +181,7 @@ public static partial class GertLogParser
                 SerialNumber = extract_field(serial_number_regex(), chunk),
                 Result = new Result(result_raw),
                 SequencerId = "GERT",
-                StartTime = parse_date(extract_field(start_time_regex(), chunk)),
+                StartTime =start_time,
                 EndTime = parse_date(extract_field(end_time_regex(), chunk)),
                 SerialNumberAttributes = [new SerialNumberAttributes { SerialNumberAttributes_Key = 1, Name = "MACAddress", Value = mac_address }],
                 TestItem = test_items,
@@ -183,6 +191,21 @@ public static partial class GertLogParser
             }
 
         return test_runs;
+        }
+
+    /** @brief extracts the number of seconds from the duration string and returns it as a double. */
+    internal static double parse_duration( string duration_string )
+        {
+        if( string.IsNullOrWhiteSpace(duration_string) )
+            {
+            return 0.0;
+            }
+        
+        if( double.TryParse(duration_string.Replace('.',','), out double seconds) )
+            {
+            return seconds;
+            }
+        return 0.0;
         }
 
     /** @brief
@@ -245,13 +268,19 @@ public static partial class GertLogParser
     @param[in] content
         The overall multi-line log container layout block.
 
+    @param[in] test_run_duration
+        The total execution time in seconds for the current test run.
+
+    @param[in] test_run_start_time
+        The starting timestamp of the current test run.
+
     @return
         Returns a list of parsed @ref TestItem objects.
 
     @exception FormatException
         Thrown when log data boundary markers are missing.
     */
-    internal static List<TestItem> parse_test_items( string content )
+    internal static List<TestItem> parse_test_items( string content, double test_run_duration , DateTime test_run_starttime)
         {
         List<TestItem> test_items = [];
         Match log_data_match = log_data_regex().Match(content);
@@ -278,7 +307,26 @@ public static partial class GertLogParser
                 test_items.Add(new TestItem(match));
                 }
             }
-
+        int nb_steps = test_items.Count;
+        (string step_duration, TimeSpan step_time) = step_duration_constructor(test_run_duration, nb_steps);
+        for(int i = 0; i < nb_steps; i++ )
+            {
+            test_items[i].Duration = step_duration;
+            test_items[i].StartTime = test_run_starttime + TimeSpan.FromSeconds(i * step_time.TotalSeconds);
+            }
         return test_items;
+        }
+
+
+    internal static (string,TimeSpan) step_duration_constructor( double test_run_duration, int nb_steps )
+        {
+        if( nb_steps <= 0 || test_run_duration <= 0 )
+            {
+            return ("PT0S",TimeSpan.Zero);
+            }
+
+        double step_seconds = test_run_duration / nb_steps;
+        TimeSpan step_time = TimeSpan.FromSeconds(step_seconds);
+        return (XmlConvert.ToString(step_time), step_time);
         }
     }
