@@ -150,6 +150,18 @@ INFO::FillVariables(0): SET [Needed if !Std. Boot Timeout]
 INFO::Needed if !Std. Boot Timeout
 Result: PASS
 --------------------
+Step 11: [L.999.02. Link PHandle]
+INFO::FillVariables(0): FillVariables(args=['LinkPHandle', '$QS_RouteStep', '$BoardId', '$UsedPhandleID'])
+
+INFO::FillVariables(0): SET [LinkPHandle]
+INFO::FillVariables(0): SET [FT_FUNCTION]
+INFO::FillVariables(0): SET [1022000000]
+INFO::FillVariables(0): SET [F60287RA]
+INFO::LinkPHandle(0): 
+#####  Internal Cmd LinkPHandle:
+args=[['FT_FUNCTION', '1022000000', 'F60287RA']]
+Result: PASS
+--------------------
 INFO::CloseTestLog(0): 
 Total elapsed time= 119.85
 [LogData = End]
