@@ -150,6 +150,10 @@ public class ParseStepItemTests
         List<TestItem> result = GertLogParser.parse_test_items(raw_content,11164.99, new DateTime(2026, 1, 1, 8, 0, 15));
         Assert.IsNotNull(result);
         Assert.HasCount(expected_count, result);
+        if( result.Count > 0 )
+            {
+            Assert.AreEqual(new DateTime(2026, 1, 1, 8, 0, 15), result[0].StartTime);
+            }
         }
     }
 
