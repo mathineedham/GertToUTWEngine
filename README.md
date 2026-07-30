@@ -8,3 +8,8 @@
 
 # to execute for a folder of .log files  
 `for %f in (C:\folder_path\*) do C:\U...e\GertToUTW\bin\Release\net10.0\GertToUTW.exe "%f" out_dir`
+
+# to execute 
+`app.exe file.log directory`
+or if you want to give a lot number 
+`app.exe file.log directory --lot 123456`
