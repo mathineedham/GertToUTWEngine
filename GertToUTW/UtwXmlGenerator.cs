@@ -114,6 +114,7 @@ public static partial class UtwXmlGenerator
             new XElement("MaterialText", test_run_instance.MaterialText),
             new XElement("MaterialRevision", test_run_instance.MaterialRevision),
             new XElement("Lot", test_run_instance.Lot),
+            new XElement("Station", test_run_instance.Station),
             new XElement("Routestep", test_run_instance.Routestep),
             new XElement("Comment", test_run_instance.Comment),
             new XElement("SerialNumber", test_run_instance.SerialNumber)

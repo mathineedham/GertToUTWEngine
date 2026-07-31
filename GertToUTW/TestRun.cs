@@ -244,7 +244,7 @@ public partial class TestRun
     public string? Station
         {
         get; set;
-        }
+        } = "NOT_SET";
 
     /** @property Routestep
         @brief
@@ -256,7 +256,7 @@ public partial class TestRun
     public string? Routestep
         {
         get; set;
-        }
+        } = "NOT_SET";
 
     /** @brief Indicates whether a custom explicit lot number was set during initialization. */
     private bool m_has_explicit_lot;

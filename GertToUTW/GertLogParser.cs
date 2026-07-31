@@ -190,9 +190,9 @@ public static partial class GertLogParser
                 }.Find_link_phandle_step());
             }
 
-        return test_runs;
-        }
 
+        return TestRunNormalizer.NormalizeRouteAndPHandle(test_runs);
+        }
     /** @brief extracts the number of seconds from the duration string and returns it as a double. */
     internal static double parse_duration( string duration_string )
         {
