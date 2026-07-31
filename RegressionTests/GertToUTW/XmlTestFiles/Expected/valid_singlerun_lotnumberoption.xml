@@ -5,6 +5,7 @@
   <MaterialText>ROB NANORISC-IMX6S-009 PCBFTX</MaterialText>
   <MaterialRevision>E001</MaterialRevision>
   <Lot>123456</Lot>
+  <Station>NOT_SET</Station>
   <Routestep>FT_FUNCTION</Routestep>
   <Comment>[BOARDDATA]
 [GUIDATA]

@@ -44,8 +44,8 @@ public sealed class TestRunTests
         Assert.IsNotNull(run.TestItem);
         Assert.IsNotNull(run.SerialNumberAttributes);
         Assert.IsNull(run.Comment);
-        Assert.IsNull(run.Routestep);
-        Assert.IsNull(run.Station);
+        Assert.AreEqual("NOT_SET", run.Routestep);
+        Assert.AreEqual("NOT_SET", run.Station);
 
         }
 
@@ -274,7 +274,7 @@ public class FindLinkPHandleStepTests
         TestRun run1 = new()
             { TestItem = [] };
         run1 = run1.Find_link_phandle_step();
-        Assert.IsTrue(string.IsNullOrEmpty(run1.Routestep));
+        Assert.AreEqual("NOT_SET", run1.Routestep);
         Assert.IsEmpty(run1.SerialNumberAttributes);
 
         // Case 2: List with no "Link PHandle" step
@@ -287,7 +287,7 @@ public class FindLinkPHandleStepTests
                 ]
             };
         run2 =run2.Find_link_phandle_step();
-        Assert.IsTrue(string.IsNullOrEmpty(run2.Routestep));
+        Assert.AreEqual("NOT_SET", run2.Routestep);
         Assert.IsEmpty(run2.SerialNumberAttributes);
 
         // Case 3: List with a "Link PHandle" step but Stdout is empty
@@ -300,7 +300,7 @@ public class FindLinkPHandleStepTests
                 ]
             };
         run3 =run3.Find_link_phandle_step();
-        Assert.IsTrue(string.IsNullOrEmpty(run3.Routestep));
+        Assert.AreEqual("NOT_SET", run3.Routestep);
         Assert.IsEmpty(run3.SerialNumberAttributes);
 
         // Case 4: List with a "Link PHandle" step but Result is not "PASSED" (e.g. skipped/failed)

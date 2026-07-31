@@ -5,7 +5,8 @@
   <MaterialText>ROB NANORISC-IMX6S-009 PCBFTX</MaterialText>
   <MaterialRevision>E001</MaterialRevision>
   <Lot>124217</Lot>
-  <Routestep />
+  <Station>NOT_SET</Station>
+  <Routestep>FT_FUNCTION</Routestep>
   <Comment>[BOARDDATA]
 [GUIDATA]
 BoardId: 1022000000
@@ -16,6 +17,7 @@ Revision: E001
 CustomerProductName: rob-nR-imx6</Comment>
   <SerialNumber>1022000000</SerialNumber>
   <SerialNumberAttributes SerialNumberAttributes_Key="1" Name="MACAddress" Value="" />
+  <SerialNumberAttributes SerialNumberAttributes_Key="1" Name="PHandle" Value="F60287RA" />
   <DUTPosition>01</DUTPosition>
   <OperatorName>ebersollt</OperatorName>
   <SoftwareVersion>0.0.0</SoftwareVersion>
