@@ -167,7 +167,6 @@ public class Application
         {
         List<TestRun> file_test_runs = GertLogParser.ParseGertLog(Input_log_path, Given_lot_number); 
         int count = file_test_runs.Count;
-        string file_name_without_ext = Path.GetFileNameWithoutExtension(Input_log_path);
         List<string> generated_xml_files = [];
 
         _ = Directory.CreateDirectory(Output_xml_dir);
@@ -175,8 +174,8 @@ public class Application
         for( int i = 0; i < count; i++ )
             {
             TestRun test_run = file_test_runs[i];
-            string file_index = i.ToString(CultureInfo.InvariantCulture);
-            string unique_xml_path = Path.Combine(Output_xml_dir, $"{file_name_without_ext}_{file_index}.xml");
+            string time = test_run.StartTime.ToString("yyyy-MM-dd'T'HHmmss.fffzzz", CultureInfo.InvariantCulture).Replace(":", "");
+            string unique_xml_path = Path.Combine(Output_xml_dir, $"{test_run.SerialNumber}-{time}.xml");
             UtwXmlGenerator.GenerateUtwXml(test_run, unique_xml_path);
             generated_xml_files.Add(unique_xml_path);
             }

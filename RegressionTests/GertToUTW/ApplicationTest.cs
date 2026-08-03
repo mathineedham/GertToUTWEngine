@@ -106,10 +106,10 @@ public partial class ApplicationTest
 
     /** @brief Validates the XML file against the XSD schema and asserts that there are no validation errors. */
     [TestMethod]
-    [DataRow("GertToUTW\\XmlTestFiles\\Generated\\valid_singlerun_0.xml")]
-    [DataRow("GertToUTW\\XmlTestFiles\\Generated\\valid_doublerun_0.xml")]
-    [DataRow("GertToUTW\\XmlTestFiles\\Generated\\valid_doublerun_1.xml")]
-    [DataRow("GertToUTW\\XmlTestFiles\\Generated\\valid_singlerun_lotnumberoption_0.xml")]
+    [DataRow("GertToUTW\\XmlTestFiles\\Generated\\1022000000-2026-04-16T142039.000+0200.xml")] //valid_singlerun_0
+    [DataRow("GertToUTW\\XmlTestFiles\\Generated\\1022000000-2026-04-16T142040.000+0200.xml")] // valid_doublerun_0
+    [DataRow("GertToUTW\\XmlTestFiles\\Generated\\1022000000-2026-04-16T142245.000+0200.xml")] // valid_doublerun_1
+    [DataRow("GertToUTW\\XmlTestFiles\\Generated\\1022000000-2026-04-16T142052.000+0200.xml")] // valid_singlerun_lotnumberoption_0
     public void Valid_XSD( string xml_file )
         {
         string xml_file_path = Path.Combine(theBaseFilesDir,xml_file);
@@ -134,13 +134,13 @@ public partial class ApplicationTest
 
     /** @brief  Validates that application correctly generated an xml file as expected */
     [TestMethod]
-    [DataRow("GertToUTW\\XmlTestFiles\\Generated\\valid_singlerun_0.xml",
+    [DataRow("GertToUTW\\XmlTestFiles\\Generated\\1022000000-2026-04-16T142039.000+0200.xml",
              "GertToUTW\\XmlTestFiles\\Expected\\valid_singlerun.xml")]
-    [DataRow("GertToUTW\\XmlTestFiles\\Generated\\valid_doublerun_0.xml",
+    [DataRow("GertToUTW\\XmlTestFiles\\Generated\\1022000000-2026-04-16T142040.000+0200.xml",
              "GertToUTW\\XmlTestFiles\\Expected\\valid_doublerun_fail.xml")]
-    [DataRow("GertToUTW\\XmlTestFiles\\Generated\\valid_doublerun_1.xml",
+    [DataRow("GertToUTW\\XmlTestFiles\\Generated\\1022000000-2026-04-16T142245.000+0200.xml",
              "GertToUTW\\XmlTestFiles\\Expected\\valid_doublerun_sucess.xml")]
-    [DataRow("GertToUTW\\XmlTestFiles\\Generated\\valid_singlerun_lotnumberoption_0.xml",
+    [DataRow("GertToUTW\\XmlTestFiles\\Generated\\1022000000-2026-04-16T142052.000+0200.xml",
              "GertToUTW\\XmlTestFiles\\Expected\\valid_singlerun_lotnumberoption.xml")]
     public void Application_Valid_ExistingFiles( string output_relative_path, string expected_relative_path )
         {
