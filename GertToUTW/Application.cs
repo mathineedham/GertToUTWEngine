@@ -22,6 +22,8 @@
     @{
     @}
 */
+// Ignore Spelling: Gert
+using System.Globalization;
 
 using System.Globalization;
 
@@ -79,6 +81,20 @@ public class Application
         get;
         }
 
+    /** @property Given_lot_number
+     *  @brief 
+     *      Gets the lot number provided by the user.
+     *  @details
+     *      - Returns the lot number supplied during construction.
+     *      - The lot number is not validated or modified by the application.
+     *  @return
+     *      The lot number provided by the user.
+     */
+    public string Given_lot_number
+        {
+        get;
+        }
+
     /** @brief
         Initializes a new instance of the @ref Application class with validated input and output paths.
 
@@ -92,11 +108,8 @@ public class Application
         @param[in] input_log_path
             Provides the path to the input Gert log file.
 
-        @param[in] output_xml_dir
-            Provides the output directory path used for generated UTW XML files.
-
-        @exception ArgumentNullException
-            Thrown when `input_log_path` or `output_xml_dir` is `null`.
+    @param[in] output_xml_dir
+        Path to the output directory where generated XML files will be stored.
 
         @exception ArgumentException
             Thrown when either path is empty or whitespace-only, or when `input_log_path` does not use the `.log` extension.
@@ -104,7 +117,7 @@ public class Application
         @exception FileNotFoundException
             Thrown when `input_log_path` does not identify an existing file.
     */
-    public Application( string input_log_path, string output_xml_dir )
+    public Application( string input_log_path, string output_xml_dir , string given_lot_number = "")
         {
         ArgumentException.ThrowIfNullOrWhiteSpace(input_log_path);
         ArgumentException.ThrowIfNullOrWhiteSpace(output_xml_dir);
@@ -121,17 +134,16 @@ public class Application
 
         Input_log_path = input_log_path;
         Output_xml_dir = output_xml_dir;
+        Given_lot_number = given_lot_number;
         }
 
     /** @brief
         Parses the configured Gert log file and generates the corresponding UTW XML files.
 
-        @details
-            - Parses input log sessions through @ref GertLogParser.
-            - Creates the configured output directory idempotently before writing files.
-            - Generates deterministic file names from the input file stem and a zero-based, culture-invariant index.
-            - Adds each output path to the result only after @ref UtwXmlGenerator completes successfully.
-            - Does not synchronize concurrent executions that target the same output paths.
+    @details
+        - Parses input log file sessions using @ref GertLogParser.
+        - Ensures the output directory exists.
+        - Generates uniquely named XML files in the target directory via @ref UtwXmlGenerator.
 
         @return
             Returns the generated XML file paths in the same order as the parsed test runs.
@@ -147,9 +159,8 @@ public class Application
     */
     public List<string> Execute()
         {
-        List<TestRun> file_test_runs = GertLogParser.ParseGertLog(Input_log_path);
+        List<TestRun> file_test_runs = GertLogParser.ParseGertLog(Input_log_path, Given_lot_number); 
         int count = file_test_runs.Count;
-        string file_name_without_ext = Path.GetFileNameWithoutExtension(Input_log_path);
         List<string> generated_xml_files = [];
 
         _ = Directory.CreateDirectory(Output_xml_dir);
@@ -157,9 +168,7 @@ public class Application
         for( int i = 0; i < count; i++ )
             {
             TestRun test_run = file_test_runs[i];
-            string file_index = i.ToString(CultureInfo.InvariantCulture);
-            string unique_xml_path = Path.Combine(Output_xml_dir, $"{file_name_without_ext}_{file_index}.xml");
-            UtwXmlGenerator.GenerateUtwXml(test_run, unique_xml_path);
+            string unique_xml_path = Path.Combine(Output_xml_dir, $"{file_name_without_ext}_{i}.xml");
             generated_xml_files.Add(unique_xml_path);
             }
 

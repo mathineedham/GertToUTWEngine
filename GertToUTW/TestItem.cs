@@ -22,7 +22,7 @@
     @{
     @}
 */
-
+// Ignore Spelling: Stdout Stderr
 using System.Globalization;
 using System.Text.RegularExpressions;
 
@@ -153,6 +153,26 @@ public class TestItem
             field = value;
             }
         }
+
+    /** @property Duration
+        @brief
+            Gets or sets the execution duration of the test item in seconds.
+        @details
+            - Represents the time taken to execute the test step.
+        @return
+            Returns the execution duration in seconds
+    */
+    public string Duration { get; set; } = string.Empty;
+
+    /** @property StartTime
+        @brief
+            Gets or sets the start time of the test item execution.
+        @details
+            - Represents the timestamp calculated from duration when the test step began execution.
+        @return
+            Returns the start time as a string.
+    */
+    public DateTime StartTime { get; set; } 
 
     /** @property Result
         @brief

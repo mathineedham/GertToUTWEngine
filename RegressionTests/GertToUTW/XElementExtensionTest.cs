@@ -11,9 +11,9 @@
     @{
     @ingroup    REF_GertToUTWEngine_RegressionTest_GertToUTW
 
-    @brief      Regression tests for the `XElementExtension` class, focusing on XML sanitization and conditional element addition.
+    @brief      Regression tests for the `XElementExtension` class, focusing on XML sanitation and conditional element addition.
 
-    @details    Validates the behavior of the `XElementExtension` class, including sanitization of strings for XML compatibility
+    @details    Validates the behavior of the `XElementExtension` class, including sanitation of strings for XML compatibility
                 and conditional addition of child elements to an `XElement`.
     @}
 */
@@ -69,19 +69,27 @@ public class XElementExtensionsTests
     public void AddIfNotEmpty_ParentNull()
         {
         XElement? null_parent = null;
-        _ = Assert.ThrowsExactly<ArgumentNullException>(() =>null_parent!.AddIfNotEmpty("TestElement", "Valid Value"));
+        _ = Assert.ThrowsExactly<ArgumentNullException>(
+            () =>
+            {
+                null_parent!.AddIfNotEmpty("TestElement", "Valid Value");
+            });
         }
 
     /** @brief Tests that the 'AddIfNotEmpty' method does not add a child element when the value is null or empty. */
     [TestMethod]
     [DataRow(null)]
     [DataRow("")]
-    public void AddIfNotEmpty_ValueEmptyorNull( string? testing_value )
+    public void AddIfNotEmpty_ValueEmptyOrNull( string? testing_value )
         {
         XElement parent = new("Parent");
         parent.AddIfNotEmpty("TestElement", testing_value);
         Assert.IsFalse(parent.HasElements, "Parent should not have any child elements when value is null or empty.");
-        _ = Assert.ThrowsExactly<ArgumentException>(() => parent.AddIfNotEmpty("   ", "Valid value"));
+        _ = Assert.ThrowsExactly<ArgumentException>(
+            () =>
+            {
+                parent.AddIfNotEmpty("   ", "Valid value");
+            });
 
         }
 

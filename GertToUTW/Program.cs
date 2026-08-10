@@ -1,9 +1,13 @@
-﻿/** @file
+﻿
 
-    @copyright  &copy; 2026, Tria Technologies GmbH
+using CommandLine;
+
+/** @file
+
+    @copyright  &copy; 2026, TRIA Technologies GmbH
                 SPDX-License-Identifier: (GPL-2.0-or-later OR LGPL-2.1-or-later)
 
-    @date       22.07.2026
+    @date       24.07.2026
 
     @author
         Mathilde Needham (Mathilde.Needham@tria-technologies.com)
@@ -34,27 +38,31 @@ namespace GertToUTW;
 
     @see Application
 */
-internal static class Program
+internal class Program
     {
-    /** @brief
-        Main executable entry point for the console runner application.
-    */
-    private static void Main()
+    private static void Main( string[] args )
         {
-        string input_log_path = @"C:\Users\needhamm\Documents\GertToUTWEngine\GertToUTW\valid_singlerun.log";
-        string output_xml_path = @"C:\Users\needhamm\Documents\GertToUTWEngine\GertToUTW\valid_singlerun.xml";
+        _ = Parser.Default.ParseArguments<Options>(args)
+            .WithParsed(run_application)
+            .WithNotParsed(errors =>
+            {
+            });
+        }
 
+    private static void run_application( Options opts )
+        {
         try
             {
-            Application app = new(input_log_path, output_xml_path);
+            Application app = new(opts.InputPath, opts.OutputDirectory, opts.LotNumber);
             _ = app.Execute();
+            Console.WriteLine("Conversion completed successfully.");
             }
         catch( Exception ex )
             {
-            Console.WriteLine(ex.Message);
+            Console.Error.WriteLine($"Error: {ex.Message}");
             }
 
         Console.WriteLine("\n Press Enter to close this window...");
-        _ = Console.ReadLine();
+        Console.ReadLine();
         }
     }

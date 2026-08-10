@@ -17,9 +17,9 @@
                 for input and output file paths, and expected exception handling in error scenarios.
     @}
 */
+// Ignore Spelling: XSD
 using System.Xml;
 using System.Xml.Linq;
-
 using GertToUTW;
 namespace RegressionTests.GertToUTW;
 
@@ -45,17 +45,23 @@ public partial class ApplicationTest
         string absolute_output_dir1 = Path.Combine(theBaseFilesDir, "GertToUTW\\XmlTestFiles\\Generated");
         Application app_valid_singlerun = new(absolute_input_file1, absolute_output_dir1);
         _ = app_valid_singlerun.Execute(); // contains "Expected\\valid_singlerun_0.xml"
+
         string absolute_input_file2 = Path.Combine(theBaseFilesDir, "GertToUTW\\LogTestFiles\\Valid\\valid_doublerun.log");
         string absolute_output_dir2 = Path.Combine(theBaseFilesDir, "GertToUTW\\XmlTestFiles\\Generated");
         Application app_valid_doublerun = new(absolute_input_file2, absolute_output_dir2);
         _ = app_valid_doublerun.Execute(); // contains "Expected\\valid_doublerun_0.xml" and "Expected\\valid_doublerun_1.xml"
+
+        string absolute_input_file3 = Path.Combine(theBaseFilesDir, "GertToUTW\\LogTestFiles\\Valid\\valid_singlerun_lotnumberoption.log");
+        string absolute_output_dir3 = Path.Combine(theBaseFilesDir, "GertToUTW\\XmlTestFiles\\Generated");
+        Application app_valid_singlerun_lnoption = new(absolute_input_file3, absolute_output_dir3, "123456");
+        _ = app_valid_singlerun_lnoption.Execute(); 
 
         // Ensure the schema file exists prior to test execution
         Assert.IsTrue(File.Exists(theXsdFilePath),theXsdFilePath);
         }
 
 
-    /** @brief  Validates that the constrcutor throws an ArgumentException when provided with an invalid file paths */
+    /** @brief  Validates that the constructor throws an ArgumentException when provided with an invalid file paths */
     [TestMethod]
     [DataRow("", "")]
     [DataRow("GertToUTW\\XmlTestFiles\\Structure\\machine-readable-logs.xsd", "output")] //input must be .log
@@ -64,17 +70,14 @@ public partial class ApplicationTest
         string absolute_input_file = string.IsNullOrEmpty(input) ? input : Path.Combine(theBaseFilesDir, input);
         string absolute_output_dir = string.IsNullOrEmpty(output) ? output : Path.Combine(theBaseFilesDir, output);
 
-        _ = Assert.ThrowsExactly<ArgumentException>
-            (
-            () =>
-                {
-                return new Application(absolute_input_file, absolute_output_dir);
-                }
-            );
+        _ = Assert.ThrowsExactly<ArgumentException>(() => new Application(absolute_input_file, absolute_output_dir));
 
         //input must exist
         string absolute_input_file2 = Path.Combine(theBaseFilesDir, "GertToUTW\\XmlTestFiles\\LogTestFiles\\nonexistent.log");
-        _ = Assert.ThrowsExactly<FileNotFoundException>(() => new Application(absolute_input_file2, "output"));
+        _ = Assert.ThrowsExactly<FileNotFoundException>(() =>
+        {
+            return new Application(absolute_input_file2, "output");
+        });
         }
 
     [TestMethod]
@@ -100,10 +103,11 @@ public partial class ApplicationTest
 
     /** @brief Validates the XML file against the XSD schema and asserts that there are no validation errors. */
     [TestMethod]
-    [DataRow("GertToUTW\\XmlTestFiles\\Generated\\valid_singlerun_0.xml")]
-    [DataRow("GertToUTW\\XmlTestFiles\\Generated\\valid_doublerun_0.xml")]
-    [DataRow("GertToUTW\\XmlTestFiles\\Generated\\valid_doublerun_1.xml")]
-    public void Valid_Xsd( string xml_file )
+    [DataRow("GertToUTW\\XmlTestFiles\\Generated\\1022000000-2026-04-16T142039.000+0200.xml")] //valid_singlerun_0
+    [DataRow("GertToUTW\\XmlTestFiles\\Generated\\1022000000-2026-04-16T142040.000+0200.xml")] // valid_doublerun_0
+    [DataRow("GertToUTW\\XmlTestFiles\\Generated\\1022000000-2026-04-16T142245.000+0200.xml")] // valid_doublerun_1
+    [DataRow("GertToUTW\\XmlTestFiles\\Generated\\1022000000-2026-04-16T142052.000+0200.xml")] // valid_singlerun_lotnumberoption_0
+    public void Valid_XSD( string xml_file )
         {
         string xml_file_path = Path.Combine(theBaseFilesDir,xml_file);
 
@@ -116,18 +120,25 @@ public partial class ApplicationTest
         using XmlReader reader = XmlReader.Create(xml_file_path, xml_settings);
         xml_doc.Load(reader);
 
-        xml_doc.Validate(( sender, e ) =>Assert.Fail(e.Message));
+        xml_doc.Validate(
+            ( sender, e ) =>
+                {
+                    Assert.Fail(e.Message);
+                }
+        );
 
         }
 
-    /** @brief  Validates that appliucation correctly generated an xml file as expected */
+    /** @brief  Validates that application correctly generated an xml file as expected */
     [TestMethod]
-    [DataRow("GertToUTW\\XmlTestFiles\\Generated\\valid_singlerun_0.xml",
+    [DataRow("GertToUTW\\XmlTestFiles\\Generated\\1022000000-2026-04-16T142039.000+0200.xml",
              "GertToUTW\\XmlTestFiles\\Expected\\valid_singlerun.xml")]
-    [DataRow("GertToUTW\\XmlTestFiles\\Generated\\valid_doublerun_0.xml",
+    [DataRow("GertToUTW\\XmlTestFiles\\Generated\\1022000000-2026-04-16T142040.000+0200.xml",
              "GertToUTW\\XmlTestFiles\\Expected\\valid_doublerun_fail.xml")]
-    [DataRow("GertToUTW\\XmlTestFiles\\Generated\\valid_doublerun_1.xml",
+    [DataRow("GertToUTW\\XmlTestFiles\\Generated\\1022000000-2026-04-16T142245.000+0200.xml",
              "GertToUTW\\XmlTestFiles\\Expected\\valid_doublerun_sucess.xml")]
+    [DataRow("GertToUTW\\XmlTestFiles\\Generated\\1022000000-2026-04-16T142052.000+0200.xml",
+             "GertToUTW\\XmlTestFiles\\Expected\\valid_singlerun_lotnumberoption.xml")]
     public void Application_Valid_ExistingFiles( string output_relative_path, string expected_relative_path )
         {
         string absolute_out = Path.Combine(theBaseFilesDir, output_relative_path);
@@ -137,8 +148,24 @@ public partial class ApplicationTest
         XElement generated = XElement.Load(absolute_out);
         XElement expected = XElement.Load(absolute_expected);
 
-        var gen_nodes = generated.DescendantsAndSelf().Select(e => new { e.Name, Value = e.Value.Replace("\r\n", "\n").Replace("\r", "\n").Trim() }).ToList();
-        var exp_nodes = expected.DescendantsAndSelf().Select(e => new { e.Name, Value = e.Value.Replace("\r\n", "\n").Replace("\r", "\n").Trim() }).ToList();
+        var gen_nodes = generated.DescendantsAndSelf().Select(
+            e =>
+            {
+                return new
+                    {
+                    e.Name,
+                    Value = e.Value.Replace("\r\n", "\n").Replace("\r", "\n").Trim()
+                    };
+            }).ToList();
+        var exp_nodes = expected.DescendantsAndSelf().Select(
+            e =>
+            {
+                return new
+                    {
+                    e.Name,
+                    Value = e.Value.Replace("\r\n", "\n").Replace("\r", "\n").Trim()
+                    };
+            }).ToList();
 
         // Verify they have the same number of nodes
         Assert.HasCount(exp_nodes.Count, gen_nodes, "The structure or node count does not match.");

@@ -17,10 +17,9 @@
                 The tests ensure that the generated XML adheres to the expected structure and content, and that file I/O operations are performed correctly.
     @}
 */
-
+// Ignore Spelling: Utw, 
 using System.Text;
 using System.Xml.Linq;
-
 using GertToUTW;
 namespace RegressionTests.GertToUTW;
 
@@ -66,7 +65,11 @@ public class UtwXmlGeneratorTests
     [TestMethod]
     public void BuildUTWXMLDOC_Error()
         {
-        _ = Assert.ThrowsExactly<ArgumentNullException>(() => UtwXmlGenerator.build_utw_xml_document(null!));
+        _ = Assert.ThrowsExactly<ArgumentNullException>(
+            () =>
+            {
+                return UtwXmlGenerator.build_utw_xml_document(null!);
+            });
         }
 
     /** @brief Allows us to test using DataRow method */
@@ -208,7 +211,7 @@ public class UtwXmlGeneratorFileIoTests
         }
 
     [TestCleanup]
-    public void Teardown()
+    public void Cleanup()
         {
         if( File.Exists(m_temp_file_path) )
             {
@@ -222,7 +225,11 @@ public class UtwXmlGeneratorFileIoTests
         {
         TestRun valid_test_run = new()
             { StartTime = DateTime.Now, EndTime = DateTime.Now };
-        _ = Assert.ThrowsExactly<ArgumentException>(() => UtwXmlGenerator.GenerateUtwXml(valid_test_run, ""));
+        _ = Assert.ThrowsExactly<ArgumentException>(
+            () =>
+            {
+                UtwXmlGenerator.GenerateUtwXml(valid_test_run, "");
+            });
        
         }
 

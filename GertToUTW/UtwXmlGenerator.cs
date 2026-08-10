@@ -9,7 +9,7 @@
         Mathilde Needham (Mathilde.Needham@tria-technologies.com)
 
     @brief
-        Provides methods to generate UTW-compliant XML files from testrun data.
+        Provides methods to generate UTW-compliant XML files from test run data.
 
     @details
         - Responsible for generating UTW-compliant XML files from parsed test run data.
@@ -21,7 +21,7 @@
     @{
     @}
 */
-
+// Ignore Spelling: filepath. Utw
 using System.Globalization;
 using System.Text;
 using System.Xml.Linq;
@@ -114,6 +114,7 @@ public static partial class UtwXmlGenerator
             new XElement("MaterialText", test_run_instance.MaterialText),
             new XElement("MaterialRevision", test_run_instance.MaterialRevision),
             new XElement("Lot", test_run_instance.Lot),
+            new XElement("Station", test_run_instance.Station),
             new XElement("Routestep", test_run_instance.Routestep),
             new XElement("Comment", test_run_instance.Comment),
             new XElement("SerialNumber", test_run_instance.SerialNumber)
@@ -165,7 +166,8 @@ public static partial class UtwXmlGenerator
         item_node.AddIfNotEmpty("Description", item.Description);
         item_node.AddIfNotEmpty("Stdout", item.Stdout);
         item_node.AddIfNotEmpty("Stderr", item.Stderr);
-
+        item_node.AddIfNotEmpty("StartTime", format_time(item.StartTime));
+        item_node.AddIfNotEmpty("Duration",item.Duration);
         return item_node;
         }
     }

@@ -1,7 +1,4 @@
-﻿
-using GertToUTW;
-
-/** @file
+﻿/** @file
 
     @copyright  &copy; 2024, Tria Technologies GmbH
                 SPDX-License-Identifier: (GPL-2.0-or-later OR LGPL-2.1-or-later)
@@ -20,7 +17,10 @@ using GertToUTW;
                 handling of various Type configurations and expected exception handling in error scenarios.
     @}
 */
+// Ignore Spelling: Routestep
+using GertToUTW;
 namespace RegressionTests.GertToUTW;
+
 /** @class      TestRunTest
     @ingroup    REF_GertToUTWEngine_RegressionTest_GertToUTW_TestRunTest
 
@@ -44,8 +44,8 @@ public sealed class TestRunTests
         Assert.IsNotNull(run.TestItem);
         Assert.IsNotNull(run.SerialNumberAttributes);
         Assert.IsNull(run.Comment);
-        Assert.IsNull(run.Routestep);
-        Assert.IsNull(run.Station);
+        Assert.AreEqual("NOT_SET", run.Routestep);
+        Assert.AreEqual("NOT_SET", run.Station);
 
         }
 
@@ -66,14 +66,18 @@ public sealed class TestRunTests
 
     /** @brief Confirms that malformed Material Numbers trigger an ArgumentException. */
     [TestMethod]
-    [DataRow("abc")]
+    [DataRow("cat")]
     [DataRow("0000000000000000000")] // Length greater than 18 digits
     [DataRow("-12.5")]
     [DataRow("AB34 7")]
     public void MaterialNumberPropertyInvalidInputThrowsTest( string invalid_material )
         {
         TestRun run = new();
-        _ = Assert.ThrowsExactly<ArgumentException>(() => run.MaterialNumber = invalid_material);
+        _ = Assert.ThrowsExactly<ArgumentException>(
+            () =>
+            {
+                return run.MaterialNumber = invalid_material;
+            });
         }
 
     /** @brief Validates compliant material engineering revisions match expectations. */
@@ -98,7 +102,11 @@ public sealed class TestRunTests
     public void MaterialRevisionPropertyInvalidInputThrowsTest( string invalid_revision )
         {
         TestRun run = new();
-        _ = Assert.ThrowsExactly<ArgumentException>(() => run.MaterialRevision = invalid_revision);
+        _ = Assert.ThrowsExactly<ArgumentException>(
+            () =>
+            {
+                return run.MaterialRevision = invalid_revision;
+            });
         }
 
 
@@ -126,7 +134,11 @@ public sealed class TestRunTests
     public void OperatingModePropertyInvalidInputThrowsTest( string invalid_mode )
         {
         TestRun run = new();
-        _ = Assert.ThrowsExactly<ArgumentException>(() => run.OperatingMode = invalid_mode);
+        _ = Assert.ThrowsExactly<ArgumentException>(
+            () =>
+            {
+                return run.OperatingMode = invalid_mode;
+            });
         }
 
 
@@ -164,7 +176,11 @@ public class LotNumberCalculatorTests
     [DataRow("12345678", "")]
     public void GenerateLotNumber_Invalid( string? mat_num, string? rev_num )
         {
-        _ = Assert.ThrowsExactly<ArgumentException>(() => TestRun.generate_lot_number(mat_num, rev_num));
+        _ = Assert.ThrowsExactly<ArgumentException>(
+            () =>
+            {
+                return TestRun.generate_lot_number(mat_num, rev_num);
+            });
         }
 
     /** @brief Tests that empty or non-numeric strings throw a FormatException */
@@ -173,9 +189,11 @@ public class LotNumberCalculatorTests
     [DataRow("12345678", "not_hex")]
     public void GenerateLotNumber_InvalidFormat_ThrowsFormatException( string mat_num, string rev_num )
         {
-        _ = Assert.ThrowsExactly<FormatException>(() =>
-            TestRun.generate_lot_number(mat_num, rev_num)
-        );
+        _ = Assert.ThrowsExactly<FormatException>(
+            () =>
+            {
+                return TestRun.generate_lot_number(mat_num, rev_num);
+            });
         }
 
     /** @brief Tests that the 'GenerateLotNumber' method correctly computes the lot number from given material number and revision. */
@@ -186,7 +204,7 @@ public class LotNumberCalculatorTests
     [DataRow("00000001", "C003", "049156")]   // 1 + 49155 = 49156           -> Padded   -> 049156
     [DataRow("0", "0000", "000000")]
     public void GenerateLotNumber_Valid(
-        string mat_num, string mat_rev, string expected )
+        string mat_num, string mat_rev,  string expected )
         {
         string actual_result = TestRun.generate_lot_number(mat_num, mat_rev);
         Assert.AreEqual(expected, actual_result);
@@ -217,6 +235,27 @@ public class LotNumberCalculatorTests
             };
         Assert.AreEqual("000000", test_run.Lot);
         }
+
+    /** @brief Validates that the interaction between lot number, material number, revision number */
+    [TestMethod]
+    [DataRow("12345678", "B001","", "390735")]   
+    [DataRow("87654321", "0000","", "654321")]  
+    [DataRow("00000001", "C003","", "049156")]
+    [DataRow("00000001", "C003", "123456", "123456")]
+    [DataRow("00000001", "C003", "1234567", "1234567")]
+    [DataRow("00000001", "C003", "12345678", "049156")]
+    [DataRow("00000001", "C003", "12345", "049156")]
+    [DataRow("00000001", "C003", "12345B", "049156")]
+    public void TryAutoGenerate_CallingTime( string material_number, string revision_number, string lot_number, string expected_lot )
+        {
+        TestRun test_run = new()
+            {
+            MaterialRevision = revision_number,
+            Lot = lot_number,
+            MaterialNumber = material_number
+            };
+        Assert.AreEqual(expected_lot, test_run.Lot);
+        }
     }
 
 /** @class      FindLinkPHandleStepTests
@@ -235,7 +274,7 @@ public class FindLinkPHandleStepTests
         TestRun run1 = new()
             { TestItem = [] };
         run1 = run1.Find_link_phandle_step();
-        Assert.IsTrue(string.IsNullOrEmpty(run1.Routestep));
+        Assert.AreEqual("NOT_SET", run1.Routestep);
         Assert.IsEmpty(run1.SerialNumberAttributes);
 
         // Case 2: List with no "Link PHandle" step
@@ -244,11 +283,11 @@ public class FindLinkPHandleStepTests
             TestItem =
                 [
                 new TestItem { Name = "Step 1: [Init]", Stdout = "INFO::ActionSteps\nResult: PASS" },
-                new TestItem { Name = "Step 2: [Teardown]", Stdout = "INFO::FillVariables\nResult: FAIL" }
+                new TestItem { Name = "Step 2: [Rush]", Stdout = "INFO::FillVariables\nResult: FAIL" }
                 ]
             };
         run2 =run2.Find_link_phandle_step();
-        Assert.IsTrue(string.IsNullOrEmpty(run2.Routestep));
+        Assert.AreEqual("NOT_SET", run2.Routestep);
         Assert.IsEmpty(run2.SerialNumberAttributes);
 
         // Case 3: List with a "Link PHandle" step but Stdout is empty
@@ -261,7 +300,7 @@ public class FindLinkPHandleStepTests
                 ]
             };
         run3 =run3.Find_link_phandle_step();
-        Assert.IsTrue(string.IsNullOrEmpty(run3.Routestep));
+        Assert.AreEqual("NOT_SET", run3.Routestep);
         Assert.IsEmpty(run3.SerialNumberAttributes);
 
         // Case 4: List with a "Link PHandle" step but Result is not "PASSED" (e.g. skipped/failed)
@@ -307,14 +346,11 @@ public class FindLinkPHandleStepTests
                     """,
                     Result = new Result { Value = "PASSED" }
                     },
-                new TestItem { Name = "Step 3: [Teardown]", Stdout = "INFO::FillVariables\nResult: FAIL" }
+                new TestItem { Name = "Step 3: [Rush]", Stdout = "INFO::FillVariables\nResult: FAIL" }
                 ]
             };
-
-        // Act
         run=run.Find_link_phandle_step();
 
-        // Assert
         Assert.AreEqual("FT_FUNCTION", run.Routestep);
 
         Assert.HasCount(1, run.SerialNumberAttributes);

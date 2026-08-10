@@ -1,9 +1,4 @@
-﻿
-using System.Text.RegularExpressions;
-
-using GertToUTW;
-
-/** @file
+﻿/** @file
 
     @copyright  &copy; 2024, Tria Technologies GmbH
                 SPDX-License-Identifier: (GPL-2.0-or-later OR LGPL-2.1-or-later)
@@ -22,6 +17,9 @@ using GertToUTW;
                 handling of various Type configurations and expected exception handling in error scenarios.
     @}
 */
+// Ignore Spelling: stdout, stderr
+using System.Text.RegularExpressions;
+using GertToUTW;
 namespace RegressionTests.GertToUTW;
 
 /** @class      TestItemTests
@@ -46,6 +44,7 @@ public sealed class TestItemTests
         Assert.IsNull(item.Stdout);
         Assert.IsNull(item.Stderr);
         Assert.IsNull(item.Idx);
+        Assert.IsEmpty(item.Duration);
         Assert.AreEqual(string.Empty, item.Result.Value);
         }
 
@@ -67,7 +66,7 @@ public sealed class TestItemTests
             $"Result: {raw_result_input}";
 
         Match raw_match = GertLogParser.step_item_regex().Match(target_log_block);
-        Assert.IsTrue(raw_match.Success, " The production step_item_regex failed to match the test logblock layout structure.");
+        Assert.IsTrue(raw_match.Success, " The production step_item_regex failed to match the test log block layout structure.");
         TestItem result = new (raw_match);
         Console.WriteLine($"TestItem Result: {result.Result.Value}, Stdout: {result.Stdout}, Stderr: {result.Stderr}");
         Assert.AreEqual(expected_stdout, result.Stdout, "The value assigned to Stdout did not match routing expectations.");
@@ -80,11 +79,19 @@ public sealed class TestItemTests
         string target_log_block =
             $"Step 12: [StepName] \nINFO::ActionSteps details\n" ;
         Match raw_match = GertLogParser.step_item_regex().Match(target_log_block);
-        _ = Assert.ThrowsExactly<ArgumentException>(() => new TestItem(raw_match), "Expected an ArgumentException to be thrown for an invalid match.");
+        _ = Assert.ThrowsExactly<ArgumentException>(
+            () =>
+            {
+                return new TestItem(raw_match);
+            }, "Expected an ArgumentException to be thrown for an invalid match.");
 
         string boardid = "[BoardID = 1012149159]";
         Match wrong_match  = GertLogParser.serial_number_regex().Match(boardid);
-        _ = Assert.ThrowsExactly<ArgumentException>(() => new TestItem(wrong_match), "Expected an ArgumentException to be thrown for a match from the wrong regex.");
+        _ = Assert.ThrowsExactly<ArgumentException>(
+            () =>
+            {
+                return new TestItem(wrong_match);
+            }, "Expected an ArgumentException to be thrown for a match from the wrong regex.");
 
         }
         

@@ -18,10 +18,9 @@
                 into serializable structural objects.
     @}
 */
+// Ignore Spelling: Gert 
 using System.Text.RegularExpressions;
-
 using GertToUTW;
-
 namespace RegressionTests.GertToUTW;
 
 
@@ -53,7 +52,11 @@ public sealed class ParseDateTests
     [DataRow("09/07/2026 at 14h30m25s")]
     public void Parse_date_InvalidFormat( string malformed_date_text )
         {
-         _ = Assert.ThrowsExactly<FormatException>(() =>GertLogParser.parse_date(malformed_date_text));
+         _ = Assert.ThrowsExactly<FormatException>(
+             () =>
+                 {
+                     return GertLogParser.parse_date(malformed_date_text);
+                 });
         }
     }
 
@@ -100,7 +103,7 @@ public sealed partial class ExtractFieldTests
 /** @class      ParseStepItemTests
     @ingroup    REF_GertToUTWEngine_RegressionTest_GertToUTW_GerLogParserTest
     @brief      Unit tests for the 'parse_test_items' method of the `GertLogParser` class.
-    @details    Verifies that the `parse_test_items` method correctly recognises all elements and all test steps
+    @details    Verifies that the `parse_test_items` method correctly recognizes all elements and all test steps
 */
 [TestClass]
 public class ParseStepItemTests
@@ -110,7 +113,11 @@ public class ParseStepItemTests
     public void ParseTestItems_NoTopLevelEnvelopeMatch_ThrowsFormatException()
         {
         string invalid_content = "Random invalid file context without log envelopes";
-        _ = Assert.Throws<FormatException>(() => GertLogParser.parse_test_items(invalid_content));
+        _ = Assert.Throws<FormatException>(
+            () =>
+            {
+                return GertLogParser.parse_test_items(invalid_content,11164.99, new DateTime(2026,1,1,8,0,15));
+            });
         }
 
     /** @brief Verifies that the `parse_test_items` correctly parses a valid log block and returns the expected number of test items. */
@@ -140,16 +147,20 @@ public class ParseStepItemTests
         """, 2)]
     public void ParseTestItems_EvaluatesLogStructures_AndReturnsExpectedCount( string raw_content, int expected_count )
         {
-        List<TestItem> result = GertLogParser.parse_test_items(raw_content);
+        List<TestItem> result = GertLogParser.parse_test_items(raw_content,11164.99, new DateTime(2026, 1, 1, 8, 0, 15));
         Assert.IsNotNull(result);
         Assert.HasCount(expected_count, result);
+        if( result.Count > 0 )
+            {
+            Assert.AreEqual(new DateTime(2026, 1, 1, 8, 0, 15), result[0].StartTime);
+            }
         }
     }
 
 /** @class      GertLogParserFlowControlTests
     @ingroup    REF_GertToUTWEngine_RegressionTest_GertToUTW_GerLogParserTest
     @brief      Unit tests for the 'ParseGertLog' method of the `GertLogParser` class.
-    @details    Uses testfiles to verify that the `ParseGertLog` method correctly parses entire log files and produces the expected number of test runs
+    @details    Uses test files to verify that the `ParseGertLog` method correctly parses entire log files and produces the expected number of test runs
 */
 [TestClass]
 public class GertLogParserFlowControlTests
@@ -175,14 +186,57 @@ public class GertLogParserFlowControlTests
     [DataRow(null)]
     public void GertLogParserTest_EmptyOrNull( string relative_file_name )
         {
-        _ = Assert.Throws<ArgumentException>(() => GertLogParser.ParseGertLog(relative_file_name));
+        _ = Assert.Throws<ArgumentException>(
+            () =>
+            {
+                return GertLogParser.ParseGertLog(relative_file_name);
+            });
         }
 
     [TestMethod]
     public void GertLogParserTest_NonExistentFile()
         {
         string non_existent_file = "GertToUTW\\LogTestFiles\\Invalid\\nonexistent.log";
-        _ = Assert.Throws<FileNotFoundException>(() => GertLogParser.ParseGertLog(non_existent_file));
+        _ = Assert.Throws<FileNotFoundException>(
+            () =>
+            {
+                return GertLogParser.ParseGertLog(non_existent_file);
+            });
         }
     }
 
+/** @class     DurationParserTests
+ *  @ingroup   REF_GertToUTWEngine_RegressionTest_GertToUTW_GerLogParserTest
+ *  @brief     Unit tests for the "parse_duration" method of the `GertLogParser` class.
+ *  @details   
+ */
+[TestClass]
+public class DurationParserTests
+    {
+    /** @brief Verifies that any format mismatch causes return to be 0.0 */
+    [TestMethod]
+    [DataRow(null)]
+    [DataRow("")]
+    [DataRow("   ")]
+    [DataRow("invalid_string")]
+    [DataRow("12.34.56")]
+    [DataRow("abc123")]
+    public void ParseDuration_InvalidOrEmptyInput_ReturnsZero( string input )
+        {
+        double result = GertLogParser.parse_duration(input);
+        Assert.AreEqual(0.0, result, 0.0001, "Expected 0.0 for invalid or empty string inputs.");
+        }
+
+    /** @brief Verifies that a correctly formatted duration string parses into the exact expected double */
+    [TestMethod]
+    [DataRow("0", 0.0)]
+    [DataRow("10", 10.0)]
+    [DataRow("45.5", 45.5)]
+    [DataRow("-15.2", -15.2)]
+    [DataRow("  100.25  ", 100.25)] // Leading and trailing whitespace handling
+    public void ParseDuration_ValidNumericString_ReturnsParsedDouble( string input, double expected )
+        {
+        double result = GertLogParser.parse_duration(input);
+        Assert.AreEqual(expected, result, 0.0001, $"Failed parsing valid duration string: '{input}'");
+        }
+    }

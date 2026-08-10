@@ -9,7 +9,7 @@
         Mathilde Needham (Mathilde.Needham@tria-technologies.com)
 
     @brief
-        Defines the context structure and property accessors representing a complete test run.
+        Defines the context structure, properties and method representing a complete test run.
 
     @details
         - Encapsulates data spanning environmental properties, timestamps, target material metadata, and execution state.
@@ -22,7 +22,7 @@
     @{
     @}
 */
-
+// Ignore Spelling: Routestep phandle
 using System.Globalization;
 using System.Text.RegularExpressions;
 
@@ -244,7 +244,7 @@ public partial class TestRun
     public string? Station
         {
         get; set;
-        }
+        } = "NOT_SET";
 
     /** @property Routestep
         @brief
@@ -256,20 +256,34 @@ public partial class TestRun
     public string? Routestep
         {
         get; set;
-        }
+        } = "NOT_SET";
+
+    /** @brief Indicates whether a custom explicit lot number was set during initialization. */
+    private bool m_has_explicit_lot;
 
     /** @property Lot
         @brief
             Gets the factory batch production lot allocation string.
 
         @details
-            - Defaults to `"000000"`.
-            - Managed internally via @ref generate_lot_number.
+            - Defaults to `"000000"`or an automatically generated lot from material/revision
+            - If explicitly set to a non-null string, auto-generation is disabled
 
         @return
-            Returns the 6-digit production lot identifier.
+            Returns the production lot identifier.
     */
-    public string Lot { get; private set; } = "000000";
+    public string Lot
+        {
+        get => string.IsNullOrEmpty(field) ? "000000" : field;
+        set
+            {
+            if( !string.IsNullOrEmpty(value) && (value.Length is 6 or 7) && value.All(char.IsAsciiDigit) )
+                {
+                field = value;
+                m_has_explicit_lot = true;
+                }
+            }
+        } = string.Empty;
 
     /** @property Comment
         @brief
@@ -364,6 +378,10 @@ public partial class TestRun
     */
     private void try_auto_generate_lot()
         {
+        if ( m_has_explicit_lot )
+            {
+            return;
+            }
         try
             {
             Lot = generate_lot_number(MaterialNumber, MaterialRevision);
