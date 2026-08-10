@@ -22,10 +22,8 @@
     @{
     @}
 */
-// Ignore Spelling: Gert
-using System.Globalization;
 
-using System.Globalization;
+// Ignore Spelling: Gert
 
 namespace GertToUTW;
 
@@ -59,7 +57,7 @@ public class Application
         @return
             Returns the validated input log file path.
     */
-    public string Input_log_path
+    public string input_log_path
         {
         get;
         }
@@ -76,7 +74,7 @@ public class Application
         @return
             Returns the configured output directory path.
     */
-    public string Output_xml_dir
+    public string output_xml_dir
         {
         get;
         }
@@ -90,7 +88,7 @@ public class Application
      *  @return
      *      The lot number provided by the user.
      */
-    public string Given_lot_number
+    public string given_lot_number
         {
         get;
         }
@@ -108,8 +106,8 @@ public class Application
         @param[in] input_log_path
             Provides the path to the input Gert log file.
 
-    @param[in] output_xml_dir
-        Path to the output directory where generated XML files will be stored.
+        @param[in] output_xml_dir
+            Path to the output directory where generated XML files will be stored.
 
         @exception ArgumentException
             Thrown when either path is empty or whitespace-only, or when `input_log_path` does not use the `.log` extension.
@@ -117,7 +115,7 @@ public class Application
         @exception FileNotFoundException
             Thrown when `input_log_path` does not identify an existing file.
     */
-    public Application( string input_log_path, string output_xml_dir , string given_lot_number = "")
+    public Application( string input_log_path, string output_xml_dir , string given_lot_number = "" )
         {
         ArgumentException.ThrowIfNullOrWhiteSpace(input_log_path);
         ArgumentException.ThrowIfNullOrWhiteSpace(output_xml_dir);
@@ -132,18 +130,18 @@ public class Application
             throw new FileNotFoundException("The specified input log file was not found.", input_log_path);
             }
 
-        Input_log_path = input_log_path;
-        Output_xml_dir = output_xml_dir;
-        Given_lot_number = given_lot_number;
+        this.input_log_path = input_log_path;
+        this.output_xml_dir = output_xml_dir;
+        this.given_lot_number = given_lot_number;
         }
 
     /** @brief
-        Parses the configured Gert log file and generates the corresponding UTW XML files.
+            Parses the configured Gert log file and generates the corresponding UTW XML files.
 
-    @details
-        - Parses input log file sessions using @ref GertLogParser.
-        - Ensures the output directory exists.
-        - Generates uniquely named XML files in the target directory via @ref UtwXmlGenerator.
+        @details
+            - Parses input log file sessions using @ref GertLogParser.
+            - Ensures the output directory exists.
+            - Generates uniquely named XML files in the target directory via @ref UtwXmlGenerator.
 
         @return
             Returns the generated XML file paths in the same order as the parsed test runs.
@@ -159,16 +157,17 @@ public class Application
     */
     public List<string> Execute()
         {
-        List<TestRun> file_test_runs = GertLogParser.ParseGertLog(Input_log_path, Given_lot_number); 
-        int count = file_test_runs.Count;
-        List<string> generated_xml_files = [];
+        List<TestRun> file_test_runs       = GertLogParser.ParseGertLog(input_log_path, given_lot_number); 
+        int           count                = file_test_runs.Count;
+        string       file_name_without_ext = Path.GetFileNameWithoutExtension(input_log_path);
+        List<string> generated_xml_files   = [];
 
-        _ = Directory.CreateDirectory(Output_xml_dir);
+        _ = Directory.CreateDirectory(output_xml_dir);
 
         for( int i = 0; i < count; i++ )
             {
-            TestRun test_run = file_test_runs[i];
-            string unique_xml_path = Path.Combine(Output_xml_dir, $"{file_name_without_ext}_{i}.xml");
+            _ = file_test_runs[i];
+            string unique_xml_path = Path.Combine(output_xml_dir, $"{file_name_without_ext}_{i}.xml");
             generated_xml_files.Add(unique_xml_path);
             }
 

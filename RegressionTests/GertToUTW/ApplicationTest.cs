@@ -17,10 +17,14 @@
                 for input and output file paths, and expected exception handling in error scenarios.
     @}
 */
+
 // Ignore Spelling: XSD
+
 using System.Xml;
 using System.Xml.Linq;
+
 using GertToUTW;
+
 namespace RegressionTests.GertToUTW;
 
 /** @class      ApplicationTests
@@ -35,7 +39,7 @@ namespace RegressionTests.GertToUTW;
 public partial class ApplicationTest
     {
     private static readonly string theBaseFilesDir = AppDomain.CurrentDomain.BaseDirectory;
-    private static readonly string theXsdFilePath = Path.Combine(theBaseFilesDir, "GertToUTW\\XmlTestFiles\\Structure\\machine-readable-logs.xsd");
+    private static readonly string theXsdFilePath  = Path.Combine(theBaseFilesDir, "GertToUTW\\XmlTestFiles\\Structure\\machine-readable-logs.xsd");
   
     /** @brief  Generates all the .xml files whose structure we will be testing against the XSD schema */
     [ClassInitialize]
@@ -70,14 +74,23 @@ public partial class ApplicationTest
         string absolute_input_file = string.IsNullOrEmpty(input) ? input : Path.Combine(theBaseFilesDir, input);
         string absolute_output_dir = string.IsNullOrEmpty(output) ? output : Path.Combine(theBaseFilesDir, output);
 
-        _ = Assert.ThrowsExactly<ArgumentException>(() => new Application(absolute_input_file, absolute_output_dir));
+        _ = Assert.ThrowsExactly<ArgumentException>
+            (
+            () =>
+                {
+                _ = new Application(absolute_input_file, absolute_output_dir);
+                }
+            );
 
         //input must exist
         string absolute_input_file2 = Path.Combine(theBaseFilesDir, "GertToUTW\\XmlTestFiles\\LogTestFiles\\nonexistent.log");
-        _ = Assert.ThrowsExactly<FileNotFoundException>(() =>
-        {
-            return new Application(absolute_input_file2, "output");
-        });
+        _ = Assert.ThrowsExactly<FileNotFoundException>
+            (
+            () =>
+                {
+                return new Application(absolute_input_file2, "output");
+                }
+            );
         }
 
     [TestMethod]
@@ -97,13 +110,13 @@ public partial class ApplicationTest
     public void Application_Valid( string input, string output )
         {
         Application app = new(input, output);
-        Assert.AreEqual(input, app.Input_log_path);
-        Assert.AreEqual(output, app.Output_xml_dir);
+        Assert.AreEqual(input, app.input_log_path);
+        Assert.AreEqual(output, app.output_xml_dir);
         }
 
     /** @brief Validates the XML file against the XSD schema and asserts that there are no validation errors. */
     [TestMethod]
-    [DataRow("GertToUTW\\XmlTestFiles\\Generated\\1022000000-2026-04-16T142039.000+0200.xml")] //valid_singlerun_0
+    [DataRow("GertToUTW\\XmlTestFiles\\Generated\\1022000000-2026-04-16T142039.000+0200.xml")] // valid_singlerun_0
     [DataRow("GertToUTW\\XmlTestFiles\\Generated\\1022000000-2026-04-16T142040.000+0200.xml")] // valid_doublerun_0
     [DataRow("GertToUTW\\XmlTestFiles\\Generated\\1022000000-2026-04-16T142245.000+0200.xml")] // valid_doublerun_1
     [DataRow("GertToUTW\\XmlTestFiles\\Generated\\1022000000-2026-04-16T142052.000+0200.xml")] // valid_singlerun_lotnumberoption_0

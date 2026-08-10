@@ -3,6 +3,7 @@
     <File Path=".editorconfig" />
     <File Path=".gitignore" />
     <File Path="doc/Grouping.dox" />
+    <File Path="README.md" />
   </Folder>
   <Project Path="GertToUTW/GertToUTW.csproj" />
   <Project Path="RegressionTests/RegressionTests.csproj" />
