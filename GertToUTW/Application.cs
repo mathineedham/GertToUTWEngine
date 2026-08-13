@@ -45,7 +45,7 @@ namespace GertToUTW;
 */
 public class Application
     {
-    /** @property Input_log_path
+    /** @property InputLogPath
         @brief
             Gets the validated path to the input Gert log file.
 
@@ -57,12 +57,12 @@ public class Application
         @return
             Returns the validated input log file path.
     */
-    public string input_log_path
+    public string InputLogPath
         {
         get;
         }
 
-    /** @property Output_xml_dir
+    /** @property OutputXmlDir
         @brief
             Gets the target directory path for generated UTW XML files.
 
@@ -74,12 +74,12 @@ public class Application
         @return
             Returns the configured output directory path.
     */
-    public string output_xml_dir
+    public string OutputXmlDir
         {
         get;
         }
 
-    /** @property Given_lot_number
+    /** @property GivenLotNumber
      *  @brief 
      *      Gets the lot number provided by the user.
      *  @details
@@ -88,7 +88,7 @@ public class Application
      *  @return
      *      The lot number provided by the user.
      */
-    public string given_lot_number
+    public string GivenLotNumber
         {
         get;
         }
@@ -108,6 +108,9 @@ public class Application
 
         @param[in] output_xml_dir
             Path to the output directory where generated XML files will be stored.
+
+        @param[in] given_lot_number
+            Used to handle log number passed by command line, empty string by default.
 
         @exception ArgumentException
             Thrown when either path is empty or whitespace-only, or when `input_log_path` does not use the `.log` extension.
@@ -130,9 +133,9 @@ public class Application
             throw new FileNotFoundException("The specified input log file was not found.", input_log_path);
             }
 
-        this.input_log_path = input_log_path;
-        this.output_xml_dir = output_xml_dir;
-        this.given_lot_number = given_lot_number;
+        this.InputLogPath = input_log_path;
+        this.OutputXmlDir = output_xml_dir;
+        this.GivenLotNumber = given_lot_number;
         }
 
     /** @brief
@@ -157,17 +160,17 @@ public class Application
     */
     public List<string> Execute()
         {
-        List<TestRun> file_test_runs       = GertLogParser.ParseGertLog(input_log_path, given_lot_number); 
+        List<TestRun> file_test_runs       = GertLogParser.ParseGertLog(InputLogPath, GivenLotNumber); 
         int           count                = file_test_runs.Count;
-        string       file_name_without_ext = Path.GetFileNameWithoutExtension(input_log_path);
+        string       file_name_without_ext = Path.GetFileNameWithoutExtension(InputLogPath);
         List<string> generated_xml_files   = [];
 
-        _ = Directory.CreateDirectory(output_xml_dir);
+        _ = Directory.CreateDirectory(OutputXmlDir);
 
         for( int i = 0; i < count; i++ )
             {
             _ = file_test_runs[i];
-            string unique_xml_path = Path.Combine(output_xml_dir, $"{file_name_without_ext}_{i}.xml");
+            string unique_xml_path = Path.Combine(OutputXmlDir, $"{file_name_without_ext}_{i}.xml");
             generated_xml_files.Add(unique_xml_path);
             }
 

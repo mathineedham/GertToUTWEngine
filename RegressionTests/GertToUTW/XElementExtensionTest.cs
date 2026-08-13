@@ -1,4 +1,4 @@
-﻿/** @file       GertLogParserTests.cs
+﻿/** @file       
 
     @copyright  &copy; 2026, Tria Technologies GmbH
                 SPDX-License-Identifier: (GPL-2.0-or-later OR LGPL-2.1-or-later)
@@ -21,6 +21,7 @@
 using System.Xml.Linq;
 
 using GertToUTW;
+
 namespace RegressionTests.GertToUTW;
 
 /** @class      SanitizeForXmlTests

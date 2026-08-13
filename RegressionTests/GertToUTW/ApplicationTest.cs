@@ -110,8 +110,8 @@ public partial class ApplicationTest
     public void Application_Valid( string input, string output )
         {
         Application app = new(input, output);
-        Assert.AreEqual(input, app.input_log_path);
-        Assert.AreEqual(output, app.output_xml_dir);
+        Assert.AreEqual(input, app.InputLogPath);
+        Assert.AreEqual(output, app.OutputXmlDir);
         }
 
     /** @brief Validates the XML file against the XSD schema and asserts that there are no validation errors. */

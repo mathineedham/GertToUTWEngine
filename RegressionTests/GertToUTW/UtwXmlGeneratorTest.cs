@@ -1,4 +1,4 @@
-﻿/** @file       GertLogParserTests.cs
+﻿/** @file
 
     @copyright  &copy; 2026, Tria Technologies GmbH
                 SPDX-License-Identifier: (GPL-2.0-or-later OR LGPL-2.1-or-later)
@@ -17,10 +17,14 @@
                 The tests ensure that the generated XML adheres to the expected structure and content, and that file I/O operations are performed correctly.
     @}
 */
-// Ignore Spelling: Utw, 
+
+// Ignore Spelling: Utw
+
 using System.Text;
 using System.Xml.Linq;
+
 using GertToUTW;
+
 namespace RegressionTests.GertToUTW;
 
 

@@ -48,7 +48,7 @@ public static partial class UtwXmlGenerator
         Converts a DateTime instance to an ISO-8601 formatted timestamp string with offset.
 
     @param[in] dt_obj
-        The source @ref DateTime value to format.
+        The source DateTime instance value to format.
 
     @return
         Returns the formatted timestamp string.
@@ -63,7 +63,7 @@ public static partial class UtwXmlGenerator
 
     @details
         - Validates that output filepath is non-empty.
-        - Serializes the generated @ref XDocument to disk with UTF-8 encoding.
+        - Serializes the generated XDocument instance to disk with UTF-8 encoding.
 
     @param[in] test_run_instance
         The @ref TestRun instance containing test run context data.
@@ -90,18 +90,18 @@ public static partial class UtwXmlGenerator
     /** @brief
         Creates a UTW-compliant XML document from a TestRun instance.
 
-    @details
-        - Constructs header elements including material details, serial numbers, hardware info, and results.
-        - Appends child `SerialNumberAttributes` and `TestItem` nodes to the root element.
+        @details
+            - Constructs header elements including material details, serial numbers, hardware info, and results.
+            - Appends child `SerialNumberAttributes` and `TestItem` nodes to the root element.
 
-    @param[in] test_run_instance
-        The @ref TestRun instance containing test run data.
+        @param[in] test_run_instance
+            The @ref TestRun instance containing test run data.
 
-    @return
-        Returns an @ref XDocument representing the UTW-compliant XML structure.
+        @return
+            Returns an XDocument instance representing the UTW-compliant XML structure.
 
-    @exception ArgumentNullException
-        Thrown when `test_run_instance` is `null`.
+        @exception ArgumentNullException
+            Thrown when `test_run_instance` is `null`.
     */
     internal static XDocument build_utw_xml_document( TestRun test_run_instance )
         {

@@ -1,4 +1,4 @@
-﻿/** @file       GertLogParserTests.cs
+﻿/** @file
 
     @copyright  &copy; 2026, Tria Technologies GmbH
                 SPDX-License-Identifier: (GPL-2.0-or-later OR LGPL-2.1-or-later)
@@ -18,11 +18,14 @@
                 into serializable structural objects.
     @}
 */
-// Ignore Spelling: Gert 
-using System.Text.RegularExpressions;
-using GertToUTW;
-namespace RegressionTests.GertToUTW;
 
+// Ignore Spelling: Gert 
+
+using System.Text.RegularExpressions;
+
+using GertToUTW;
+
+namespace RegressionTests.GertToUTW;
 
 /** @class      TestParseDateTests
     @ingroup    REF_GertToUTWEngine_RegressionTest_GertToUTW_GerLogParserTest

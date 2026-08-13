@@ -1,4 +1,4 @@
-﻿/** @file       SerialNumberAttributesTests.cs
+﻿/** @file       
 
     @brief      Provides automated verification scenarios testing the SerialNumberAttributes data model.
 
@@ -12,8 +12,11 @@
     @defgroup   REF_GertToUTWEngine_RegressionTest_GertToUTW_SerialNumberAttributesTest   SerialNumberAttributesTest
     @{
     @ingroup    REF_GertToUTWEngine_RegressionTest_GertToUTW
+    @}
 */
+
 using GertToUTW;
+
 namespace RegressionTests.GertToUTW;
 
 /** @class      SerialNumberAttributesTests
