@@ -1,4 +1,10 @@
-﻿/** @file
+﻿
+
+// Ignore Spelling: Gert
+
+using System.Globalization;
+
+/** @file
 
     @copyright  &copy; 2024, Tria Technologies GmbH
                 SPDX-License-Identifier: (GPL-2.0-or-later OR LGPL-2.1-or-later)
@@ -133,9 +139,9 @@ public class Application
             throw new FileNotFoundException("The specified input log file was not found.", input_log_path);
             }
 
-        this.InputLogPath = input_log_path;
-        this.OutputXmlDir = output_xml_dir;
-        this.GivenLotNumber = given_lot_number;
+        InputLogPath = input_log_path;
+        OutputXmlDir = output_xml_dir;
+        GivenLotNumber = given_lot_number;
         }
 
     /** @brief
@@ -160,20 +166,22 @@ public class Application
     */
     public List<string> Execute()
         {
-        List<TestRun> file_test_runs       = GertLogParser.ParseGertLog(InputLogPath, GivenLotNumber); 
-        int           count                = file_test_runs.Count;
-        string       file_name_without_ext = Path.GetFileNameWithoutExtension(InputLogPath);
-        List<string> generated_xml_files   = [];
+        List<TestRun> file_test_runs = GertLogParser.ParseGertLog(InputLogPath, GivenLotNumber);
+        int count = file_test_runs.Count;
+        List<string> generated_xml_files = [];
 
         _ = Directory.CreateDirectory(OutputXmlDir);
 
         for( int i = 0; i < count; i++ )
             {
-            _ = file_test_runs[i];
-            string unique_xml_path = Path.Combine(OutputXmlDir, $"{file_name_without_ext}_{i}.xml");
+            TestRun test_run = file_test_runs[i];
+            string time = test_run.StartTime.ToString("yyyy-MM-dd'T'HHmmss.fffzzz", CultureInfo.InvariantCulture).Replace(":", "");
+            string unique_xml_path = Path.Combine(OutputXmlDir, $"{test_run.SerialNumber}-{time}.xml");
+            UtwXmlGenerator.GenerateUtwXml(test_run, unique_xml_path);
             generated_xml_files.Add(unique_xml_path);
             }
 
         return generated_xml_files;
         }
     }
+

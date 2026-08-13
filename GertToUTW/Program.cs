@@ -61,8 +61,5 @@ internal class Program
             {
             Console.Error.WriteLine($"Error: {ex.Message}");
             }
-
-        Console.WriteLine("\n Press Enter to close this window...");
-        _ = Console.ReadLine();
         }
     }
