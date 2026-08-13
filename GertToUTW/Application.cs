@@ -1,4 +1,10 @@
-﻿/** @file
+﻿
+
+// Ignore Spelling: Gert
+
+using System.Globalization;
+
+/** @file
 
     @copyright  &copy; 2024, Tria Technologies GmbH
                 SPDX-License-Identifier: (GPL-2.0-or-later OR LGPL-2.1-or-later)
@@ -22,8 +28,8 @@
     @{
     @}
 */
+
 // Ignore Spelling: Gert
-using System.Globalization;
 
 namespace GertToUTW;
 
@@ -45,7 +51,7 @@ namespace GertToUTW;
 */
 public class Application
     {
-    /** @property Input_log_path
+    /** @property InputLogPath
         @brief
             Gets the validated path to the input Gert log file.
 
@@ -57,12 +63,12 @@ public class Application
         @return
             Returns the validated input log file path.
     */
-    public string Input_log_path
+    public string InputLogPath
         {
         get;
         }
 
-    /** @property Output_xml_dir
+    /** @property OutputXmlDir
         @brief
             Gets the target directory path for generated UTW XML files.
 
@@ -74,12 +80,12 @@ public class Application
         @return
             Returns the configured output directory path.
     */
-    public string Output_xml_dir
+    public string OutputXmlDir
         {
         get;
         }
 
-    /** @property Given_lot_number
+    /** @property GivenLotNumber
      *  @brief 
      *      Gets the lot number provided by the user.
      *  @details
@@ -88,7 +94,7 @@ public class Application
      *  @return
      *      The lot number provided by the user.
      */
-    public string Given_lot_number
+    public string GivenLotNumber
         {
         get;
         }
@@ -107,13 +113,10 @@ public class Application
             Provides the path to the input Gert log file.
 
         @param[in] output_xml_dir
-            Provides the output directory path used for generated UTW XML files.
+            Path to the output directory where generated XML files will be stored.
 
         @param[in] given_lot_number
-            Provides the lot number to be used in the generated UTW XML files, is an optional parameter.
-
-        @exception ArgumentNullException
-            Thrown when `input_log_path` or `output_xml_dir` is `null`.
+            Used to handle log number passed by command line, empty string by default.
 
         @exception ArgumentException
             Thrown when either path is empty or whitespace-only, or when `input_log_path` does not use the `.log` extension.
@@ -121,7 +124,7 @@ public class Application
         @exception FileNotFoundException
             Thrown when `input_log_path` does not identify an existing file.
     */
-    public Application( string input_log_path, string output_xml_dir , string given_lot_number = "")
+    public Application( string input_log_path, string output_xml_dir , string given_lot_number = "" )
         {
         ArgumentException.ThrowIfNullOrWhiteSpace(input_log_path);
         ArgumentException.ThrowIfNullOrWhiteSpace(output_xml_dir);
@@ -136,20 +139,18 @@ public class Application
             throw new FileNotFoundException("The specified input log file was not found.", input_log_path);
             }
 
-        Input_log_path = input_log_path;
-        Output_xml_dir = output_xml_dir;
-        Given_lot_number = given_lot_number;
+        InputLogPath = input_log_path;
+        OutputXmlDir = output_xml_dir;
+        GivenLotNumber = given_lot_number;
         }
 
     /** @brief
-        Parses the configured Gert log file and generates the corresponding UTW XML files.
+            Parses the configured Gert log file and generates the corresponding UTW XML files.
 
         @details
-            - Parses input log sessions through @ref GertLogParser.
-            - Creates the configured output directory before writing files.
-            - Generates deterministic file names from the input file stem and a zero-based, culture-invariant index.
-            - Adds each output path to the result only after @ref UtwXmlGenerator completes successfully.
-            - Does not synchronize concurrent executions that target the same output paths.
+            - Parses input log file sessions using @ref GertLogParser.
+            - Ensures the output directory exists.
+            - Generates uniquely named XML files in the target directory via @ref UtwXmlGenerator.
 
         @return
             Returns the generated XML file paths in the same order as the parsed test runs.
@@ -165,17 +166,17 @@ public class Application
     */
     public List<string> Execute()
         {
-        List<TestRun> file_test_runs = GertLogParser.ParseGertLog(Input_log_path, Given_lot_number); 
+        List<TestRun> file_test_runs = GertLogParser.ParseGertLog(InputLogPath, GivenLotNumber);
         int count = file_test_runs.Count;
         List<string> generated_xml_files = [];
 
-        _ = Directory.CreateDirectory(Output_xml_dir);
+        _ = Directory.CreateDirectory(OutputXmlDir);
 
         for( int i = 0; i < count; i++ )
             {
             TestRun test_run = file_test_runs[i];
             string time = test_run.StartTime.ToString("yyyy-MM-dd'T'HHmmss.fffzzz", CultureInfo.InvariantCulture).Replace(":", "");
-            string unique_xml_path = Path.Combine(Output_xml_dir, $"{test_run.SerialNumber}-{time}.xml");
+            string unique_xml_path = Path.Combine(OutputXmlDir, $"{test_run.SerialNumber}-{time}.xml");
             UtwXmlGenerator.GenerateUtwXml(test_run, unique_xml_path);
             generated_xml_files.Add(unique_xml_path);
             }
@@ -183,3 +184,4 @@ public class Application
         return generated_xml_files;
         }
     }
+

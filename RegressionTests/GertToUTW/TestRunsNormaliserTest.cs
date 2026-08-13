@@ -19,6 +19,7 @@
 
     @defgroup REF_GertToUTW_RegressionTests_GertToUTW_TestRunNormalizer_Tests TestRunNormalizer_Tests
     @{
+    @ingroup  REF_GertToUTW_RegressionTests_GertToUTW
     @}
 */
 

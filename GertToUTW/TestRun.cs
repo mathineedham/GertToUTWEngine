@@ -206,7 +206,7 @@ public partial class TestRun
             Gets or sets the starting timestamp tracking test execution initialization.
 
         @return
-            Returns the starting local @ref DateTime.
+            Returns the starting local DateTime instance.
     */
     public DateTime StartTime
         {
@@ -218,7 +218,7 @@ public partial class TestRun
             Gets or sets the ending timestamp tracking test sequence completion.
 
         @return
-            Returns the ending local @ref DateTime.
+            Returns the ending local DateTime instance.
     */
     public DateTime EndTime
         {

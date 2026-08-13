@@ -22,7 +22,10 @@
     @}
 */
 
-// Ignore Spelling: Gert, filepath
+// Ignore Spelling: Gert filepath
+
+
+
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -122,7 +125,7 @@ public static partial class GertLogParser
     @param[in] filepath
         The explicit layout system access path to the target document.
 
-    @param[in] givenlotnumber
+    @param[in] given_lot_number
         Optional lot number to override the default extracted value.
 
     @return
@@ -243,7 +246,7 @@ public static partial class GertLogParser
         The raw text configuration segment tracking time.
 
     @return
-        Returns the converted @ref DateTime snapshot.
+        Returns the converted DateTime instance snapshot.
 
     @exception FormatException
         Thrown when `date_str` fails to conform to the required date format string.
@@ -280,7 +283,7 @@ public static partial class GertLogParser
     @exception FormatException
         Thrown when log data boundary markers are missing.
     */
-    internal static List<TestItem> parse_test_items( string content, double test_run_duration , DateTime test_run_starttime)
+    internal static List<TestItem> parse_test_items( string content, double test_run_duration , DateTime test_run_start_time )
         {
         List<TestItem> test_items = [];
         Match log_data_match = log_data_regex().Match(content);
@@ -312,7 +315,7 @@ public static partial class GertLogParser
         for(int i = 0; i < nb_steps; i++ )
             {
             test_items[i].Duration = step_duration;
-            test_items[i].StartTime = test_run_starttime + TimeSpan.FromSeconds(i * step_time.TotalSeconds);
+            test_items[i].StartTime = test_run_start_time + TimeSpan.FromSeconds(i * step_time.TotalSeconds);
             }
         return test_items;
         }
