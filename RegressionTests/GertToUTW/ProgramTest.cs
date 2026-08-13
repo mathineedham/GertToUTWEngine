@@ -24,6 +24,8 @@
 
 using System.Diagnostics;
 
+using GertToUTW.Generated;
+
 namespace RegressionTests.GertToUTW;
 
 /** @ingroup REF_GertToUTWEngine_RegressionTests_GertToUTW_Program_Tests
@@ -39,10 +41,36 @@ namespace RegressionTests.GertToUTW;
 [TestClass]
 public class ProgramTests
     {
-    // Adjust relative path to point to your compiled executable (e.g., bin/Debug/net10.0/GertToUTW.exe)
-    private readonly string mExecutable_path = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../bin/Debug/net10.0/GertToUTW.exe"));
     private static readonly string theBaseFilesDir = AppDomain.CurrentDomain.BaseDirectory;
 
+    private readonly string mExecutable_path = get_executable_path();
+
+    private static string get_executable_path()
+        {
+        // 1. Direct check: Works if the executable is copied to the test output directory
+        string local_path = Path.Combine(theBaseFilesDir, "GertToUTW.exe");
+        if( File.Exists(local_path) )
+            {
+            return local_path;
+            }
+
+        // 2. Build-configuration check: Switches path based on Debug vs Release
+#if DEBUG
+        const string build_config = "Debug";
+#else
+        const string build_config = "Release";
+#endif
+
+        // Navigates directly from the solution root: <SolutionDir>/GertToUTW/bin/<Debug|Release>/net10.0/GertToUTW.exe
+        return Path.GetFullPath(Path.Combine(
+            ProjectInfo.SolutionDir,
+            "GertToUTW",
+            "bin",
+            build_config,
+            "net10.0",
+            "GertToUTW.exe"
+        ));
+        }
     /** @brief
             Executes a process asynchronously while capturing stdout and stderr streams.
 
